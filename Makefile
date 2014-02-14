@@ -27,7 +27,7 @@ $(DJANGO_DB_FILE): config.py app_server/settings_local.py $VENV $(LOCAL_DBS) | a
 	. $(VENV_ACTIVATE); python app_server/manage.py migrate
 
 $(CONTENT_DIR):
-	git clone https://github.com/metacademy/octal-content.git $(CONTENT_DIR)
+	git clone https://github.com/danallan/octal-content.git $(CONTENT_DIR)
 
 app_server/static/lib/kmap/*:
 	git clone https://github.com/cjrd/kmap.git app_server/static/lib/kmap
