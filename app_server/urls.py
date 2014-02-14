@@ -34,6 +34,8 @@ urlpatterns = patterns('',
                        (r'^admin/doc/', include('django.contrib.admindocs.urls')),
                        url(r'^admin/', include(admin.site.urls)),
                        url(r'^browser-tests', include('apps.browser_tests.urls', namespace="btests")),
+                       url(r'^(?i)octal/', include('apps.octal.urls', namespace="graphs") ),
+                       url(r'^(?i)quiz$', TemplateView.as_view(template_name="quiz-container.html")),
 )
 
 urlpatterns += staticfiles_urlpatterns()

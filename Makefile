@@ -20,14 +20,14 @@ VENV_ACTIVATE = $(VENV)/bin/activate
 # derived vars
 LOCAL_DBS = $(LOCAL_DBS_DIR)/$(DJANGO_DB_DIR) $(LOCAL_DBS_DIR)/$(CONTENT_INDEX_DIR) $(LOCAL_DBS_DIR)/$(APP_INDEX_DIR)
 DJANGO_DB_FILE := $(LOCAL_DBS_DIR)/$(DJANGO_DB_DIR)/django_db.sqlite
-CONTENT_DIR = $(BASE_DIR)/metacademy-content
+CONTENT_DIR = $(BASE_DIR)/octal-content
 
 $(DJANGO_DB_FILE): config.py app_server/settings_local.py $VENV $(LOCAL_DBS) | app_server/static/lib/kmap/* python_path $(CONTENT_DIR)
 	. $(VENV_ACTIVATE); python app_server/manage.py syncdb --noinput
 	. $(VENV_ACTIVATE); python app_server/manage.py migrate
 
 $(CONTENT_DIR):
-	git clone https://github.com/metacademy/metacademy-content.git $(CONTENT_DIR)
+	git clone https://github.com/metacademy/octal-content.git $(CONTENT_DIR)
 
 app_server/static/lib/kmap/*:
 	git clone https://github.com/cjrd/kmap.git app_server/static/lib/kmap
