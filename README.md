@@ -1,13 +1,11 @@
-[![Build Status](https://travis-ci.org/metacademy/metacademy-application.png)](https://travis-ci.org/metacademy/metacademy-application)
-
-Metacademy's Source
+OCTAL's Source
 ==============
 
 This source is licensed under GPLv3, see LICENSE.txt (note: metacademy's content is CC BY SA 3.0).
 
-## Demo
-
-Metacademy is live at http://www.metacademy.org
+OCTAL is based upon Metacademy:
+https://github.com/metacademy/metacademy-application
+With a live demo at http://www.metacademy.org
 
 
 ## Installation
@@ -36,17 +34,17 @@ For Windows installation/requirements, please see the readme located in [/window
 
 ### Mac OSX and *nix
 
-1. create a top-level metacademy directory in a desired location, e.g. `mkdir -p ~/MyProjects/metacademy`
-1. go to the top-level metacademy directory `cd ~/MyProjects/metacademy`
-1. from your top-level metacademy directory, clone the application repo:
+1. create a top-level octal directory in a desired location, e.g. `mkdir -p ~/MyProjects/octal`
+1. go to the top-level octal directory `cd ~/MyProjects/octal`
+1. from your top-level octal directory, clone the application repo:
 
-        git clone https://github.com/metacademy/metacademy-application.git
+        git clone https://github.com/danallan/octal-application.git
 
-1. go to the metacademy-application directory
+1. go to the octal-application directory
 
-        cd metacademy-application
+        cd octal-application
 
-1. install the metacademy application (note: this project uses a [virtual environment](http://www.virtualenv.org/en/latest/) for development):
+1. install the octal application (note: this project uses a [virtual environment](http://www.virtualenv.org/en/latest/) for development):
 
         make
 
@@ -80,4 +78,4 @@ Some of metacademy's ancillary functions currently depend on `scipy`. Scipy can 
 
 Note: the initial search may take some time to load (the backend must load the graph into memory), but all subsequent pages should load much quicker.
 
-If you have any problems with this installations, please submit an issue at [https://github.com/metacademy/metacademy-application/issues?state=open](https://github.com/metacademy/metacademy-application/issues?state=open)
+Since this installation is based upon metacademy, if you have problems with the installation please be sure to look at the issues at [https://github.com/metacademy/metacademy-application/issues?state=open](https://github.com/metacademy/metacademy-application/issues?state=open)
