@@ -6,8 +6,8 @@
 // TODO normalize create/edit vocabulary
 
 /*global define */
-define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "agfk/views/agfk-concept-list-view", "agfk/views/concept-details-view","agfk/views/edit-tools-view", "agfk/models/explore-graph-model", "agfk/models/user-data-model", "utils/errors", "agfk/views/error-view", "gc/views/editor-graph-view", "gc/views/concept-editor-view", "colorbox"],
-  function(Backbone, _, $, ExploreView, ConceptListView, ConceptDetailsView, AppToolsView, ExploreGraphModel, UserData, ErrorHandler, ErrorMessageView, EditorGraphView, ConceptEditorView){
+define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "agfk/views/agfk-concept-list-view", "agfk/views/concept-details-view","agfk/views/edit-tools-view", "agfk/views/quiz-view", "agfk/models/explore-graph-model", "agfk/models/quiz-model", "agfk/models/user-data-model", "utils/errors", "agfk/views/error-view", "gc/views/editor-graph-view", "gc/views/concept-editor-view", "colorbox"],
+  function(Backbone, _, $, ExploreView, ConceptListView, ConceptDetailsView, AppToolsView, QuizView, ExploreGraphModel, QuestionModel, UserData, ErrorHandler, ErrorMessageView, EditorGraphView, ConceptEditorView){
   "use strict";
 
   /**
@@ -26,6 +26,7 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
       pExploreMode: "explore",
       pLearnMode: "learn",
       pEditMode: "edit",
+      pQuizMode: "quiz",
       colorboxWidth: "80%",
       colorboxHeight: "95%",
       pCreateMode: "create",
@@ -35,6 +36,7 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
       createViewId: "gc-wrap",
       listWrapId: "concept-list-wrapper",
       expViewId: "graph-view-wrapper", // id for main explore view div
+      qViewId: "quiz-view-wrapper",
       editViewId: "concept-editor-wrap",
       noContentErrorKey: "nocontent", // must also change in error-view.js
       ajaxErrorKey: "ajax", // must also change in error-view.js
@@ -211,6 +213,7 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
             qFocusConcept = consts.qFocusConcept,
             pExploreMode = consts.pExploreMode,
             pLearnMode = consts.pLearnMode,
+            pQuizMode = consts.pQuizMode,
             pEditMode = consts.pEditMode,
             pCreateMode = consts.pCreateMode,
             keyNodeChanged = !isCreating && nodeId !== thisRoute.prevNodeId,
@@ -226,6 +229,27 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
         if (!thisRoute.graphModel) {
           thisRoute.graphModel = new thisRoute.GraphModel(isCreating ? {} : {leafs: [nodeId]});
         }
+        if (!thisRoute.questionModel) {
+            var getModel = function() {
+                var model;
+                var concept = paramsObj[qFocusConcept];
+                // sid = agfkGlobals.auxModel.get('nodes').get(concept).get('sid');
+
+                //$.ajax({url: "/octal/exercise/" + sid, async:false}).done(function(data) {
+                //         if ( console && console.log ) {
+                //                 model = new QuestionModel(data);
+                //                 model.set("concept",concept);
+                //         }
+                //});
+                model = new QuestionModel();
+                model.set("concept", concept);
+                return model;
+                };
+
+
+            var questionModel = getModel();
+            thisRoute.questionModel = questionModel;
+            }
 
         if (!thisRoute.userModel) {
           var userModel = new UserData(window.agfkGlobals.userInitData, {parse: true});
@@ -306,7 +330,17 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
             thisRoute.editView = new ConceptEditorView({model: thisRoute.graphModel.getNode(paramsObj[qFocusConcept])});
             thisRoute.showView(thisRoute.editView, doRender, "#" + consts.editViewId, false, true);
             break;
-
+          case pQuizMode:
+            if (paramsObj[qFocusConcept] === undefined){
+              paramsObj[qFocusConcept] = thisRoute.graphModel.getTopoSort().pop();
+            }
+            if (!thisRoute.quizView || paramsObj[qFocusConcept] !== thisRoute.learnView.model.id ){
+                doRender = true;
+                thisRoute.quizView = new QuizView({model: thisRoute.questionModel,
+                                                                        appRouter: thisRoute});
+            }
+            thisRoute.showView(thisRoute.quizView, doRender, "#"+consts.qViewId);
+            break;
           case pCreateMode:
             doRender = true;
             thisRoute.createView = thisRoute.createView
