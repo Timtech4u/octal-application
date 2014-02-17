@@ -83,6 +83,23 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
       // override in subclass
       postinitialize: function(){},
 
+
+      getModel: function(paramsObj){
+            var model;
+            var concept = paramsObj[pvt.consts.qFocusConcept];
+            // sid = agfkGlobals.auxModel.get('nodes').get(concept).get('sid');
+
+            //$.ajax({url: "/octal/exercise/" + sid, async:false}).done(function(data) {
+            //         if ( console && console.log ) {
+            //                 model = new QuestionModel(data);
+            //                 model.set("concept",concept);
+            //         }
+            //});
+            model = new QuestionModel();
+            model.set("concept", concept);
+            return model;
+
+      },
       /**
        * Show the input view in the input selector and maintain a reference for correct clean up
        */
@@ -97,7 +114,7 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
             thisRoute.currentView.$el.parent().hide();
           }
 
-          // FIXME this if/else structure is hiddeous -CJR (I wrote it)
+          // FIXME this if/else structure is hideous -CJR (I wrote it)
           if (doRender){
             if (typeof selector === "string"){
               if (useColorBox){
@@ -229,28 +246,6 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
         if (!thisRoute.graphModel) {
           thisRoute.graphModel = new thisRoute.GraphModel(isCreating ? {} : {leafs: [nodeId]});
         }
-        if (!thisRoute.questionModel) {
-            var getModel = function() {
-                var model;
-                var concept = paramsObj[qFocusConcept];
-                // sid = agfkGlobals.auxModel.get('nodes').get(concept).get('sid');
-
-                //$.ajax({url: "/octal/exercise/" + sid, async:false}).done(function(data) {
-                //         if ( console && console.log ) {
-                //                 model = new QuestionModel(data);
-                //                 model.set("concept",concept);
-                //         }
-                //});
-                model = new QuestionModel();
-                model.set("concept", concept);
-                return model;
-                };
-
-
-            var questionModel = getModel();
-            thisRoute.questionModel = questionModel;
-            }
-
         if (!thisRoute.userModel) {
           var userModel = new UserData(window.agfkGlobals.userInitData, {parse: true});
           var aux = window.agfkGlobals.auxModel;
@@ -330,14 +325,27 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
             thisRoute.editView = new ConceptEditorView({model: thisRoute.graphModel.getNode(paramsObj[qFocusConcept])});
             thisRoute.showView(thisRoute.editView, doRender, "#" + consts.editViewId, false, true);
             break;
-          case pQuizMode:
+              case pQuizMode:
+            //first, load the graph.
             if (paramsObj[qFocusConcept] === undefined){
               paramsObj[qFocusConcept] = thisRoute.graphModel.getTopoSort().pop();
             }
-            if (!thisRoute.quizView || paramsObj[qFocusConcept] !== thisRoute.learnView.model.id ){
+            doRender = doRender || ((thisRoute.viewMode === pExploreMode || thisRoute.viewMode === pQuizMode) && typeof thisRoute.expView === "undefined");
+            if (doRender){ // UPDATE
+              thisRoute.expView = new ExploreView({model: thisRoute.graphModel, appRouter: thisRoute, includeShortestOutlink: true });
+            }
+            //Then, load the quiz
+            if (paramsObj[qFocusConcept] === undefined){
+              paramsObj[qFocusConcept] = thisRoute.graphModel.getTopoSort().pop();
+            }
+            if (!thisRoute.quizView || paramsObj[qFocusConcept] !== thisRoute.quizView.concept ){
                 doRender = true;
+                thisRoute.questionModel = thisRoute.getModel(paramsObj);
+                //TODO: I need to render a new question if they switch topics, here
                 thisRoute.quizView = new QuizView({model: thisRoute.questionModel,
-                                                                        appRouter: thisRoute});
+                                                                        concept: paramsObj[qFocusConcept],
+                                                                        appRouter: thisRoute,
+                                                                        nonLinear: true});
             }
             thisRoute.showView(thisRoute.quizView, doRender, "#"+consts.qViewId);
             break;
@@ -414,6 +422,9 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
       getConstsClone: function(){
         return _.clone(pvt.consts);
       }
+
+
     });
+
   })();
 });

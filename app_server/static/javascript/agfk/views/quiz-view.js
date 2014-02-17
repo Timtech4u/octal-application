@@ -53,8 +53,10 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                             var h = _.clone(thisModel.toJSON());
 
                             thisView.$el.html(thisView.template(h));
+
                             //add graph view as subview to quiz view.  view.
-                            //thisView.$el.find('#graph-wrapper').append(thisView.options.appRouter.eview.el);
+                            thisView.options.appRouter.expView.render()
+                            thisView.$el.find('#graph-wrapper').append(thisView.options.appRouter.expView.el);
                             //set border thicker on current node
                             //thisView.$el.find("#"+ pvt.conceptName).find('ellipse').css('stroke-width',7)
 
