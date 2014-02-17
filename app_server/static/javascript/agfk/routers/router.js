@@ -111,7 +111,14 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
         // TODO move to private
         function swapViews(){
           if (thisRoute.currentView && removeOldView) {
-            thisRoute.currentView.$el.parent().hide();
+            //FIXME: I have made this even more heinous, my bad - ZMM
+              //This makes sure to actually hide the graph-view-wrapper, since graph-view has already moved.
+            if(thisRoute.currentView.$el.attr('id') === 'graph-view') {
+                $('#' + pvt.consts.expViewId).hide();
+
+            } else {
+                thisRoute.currentView.$el.parent().hide();
+            }
           }
 
           // FIXME this if/else structure is hideous -CJR (I wrote it)
@@ -133,9 +140,15 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
               window.document.body.appendChild(inView.el);
             }
           } else{
+
             if (useColorBox) {
               $.colorbox({inline: true, href: inView.$el, transition: "elastic", width: pvt.consts.colorboxWidth, height: pvt.consts.colorboxHeight});
             } else {
+                //TODO: fixGhetto workaround to put graph view back in the right place
+              if(inView.$el.attr('id') === 'graph-view') {
+                  $('#' + pvt.consts.expViewId).append(inView.$el)
+              }
+
               inView.$el.parent().show();
             }
           }
@@ -325,7 +338,7 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
             thisRoute.editView = new ConceptEditorView({model: thisRoute.graphModel.getNode(paramsObj[qFocusConcept])});
             thisRoute.showView(thisRoute.editView, doRender, "#" + consts.editViewId, false, true);
             break;
-              case pQuizMode:
+          case pQuizMode:
             //first, load the graph.
             if (paramsObj[qFocusConcept] === undefined){
               paramsObj[qFocusConcept] = thisRoute.graphModel.getTopoSort().pop();
@@ -333,6 +346,7 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
             doRender = doRender || ((thisRoute.viewMode === pExploreMode || thisRoute.viewMode === pQuizMode) && typeof thisRoute.expView === "undefined");
             if (doRender){ // UPDATE
               thisRoute.expView = new ExploreView({model: thisRoute.graphModel, appRouter: thisRoute, includeShortestOutlink: true });
+              thisRoute.expView.render();
             }
             //Then, load the quiz
             if (paramsObj[qFocusConcept] === undefined){
@@ -343,11 +357,18 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
                 thisRoute.questionModel = thisRoute.getModel(paramsObj);
                 //TODO: I need to render a new question if they switch topics, here
                 thisRoute.quizView = new QuizView({model: thisRoute.questionModel,
-                                                                        concept: paramsObj[qFocusConcept],
                                                                         appRouter: thisRoute,
                                                                         nonLinear: true});
+            } else {
+                thisRoute.quizView.reattachGraph();
             }
             thisRoute.showView(thisRoute.quizView, doRender, "#"+consts.qViewId);
+             // center the graph display: flicker animation
+            if(doRender || viewMode !== thisRoute.prevUrlParams[qViewMode]) {
+                var fnode = thisRoute.graphModel.getNode( paramsObj[qFocusConcept]);
+                thisRoute.expView.centerForNode(fnode);
+                thisRoute.expView.setFocusNode(fnode);
+            }
             break;
           case pCreateMode:
             doRender = true;

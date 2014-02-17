@@ -16,6 +16,8 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                     unknownColor: "#FA3333"
             };
             pvt.isRendered = false;
+            pvt.expView;
+            pvt.graphRendered = false;
 
             pvt.conceptName = window.location.href.split('/').pop().split('#').shift();
 
@@ -23,6 +25,8 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
             var ans = "";
 
             return Backbone.View.extend({
+
+                    concept: pvt.conceptName,
 
                     template: _.template(document.getElementById( pvt.viewConsts.templateId).innerHTML),
 
@@ -45,7 +49,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                             var thisModel = thisView.model;
                             //var thiseView = thisView.options.appRouter.eview;
 
-
+                            thisView.concept = thisModel.get('concept');
                             thisView.$el.empty();
                             thisModel.set("concept",thisModel.get("concept").replace(/_/g, " "));
                             ans = thisModel.get("a")[0];
@@ -53,12 +57,22 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                             var h = _.clone(thisModel.toJSON());
 
                             thisView.$el.html(thisView.template(h));
-
-                            //add graph view as subview to quiz view.  view.
-                            thisView.options.appRouter.expView.render()
-                            thisView.$el.find('#graph-wrapper').append(thisView.options.appRouter.expView.el);
-                            //set border thicker on current node
-                            //thisView.$el.find("#"+ pvt.conceptName).find('ellipse').css('stroke-width',7)
+                            if( !pvt.graphRendered) {
+                                //add graph view as subview to quiz view.  view.
+                                var expView = thisView.options.appRouter.expView;
+                                pvt.expView = expView;
+                                var fnode = thisView.options.appRouter.graphModel.getNode(thisView.concept);
+                                thisView.options.appRouter.expView.centerForNode(fnode);
+                                thisView.options.appRouter.expView.setFocusNode(fnode);
+                                thisView.$el.find('#graph-wrapper').append(expView.el);
+                                var svg = expView.el.getElementsByTagName('svg')[0];
+                                //svg.setAttribute('viewBox', '0, -800, 1200, 1000');
+                                //set border thicker on current node
+                                //thisView.$el.find("#"+ pvt.conceptName).find('ellipse').css('stroke-width',7)
+                                pvt.graphRendered = true;
+                            } else {
+                                thisView.$el.find('#graph-wrapper').append(pvt.expView.el);
+                            }
 
 
                             pvt.isRendered = true;
@@ -67,6 +81,9 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                             return this;
 
 
+                    },
+                    reattachGraph: function() {
+                        this.$el.find('#graph-wrapper').append(pvt.expView.el);
                     },
 
                     //If no button selected, returns undefined
@@ -140,13 +157,12 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
 
                     close: function() {
                             //$('#header').css('display', 'block');
-                    },
+                    }
 
 
             });
     })();
 
-    var quizView = new QuizView();
 
     // log reference to a DOM element that corresponds to the view instance
 
