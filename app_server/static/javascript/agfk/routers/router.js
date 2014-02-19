@@ -87,16 +87,16 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
       getModel: function(paramsObj){
             var model;
             var concept = paramsObj[pvt.consts.qFocusConcept];
-            // sid = agfkGlobals.auxModel.get('nodes').get(concept).get('sid');
+            var sid = agfkGlobals.auxModel.get('nodes').get(concept).get('sid');
 
-            //$.ajax({url: "/octal/exercise/" + sid, async:false}).done(function(data) {
-            //         if ( console && console.log ) {
-            //                 model = new QuestionModel(data);
-            //                 model.set("concept",concept);
-            //         }
-            //});
-            model = new QuestionModel();
-            model.set("concept", concept);
+            $.ajax({url: "/octal/exercise/" + sid, async:false}).done(function(data) {
+                     if ( console && console.log ) {
+                             model = new QuestionModel(data);
+                             model.set("concept",concept);
+                     }
+            });
+            //model = new QuestionModel();
+            //model.set("concept", concept);
             return model;
 
       },
