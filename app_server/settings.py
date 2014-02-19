@@ -132,6 +132,7 @@ INSTALLED_APPS = (
     'apps.cserver_comm',
     'apps.roadmaps',
     'apps.browser_tests',
+    'apps.octal',
     'haystack',
     'captcha',
     'south',
