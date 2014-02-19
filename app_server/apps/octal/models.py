@@ -26,7 +26,7 @@ class ExerciseAttempts(models.Model):
     uprofile  = models.ForeignKey(Profile)
     concept   = models.ForeignKey(ExerciseConcepts)
     exercise  = models.PositiveIntegerField()
-    correct   = models.BooleanField()
+    correct   = models.NullBooleanField()
     timestamp = models.DateTimeField(auto_now=True)
     submitted = models.BooleanField(default=False)
 
