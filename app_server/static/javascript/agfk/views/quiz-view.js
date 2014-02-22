@@ -11,12 +11,13 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
             pvt.viewConsts = {
                     templateId: "quiz-view-template",
                     viewId: "quiz",
-                    knownColor: '#A1FFB8',
+                    knownColor: '#EDFFED',
                     neutralColor: "#F6FBFF",
                     unknownColor: "#FA3333"
             };
             pvt.isRendered = false;
             pvt.expView;
+            pvt.paramsObj;
             pvt.graphRendered = false;
 
             pvt.conceptName = window.location.href.split('/').pop().split('#').shift();
@@ -46,7 +47,9 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                     render: function() {
                             pvt.isRendered = false;
                             var thisView = this;
+
                             var thisModel = thisView.model;
+
                             //var thiseView = thisView.options.appRouter.eview;
 
                             thisView.concept = thisModel.get('concept');
@@ -76,7 +79,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
 
 
                             pvt.isRendered = true;
-                            //this.highlightNodes();
+                            this.highlightNodes();
 
                             return this;
 
@@ -92,6 +95,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                           var attempt = $("input[type='radio'][name='answer']:checked").val();
                             console.log(ans);
                             var correctness = (ans==attempt) ? 1 : 0;
+                            pvt.conceptName = window.location.href.split('/').pop().split('#').pop().split('&').shift().split('=').pop();
                             var sid = agfkGlobals.auxModel.get('nodes').get(pvt.conceptName).get('sid');
                             var aid = thisView.model.get('aid');
                             console.log(aid);
@@ -146,7 +150,11 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                                     //	this.$el.find("#"  + unknownConcepts[i]).find('ellipse').css('fill', pvt.viewConsts.unknownColor);
                                     //}
                                     for (var i = 0; i < data.length; i++) {
-                                            thisView.$el.find("#"  + data[i]).find('ellipse').css('fill', pvt.viewConsts.knownColor);
+                                        try {
+                                            $($('#circlgG-' + pvt.expView.model.getNode(data[i]).cid ).find('circle')[0]).css('fill', pvt.viewConsts.knownColor);
+                                        } catch (TypeError) {
+                                            //do nothing, node not in graph
+                                        }
                                     }
                             });
 

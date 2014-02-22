@@ -28,67 +28,66 @@ def performInference(responses):
 
     concepts = [];        
     ###########hardcoding our graph in for some testing - fix this###############
-    primitives = mc.Bernoulli('primitives', pK, value=1)
-    concepts.append(primitives);
-    procedural_execution = mc.Bernoulli('procedural_execution', pK, value=1)
-    concepts.append(procedural_execution);
-    pOperations = calculateProbability('pOperations', [primitives])
-    operations = mc.Bernoulli('operations', pOperations, value=1)
-    concepts.append(operations);
-    pVariables = calculateProbability('pVariables', [operations])
-    variables = mc.Bernoulli('variables', pVariables, value=1)
+    variables = mc.Bernoulli('variables', .5, value=1)
     concepts.append(variables);
-    pConditionals = calculateProbability('pConditionals', [variables, procedural_execution])
+
+    pConditionals = calculateProbability('pConditionals', [variables])
     conditionals = mc.Bernoulli('conditionals', pConditionals, value=1)
     concepts.append(conditionals);
+
     pVariableMutation = calculateProbability('pVariableMutation',[variables])
     variable_mutation = mc.Bernoulli('variable_mutation', pVariableMutation, value=1)
     concepts.append(variable_mutation);
-    pTypes = calculateProbability('pTypes', [variables])
-    types = mc.Bernoulli('types', pTypes, value=1)
-    concepts.append(types);
-    pIteration = calculateProbability('pIteration', [variable_mutation, conditionals])
-    iteration = mc.Bernoulli('iteration', pIteration, value=1)
-    concepts.append(iteration);
-    pFunctions = calculateProbability('pFunctions', [types])
+
+    pLoops = calculateProbability('pLoops', [variable_mutation, conditionals])
+    loops = mc.Bernoulli('loops', pLoops, value=1)
+    concepts.append(loops);
+
+    pFunctions = calculateProbability('pFunctions', [variables])
     functions = mc.Bernoulli('functions', pFunctions, value=1)
     concepts.append(functions);
-    pArrays = calculateProbability('pArrays', [iteration])
-    arrays = mc.Bernoulli('arrays', pArrays, value=1)
-    concepts.append(arrays);
-    pHofs = calculateProbability('pHofs', [functions])
-    higher_order_functions = mc.Bernoulli('higher_order_functions', pHofs, value=1)
-    concepts.append(higher_order_functions);
-    pRecursion = calculateProbability('pRecursion', [functions])
-    recursion = mc.Bernoulli('recursion', pRecursion, value=1)
-    concepts.append(recursion);
-    pSorting = calculateProbability('pSorting', [higher_order_functions, recursion, arrays])
-    sorting = mc.Bernoulli('sorting', pSorting, value=1)
-    concepts.append(sorting);
-    pDataStructures = calculateProbability('pDataStructures', [arrays])
-    data_structures = mc.Bernoulli('data_structures', pDataStructures, value=1)
-    concepts.append(data_structures);
-    pAComplexity = calculateProbability('pAComplexity', [sorting, data_structures])
+
+    pLists = calculateProbability('pLists', [loops])
+    lists = mc.Bernoulli('lists', pLists, value=1)
+    concepts.append(lists);
+
+    pTreeRecursion = calculateProbability('pTreeRecursion', [functions])
+    tree_recursion = mc.Bernoulli('tree_recursion', pTreeRecursion, value=1)
+    concepts.append(tree_recursion);
+
+    pTailRecursion = calculateProbability('pTailRecursion', [functions])
+    tail_recursion = mc.Bernoulli('tail_recursion', pTailRecursion, value=1)
+    concepts.append(tail_recursion);
+
+    pFractals = calculateProbability('pFractals', [tail_recursion, tree_recursion])
+    fractals = mc.Bernoulli('fractals', pFractals, value=1)
+    concepts.append(fractals);
+
+    pConcurrency = calculateProbability('pConcurrency', [functions])
+    concurrency = mc.Bernoulli('concurrency', pConcurrency, value=1)
+    concepts.append(concurrency);
+
+    pAComplexity = calculateProbability('pAComplexity', [lists, tail_recursion, tree_recursion])
     algorithmic_complexity = mc.Bernoulli('algorithmic_complexity', pAComplexity, value=1)
     concepts.append(algorithmic_complexity);
     ########################################################################
     
-    pQuestion1 = mc.Lambda('pQuestion1', lambda sorting=sorting: pl.where(sorting, 1-pS, pG))
+    pQuestion1 = mc.Lambda('pQuestion1', lambda lists=lists: pl.where(lists, 1-pS, pG))
     question1 = mc.Bernoulli('question1', pQuestion1, value=[1,1,1,1], observed=True)
     
-    pQuestion2 = mc.Lambda('pQuestion2', lambda higher_order_functions=higher_order_functions: pl.where(higher_order_functions, 1-pS, pG))
+    pQuestion2 = mc.Lambda('pQuestion2', lambda tail_recursion=tail_recursion: pl.where(tail_recursion, 1-pS, pG))
     question2 = mc.Bernoulli('question2', pQuestion2, value=[1, 1, 1, 1, 1], observed=True)
 
-    pQuestion3 = mc.Lambda('pQuestion3', lambda recursion=recursion: pl.where(recursion, 1-pS, pG))
+    pQuestion3 = mc.Lambda('pQuestion3', lambda concurrency=concurrency: pl.where(concurrency, 1-pS, pG))
     question3 = mc.Bernoulli('question3', pQuestion3, value=[1,1,1,1,1], observed=True)
 
-    pQuestion4 = mc.Lambda('pQuestion4', lambda data_structures=data_structures: pl.where(data_structures, 1-pS, pG))
+    pQuestion4 = mc.Lambda('pQuestion4', lambda variables=variables: pl.where(variables, 1-pS, pG))
     question4 = mc.Bernoulli('question4', pQuestion4, value=1, observed=True)
 
     pQuestion5 = mc.Lambda('pQuestion5', lambda conditionals=conditionals: pl.where(conditionals, 1-pS, pG))
     question5 = mc.Bernoulli('question5', pQuestion5, value=1, observed=True)
 
-    pQuestion6 = mc.Lambda('pQuestion6', lambda arrays=arrays: pl.where(arrays, 1-pS, pG))
+    pQuestion6 = mc.Lambda('pQuestion6', lambda loops=loops: pl.where(loops, 1-pS, pG))
     question6 = mc.Bernoulli('question6', pQuestion6, value=[1,1,1], observed=True)
 
     #pQuestion7 = mc.Lambda('pQuestion7', lambda algorithmic_complexity=algorithmic_complexity: pl.where(algorithmic_complexity, 1-pS, pG))
@@ -102,7 +101,7 @@ def performInference(responses):
     
     ##################some simple tests##########
     
-    model = mc.Model([primitives, operations, variables, procedural_execution, types, variable_mutation, conditionals, functions, iteration, higher_order_functions, recursion, arrays, sorting, data_structures, algorithmic_complexity, question1, question2, question3, question4, question5, question6] + otherQuestions);
+    model = mc.Model([variables, variable_mutation, conditionals, functions, loops, concurrency, tail_recursion, tree_recursion, lists, algorithmic_complexity, question1, question2, question3, question4, question5, question6] + otherQuestions);
     
     
     samples = mc.MCMC(model)
