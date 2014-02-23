@@ -19,14 +19,48 @@ class ExerciseConcepts(models.Model):
             self.tag = id_concept_dict[self.conceptId]['tag'].encode('ascii')
         return self.tag
 
+
+class Exercises(models.Model):
+    """
+    Exercise storage
+    """
+    MULTIPLE = 0
+    SHORT    = 1
+    EXERCISE_TYPES = ( 
+        ('Multiple choice', MULTIPLE),
+        ('Short answer',    SHORT),
+    )
+
+    question = models.TextField()
+    concepts = models.ManyToManyField(ExerciseConcepts)
+    qtype = models.CharField(max_length=1, 
+                             choices=EXERCISE_TYPES,
+                             default=MULTIPLE)
+
+    def __unicode__(self):
+        return u'%s' % (self.question)
+
+
+class Responses(models.Model):
+    """
+    Correct answers and distractors for exercises
+    """
+    question = models.ForeignKey(Exercises)
+    response = models.TextField()
+    distract = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return u'%s' % (self.response)
+
+
 class ExerciseAttempts(models.Model):
     """
     Store exercise attempts for every user
     """
-    uprofile  = models.ForeignKey(Profile)
-    concept   = models.ForeignKey(ExerciseConcepts)
-    exercise  = models.PositiveIntegerField()
-    correct   = models.NullBooleanField()
+    uprofile = models.ForeignKey(Profile)
+    concept = models.ForeignKey(ExerciseConcepts)
+    exercise = models.ForeignKey(Exercises)
+    correct = models.NullBooleanField()
     timestamp = models.DateTimeField(auto_now=True)
     submitted = models.BooleanField(default=False)
 

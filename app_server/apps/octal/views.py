@@ -5,7 +5,7 @@ from django.template import RequestContext
 from django.http import HttpResponse
 from lazysignup.decorators import allow_lazy_user
 
-from apps.octal.models import ExerciseAttempts, ExerciseConcepts
+from apps.octal.models import Exercises, Responses, ExerciseAttempts, ExerciseConcepts
 from apps.cserver_comm.cserver_communicator import get_full_graph_json_str, get_id_to_concept_dict
 from apps.user_management.models import Profile
 
@@ -32,6 +32,19 @@ def get_octal_app(request):
                               },
                               context_instance=RequestContext(request))
 
+def fetch_attempt_id(user, con, ex):
+    try:
+        # try to recycle an unused attempt id
+        attempt = ExerciseAttempts.objects.get(uprofile=user, 
+                                               exercise=ex,
+                                               submitted=False)
+        #filter(uprofile=user).filter(exercise=ex).get(submitted=False)
+    except ExerciseAttempts.DoesNotExist:
+        attempt = ExerciseAttempts(uprofile=user, exercise=ex, concept=con)
+        attempt.save()
+    return attempt.pk;
+
+
 @allow_lazy_user
 def handle_exercise_request(request, conceptId=""):
     #does the requested concept exist?
@@ -39,27 +52,31 @@ def handle_exercise_request(request, conceptId=""):
     if conceptId not in concept_dict: 
         return HttpResponse(status=422)
 
-    uprof, pcreated = Profile.objects.get_or_create(pk=request.user.pk)
-    excpt, ccreated = ExerciseConcepts.objects.get_or_create(conceptId=conceptId)
+    user, pcreated = Profile.objects.get_or_create(pk=request.user.pk)
+    eCon, ccreated = ExerciseConcepts.objects.get_or_create(conceptId=conceptId)
 
-    qid = 0
-
+    # fetch a question for the given concept
     try:
-        # try to recycle an unused attempt id
-        ex = ExerciseAttempts.objects.filter(uprofile=uprof).filter(exercise=qid).get(submitted=False)
-    except ExerciseAttempts.DoesNotExist:
-        ex = ExerciseAttempts(uprofile=uprof, exercise=qid, concept=excpt)
-        ex.save()
+        #order_by('?') probably makes this slow
+        ex = Exercises.objects.filter(concepts=eCon).order_by('?')[:1].get()
+    except Exercises.DoesNotExist:
+        return HttpResponse(status=404) 
 
-    q = {
-            'qid': qid,
-            'h': '<p>question text goes here</p>',
-            't': 1, 
-            'a': ["correct answer","ans2","ans3","ans4"],
-            'aid': ex.pk,
-        }
+    # fetch the question answers
+    try:
+        r = Responses.objects.filter(exercise=ex).order_by("-distract")
+    except Responses.DoesNotExist:
+        return HttpResponse(status=404)
 
-    return HttpResponse(json.dumps(q), mimetype='application/json')
+    data = {
+        'qid': ex.pk,
+        'h': ex,
+        't': ex.qtype,
+        'a': r.values_list('response', flat=True),
+        'aid': fetch_attempt_id(user, eCon, ex),
+    }
+
+    return HttpResponse(json.dumps(data), mimetype='application/json')
 
 @allow_lazy_user
 @csrf_exempt #TODO remove me
@@ -78,10 +95,19 @@ def handle_exercise_attempt(request, attempt="", correct=""):
         # only accept data if we were waiting for it
         if ex is None:
             return HttpResponse(status=401)
-        ex.correct = True if int(correct) is 1 else False
+
+        correctness = True if int(correct) is 1 else False
+
+        ex.correct = correctness
         ex.submitted = True
-        ex.save()    
-        return HttpResponse()
+        ex.save()
+
+        # provide a new attempt id if it was incorrect
+        if correctness:
+            return HttpResponse()
+        else:
+            return HttpResponse(fetch_attempt_id(uprof, ex.concept, ex.exercise))
+            
     else:
         return HttpResponse(status=405)
 
