@@ -92,7 +92,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                     //If no button selected, returns undefined
                     submit: function() {
                             var thisView = this;
-                          var attempt = $("input[type='radio'][name='answer']:checked").val();
+                            var attempt = $("input[type='radio'][name='answer']:checked").val();
                             console.log(ans);
                             var correctness = (ans==attempt) ? 1 : 0;
                             pvt.conceptName = window.location.href.split('/').pop().split('#').pop().split('&').shift().split('=').pop();
@@ -111,23 +111,28 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                             $.ajax({
                                     url: "/octal/attempt/" + aid + "/" + correctness,
                                     type: "PUT",
-                                    async: false
+                                    async: false,
+                                    dataType:text,
+                                    success: function(data) {
+                                        thisView.model.set('aid',data);
+                                    }
 
                             })
 
                             //request to get new question
+                            if(correctness) {
+                                $.ajax({
+                                        url: "/octal/exercise/" + sid,
+                                        async:false
+                                }).done(function(data) {
+                                        if ( console && console.log ) {
+                                                thisView.model = new QuestionModel(data);
+                                                thisView.model.set("concept", pvt.conceptName);
+                                        }
+                                });
+                            }
 
-                            $.ajax({
-                                    url: "/octal/exercise/" + sid,
-                                    async:false
-                            }).done(function(data) {
-                                    if ( console && console.log ) {
-                                            thisView.model = new QuestionModel(data);
-                                            thisView.model.set("concept", pvt.conceptName);
-                                    }
-                            });
-
-                            console.log(thisView.model.get("aid"));
+                            //console.log(thisView.model.get("aid"));
 
 
                             //SOME LOGIC GOES HERE FOR HIGHLIGHTING NODES
@@ -139,7 +144,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                             var sid = agfkGlobals.auxModel.get('nodes').get(pvt.conceptName).get('sid');
 
                             $.ajax({
-                                url: "/octal/knowledge/" + sid,
+                                url: "/octal/knowledge/" + sid
 
                             }).done(function(data) {
                                     //thisView.highlightNodes(data);
