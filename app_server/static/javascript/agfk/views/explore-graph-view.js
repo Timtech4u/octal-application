@@ -345,16 +345,16 @@ define(["backbone", "d3", "jquery", "underscore", "lib/kmapjs/views/graph-view",
         if (!d3node.attr(consts.dataHoveredProp)) {
           // add checkmark if not present
           if (d3node.select("." + consts.checkClass).node() === null){
-            thisView.addCheckmarkIcon(d, d3node);
+            //thisView.addCheckmarkIcon(d, d3node);
           }
           // add node star if not already present
           if (d3node.select("." + consts.starClass).node() === null){
-            thisView.addStarIcon(d, d3node);
+            //thisView.addStarIcon(d, d3node);
           }
 
           // add e-to-l button if not already present
           if (d3node.select("." + consts.elIconClass).node() === null){
-            pvt.addEToLIcon.call(thisView, d, d3node);
+            //pvt.addEToLIcon.call(thisView, d, d3node);
           }
           d3node.attr(consts.dataHoveredProp, true);
         }
