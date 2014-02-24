@@ -1,14 +1,14 @@
 .quiz {
     text-align:center;
     position:absolute;
-    border:1px solid black;
-    border-radius: 5px;
+    #border:1px solid black;
+    #border-radius: 5px;
     width:30%;
     z-index:2;
     background-color: #FFFFFF;
     opacity: .8;
-    margin-top:3%;
-    margin-bottom:3%;
+    margin-top:4%;
+    margin-bottom:4%;
     height:80%;
     overflow-style: scrollbar;
     overflow-y: auto;
@@ -17,7 +17,7 @@
 .answer {
     position:relative;
     text-align:left;
-    border: 1px solid black;
+    #border: 1px solid black;
     display:inline-block;
     padding:0px 10px 0px 10px;
     border-radius: 3px;
@@ -60,4 +60,9 @@
 
 #concept-list-wrapper {
     position:static;
+}
+
+strong {
+    font-weight: bold;
+    font-size: larger;
 }
