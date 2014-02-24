@@ -6,6 +6,8 @@
     top-margin:200px;
     width:30%;
     z-index:2;
+    background-color: #FFFFFF;
+    opacity: .8;
 }
 
 .answer {
