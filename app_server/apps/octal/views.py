@@ -57,12 +57,28 @@ def handle_exercise_request(request, conceptId=""):
     eCon, ccreated = ExerciseConcepts.objects.get_or_create(conceptId=conceptId,
                                 name=concept_dict[conceptId]['tag'])
 
-    # fetch a question for the given concept
+
+    completed = ExerciseAttempts.objects.filter(
+                    uprofile=user).filter(
+                    concept=eCon).filter(
+                    correct=True).values(
+                    'exercise').distinct()
+
+    #return HttpResponse([x['exercise'] for x in completed])
+
+    # fetch a question the user hasn't yet answered correctly
     try:
-        #order_by('?') probably makes this slow
-        ex = Exercises.objects.filter(concepts=eCon).order_by('?')[:1].get()
+        ex = Exercises.objects.filter(
+                    concepts=eCon).exclude(
+                    pk__in = [x['exercise'] for x in completed]).order_by(
+                    '?')[:1].get()
     except Exercises.DoesNotExist:
-        return HttpResponse(status=404) 
+        # seems they've gotten them all right! pick one at random
+        try:
+            #documentation warns order_by('?') may be slow
+            ex = Exercises.objects.filter(concepts=eCon).order_by('?')[:1].get()
+        except Exercises.DoesNotExist:
+            return HttpResponse(status=404) 
 
     # fetch the question answers
     try:
