@@ -150,6 +150,9 @@ def build_exercise_db(request):
 
         ex.save()
 
+        # destroy existing answers, if any
+        Responses.objects.filter(exercise=ex).delete()
+
         # add answer and distractors
         Responses.objects.get_or_create(exercise=ex, response=e['ans'])
         for d in [e['d1'], e['d2'], e['d3']]:
