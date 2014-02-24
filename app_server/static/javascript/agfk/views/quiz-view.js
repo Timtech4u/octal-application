@@ -9,10 +9,11 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
     var QuizView = (function() {
             var pvt = {};
             pvt.viewConsts = {
-                    templateId: "quiz-view-template",
+                    templateId: (agfkGlobals.linear) ? "quiz-view-template" : "quiz-view-nonlinear-template",
                     viewId: "quiz",
                     knownColor: '#EDFFED',
                     neutralColor: "#F6FBFF",
+
                     unknownColor: "#FA3333"
             };
             pvt.isRendered = false;
@@ -62,21 +63,23 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                             var h = _.clone(thisModel.toJSON());
 
                             thisView.$el.html(thisView.template(h));
-                            if( !pvt.graphRendered) {
-                                //add graph view as subview to quiz view.  view.
-                                var expView = thisView.options.appRouter.expView;
-                                pvt.expView = expView;
-                                var fnode = thisView.options.appRouter.graphModel.getNode(thisView.concept);
-                                thisView.options.appRouter.expView.centerForNode(fnode);
-                                thisView.options.appRouter.expView.setFocusNode(fnode);
-                                thisView.$el.find('#graph-wrapper').append(expView.el);
-                                var svg = expView.el.getElementsByTagName('svg')[0];
-                                //svg.setAttribute('viewBox', '0, -800, 1200, 1000');
-                                //set border thicker on current node
-                                //thisView.$el.find("#"+ pvt.conceptName).find('ellipse').css('stroke-width',7)
-                                pvt.graphRendered = true;
-                            } else {
-                                thisView.$el.find('#graph-wrapper').append(pvt.expView.el);
+                            if(!agfkGlobals.linear) {
+                                if( !pvt.graphRendered) {
+                                    //add graph view as subview to quiz view.  view.
+                                    var expView = thisView.options.appRouter.expView;
+                                    pvt.expView = expView;
+                                    var fnode = thisView.options.appRouter.graphModel.getNode(thisView.concept);
+                                    thisView.options.appRouter.expView.centerForNode(fnode);
+                                    thisView.options.appRouter.expView.setFocusNode(fnode);
+                                    thisView.$el.find('#graph-wrapper').append(expView.el);
+                                    var svg = expView.el.getElementsByTagName('svg')[0];
+                                    //svg.setAttribute('viewBox', '0, -800, 1200, 1000');
+                                    //set border thicker on current node
+                                    //thisView.$el.find("#"+ pvt.conceptName).find('ellipse').css('stroke-width',7)
+                                    pvt.graphRendered = true;
+                                } else {
+                                    thisView.$el.find('#graph-wrapper').append(pvt.expView.el);
+                                }
                             }
 
 
@@ -151,17 +154,28 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
 
                             }).done(function(data) {
                                     //thisView.highlightNodes(data);
-                                    console.log(data)
-                                    //mega-ghetto
-                                    thisView.$el.find('ellipse').css('fill',pvt.viewConsts.neutralColor);
-                                    //for (var i = 0; i < unknownConcepts.length; i++) {
-                                    //	this.$el.find("#"  + unknownConcepts[i]).find('ellipse').css('fill', pvt.viewConsts.unknownColor);
-                                    //}
-                                    for (var i = 0; i < data.length; i++) {
-                                        try {
-                                            $($('#circlgG-' + pvt.expView.model.getNode(data[i]).cid ).find('circle')[0]).css('fill', pvt.viewConsts.knownColor);
-                                        } catch (TypeError) {
-                                            //do nothing, node not in graph
+                                    if(!agfkGlobals.linear) {
+                                        console.log(data)
+                                        //mega-ghetto
+                                        thisView.$el.find('ellipse').css('fill',pvt.viewConsts.neutralColor);
+                                        //for (var i = 0; i < unknownConcepts.length; i++) {
+                                        //	this.$el.find("#"  + unknownConcepts[i]).find('ellipse').css('fill', pvt.viewConsts.unknownColor);
+                                        //}
+                                        for (var i = 0; i < data.length; i++) {
+                                            try {
+                                                $($('#circlgG-' + pvt.expView.model.getNode(data[i]).cid ).find('circle')[0]).css('fill', pvt.viewConsts.knownColor);
+                                            } catch (TypeError) {
+                                                //do nothing, node not in graph
+                                            }
+                                        }
+                                    } else {
+                                        $('.learn-title-display').css('background-color', pvt.viewConsts.neutralColor);
+                                        for (var i = 0; i < data.length; i++) {
+                                            try {
+                                                $('#node-title-view-' + data[i]).css('background-color', pvt.viewConsts.knownColor);
+                                            } catch (TypeError) {
+                                                //do nothing, node not in graph
+                                            }
                                         }
                                     }
                             });

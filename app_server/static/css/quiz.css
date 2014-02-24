@@ -43,7 +43,18 @@
 #graph-wrapper {
         position:absolute;
         z-index: 1;
-		width:98%;
-        height:98%;
+		width:100%;
+        height:100%;
         margin-right: 50px;
+}
+#linear-quiz {
+    height:100%;
+    width:100%;
+    margin-top:0;
+    margin-bottom:0;
+    position:relative;
+}
+
+#concept-list-wrapper {
+    position:static;
 }
