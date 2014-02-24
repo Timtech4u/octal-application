@@ -14,7 +14,7 @@ class ExerciseConcepts(models.Model):
         return self.name
 
     def get_tag(self):
-        return self.name
+        return self.name.encode('ascii')
 
 
 class Exercises(models.Model):
