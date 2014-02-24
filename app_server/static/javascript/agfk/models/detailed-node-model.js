@@ -110,9 +110,9 @@ define(["underscore", "lib/kmapjs/models/node-model", "agfk/collections/node-pro
       if (this.get("is_shortcut")) {
         title += " (shortcut)";
       }
-      if (!this.isFinished()) {
-        title += " (under construction)";
-      }
+      //if (!this.isFinished()) {
+      //  title += " (under construction)";
+      //}
       return title;
     },
 
