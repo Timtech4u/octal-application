@@ -2,22 +2,16 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from apps.user_management.models import Profile
-from apps.cserver_comm.cserver_communicator import get_id_to_concept_dict
 
 class ExerciseConcepts(models.Model):
     """
     Skeleton to factor out concepts from exercise attempts
     """
     conceptId = models.CharField(max_length=10, unique=True)
+    name = models.CharField(max_length=100, unique=True)
 
     def __unicode__(self):
-        return self.get_tag()
-
-    def get_tag(self):
-        if not hasattr(self, 'tag'):
-            id_concept_dict = get_id_to_concept_dict()
-            self.tag = id_concept_dict[self.conceptId]['tag'].encode('ascii')
-        return self.tag
+        return self.name
 
 
 class Exercises(models.Model):
@@ -45,7 +39,7 @@ class Responses(models.Model):
     """
     Correct answers and distractors for exercises
     """
-    question = models.ForeignKey(Exercises)
+    exercise = models.ForeignKey(Exercises)
     response = models.TextField()
     distract = models.BooleanField(default=False)
 

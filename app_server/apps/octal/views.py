@@ -53,7 +53,8 @@ def handle_exercise_request(request, conceptId=""):
         return HttpResponse(status=422)
 
     user, pcreated = Profile.objects.get_or_create(pk=request.user.pk)
-    eCon, ccreated = ExerciseConcepts.objects.get_or_create(conceptId=conceptId)
+    eCon, ccreated = ExerciseConcepts.objects.get_or_create(conceptId=conceptId,
+                                name=concept_dict[conceptId]['tag'])
 
     # fetch a question for the given concept
     try:
@@ -64,15 +65,15 @@ def handle_exercise_request(request, conceptId=""):
 
     # fetch the question answers
     try:
-        r = Responses.objects.filter(exercise=ex).order_by("-distract")
+        r = Responses.objects.filter(exercise=ex).order_by("distract")
     except Responses.DoesNotExist:
         return HttpResponse(status=404)
 
     data = {
         'qid': ex.pk,
-        'h': ex,
+        'h': ex.question,
         't': ex.qtype,
-        'a': r.values_list('response', flat=True),
+        'a': [x.response for x in r],
         'aid': fetch_attempt_id(user, eCon, ex),
     }
 
@@ -81,7 +82,6 @@ def handle_exercise_request(request, conceptId=""):
 @allow_lazy_user
 @csrf_exempt #TODO remove me
 def handle_exercise_attempt(request, attempt="", correct=""):
-    #def handle_exercise_attempt(request, concept="", exercise="", attempt="", correct=""):
     uprof, created = Profile.objects.get_or_create(pk=request.user.pk)
     try:
         # only inject attempts if we have not submitted for this attempt
@@ -121,3 +121,29 @@ def handle_knowledge_request(request, conceptID=""):
         return HttpResponse(json.dumps(inferences), mimetype='application/json')
     else:
         return HttpResponse(status=405)
+
+def build_exercise_db(request):
+    concept_dict = get_id_to_concept_dict()
+    concepts = {}
+    for c in concept_dict:
+        tag = concept_dict[c]['tag']
+        concepts[tag],t = ExerciseConcepts.objects.get_or_create(conceptId=c, 
+                                        name=tag)
+
+    exercises = [
+        { 
+            'q': "<p>Given the function definition:</p> <p style='text-align:center'><strong><em>f(N) = f(N -1) + f(N - 2)</em></strong></p><p>and an implementation not making use of memoization, what is the most likely asymptotic runtime as a function of N?</p>",
+            'c': ["algorithmic_complexity"],
+            'a': 'O(2^N)',
+            'd': ['O(1)', 'O(N)', 'O(N^2)'],
+        },
+    ]
+
+    for e in exercises:
+        ex,t = Exercises.objects.get_or_create(question=e['q'])
+        ex.concepts = [concepts[x] for x in e['c']]
+        Responses.objects.get_or_create(exercise=ex, response=e['a'])
+        for d in e['d']:
+            Responses.objects.get_or_create(exercise=ex, response=d, distract=True)
+
+    return HttpResponse("Done")
