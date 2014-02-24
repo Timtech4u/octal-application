@@ -13,6 +13,9 @@ class ExerciseConcepts(models.Model):
     def __unicode__(self):
         return self.name
 
+    def get_tag():
+        return self.name;
+
 
 class Exercises(models.Model):
     """
