@@ -13,7 +13,7 @@ class ExerciseConcepts(models.Model):
     def __unicode__(self):
         return self.name
 
-    def get_tag():
+    def get_tag(self):
         return self.name
 
 
