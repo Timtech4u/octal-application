@@ -1,4 +1,5 @@
 import json
+import requests, csv
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -130,20 +131,23 @@ def build_exercise_db(request):
         concepts[tag],t = ExerciseConcepts.objects.get_or_create(conceptId=c, 
                                         name=tag)
 
-    exercises = [
-        { 
-            'q': "<p>Given the function definition:</p> <p style='text-align:center'><strong><em>f(N) = f(N -1) + f(N - 2)</em></strong></p><p>and an implementation not making use of memoization, what is the most likely asymptotic runtime as a function of N?</p>",
-            'c': ["algorithmic_complexity"],
-            'a': 'O(2^N)',
-            'd': ['O(1)', 'O(N)', 'O(N^2)'],
-        },
-    ]
+    gdoc = requests.get('https://docs.google.com/spreadsheet/pub?key=0ApfeFyIuuj_MdF9ZS3hXU0pUN0NnMDVIcHFkTlN6V0E&single=true&gid=0&output=csv')
+
+    if gdoc.status_code != 200:
+        return HttpResponse(status=404)
+
+    # parse the gdoc CSV file into a dictionary
+    exercises = csv.DictReader(gdoc.content.splitlines())
 
     for e in exercises:
-        ex,t = Exercises.objects.get_or_create(question=e['q'])
-        ex.concepts = [concepts[x] for x in e['c']]
-        Responses.objects.get_or_create(exercise=ex, response=e['a'])
-        for d in e['d']:
+        ex,t = Exercises.objects.get_or_create(question=e['question'])
+
+        # add concepts to the exercise (concepts separated by |)
+        ex.concepts = [concepts[x] for x in e['concepts'].split('|')]
+
+        # add answer and distractors
+        Responses.objects.get_or_create(exercise=ex, response=e['ans'])
+        for d in [e['d1'], e['d2'], e['d3']]:
             Responses.objects.get_or_create(exercise=ex, response=d, distract=True)
 
     return HttpResponse("Done")
