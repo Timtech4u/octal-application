@@ -14,7 +14,7 @@ class ExerciseConcepts(models.Model):
         return self.name
 
     def get_tag():
-        return self.name;
+        return self.name
 
 
 class Exercises(models.Model):
