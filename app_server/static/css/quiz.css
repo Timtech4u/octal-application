@@ -11,7 +11,7 @@
     margin-bottom:3%;
     height:80%;
     overflow-style: scrollbar;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .answer {
