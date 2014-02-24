@@ -140,10 +140,15 @@ def build_exercise_db(request):
     exercises = csv.DictReader(gdoc.content.splitlines())
 
     for e in exercises:
-        ex,t = Exercises.objects.get_or_create(question=e['question'])
+        ex,t = Exercises.objects.get_or_create(pk=e['qid'])
+
+        # update question text
+        ex.question = e['question']
 
         # add concepts to the exercise (concepts separated by |)
         ex.concepts = [concepts[x] for x in e['concepts'].split('|')]
+
+        ex.save()
 
         # add answer and distractors
         Responses.objects.get_or_create(exercise=ex, response=e['ans'])
