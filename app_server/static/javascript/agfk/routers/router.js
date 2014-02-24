@@ -75,7 +75,7 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
         thisRoute.GraphModel = ExploreGraphModel;
 
         // default mode
-        thisRoute.defaultMode = pvt.consts.pLearnMode;
+        thisRoute.defaultMode = pvt.consts.pQuizMode;
 
         thisRoute.postinitialize();
       },

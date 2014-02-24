@@ -17,9 +17,8 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
             };
             pvt.isRendered = false;
             pvt.expView;
-            pvt.paramsObj;
             pvt.graphRendered = false;
-
+            pvt.newQuestion = true;
             pvt.conceptName = window.location.href.split('/').pop().split('#').shift();
 
 
@@ -55,7 +54,10 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                             thisView.concept = thisModel.get('concept');
                             thisView.$el.empty();
                             thisModel.set("concept",thisModel.get("concept").replace(/_/g, " "));
-                            ans = thisModel.get("a")[0];
+                            if(pvt.newQuestion) {
+                                ans = thisModel.get("a")[0];
+                                pvt.newQuestion = false;
+                            }
                             thisModel.set("a", shuffle(thisModel.get("a")));
                             var h = _.clone(thisModel.toJSON());
 
@@ -112,7 +114,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                                     url: "/octal/attempt/" + aid + "/" + correctness,
                                     type: "PUT",
                                     async: false,
-                                    dataType:text,
+                                    dataType: "text",
                                     success: function(data) {
                                         thisView.model.set('aid',data);
                                     }
@@ -130,6 +132,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                                                 thisView.model.set("concept", pvt.conceptName);
                                         }
                                 });
+                                pvt.newQuestion = true;
                             }
 
                             //console.log(thisView.model.get("aid"));
