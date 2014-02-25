@@ -13,11 +13,11 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                     viewId: "quiz",
                     knownColor: '#EDFFED',
                     neutralColor: "#F6FBFF",
-
                     unknownColor: "#FA3333"
             };
             pvt.isRendered = false;
             pvt.expView;
+            pvt.knownConcepts = [];
             pvt.graphRendered = false;
             pvt.newQuestion = true;
             pvt.conceptName = window.location.href.split('/').pop().split('#').shift();
@@ -89,7 +89,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
 
 
                             pvt.isRendered = true;
-                            this.highlightNodes();
+                            this.getKnowledgeState();
 
                             return this;
 
@@ -150,7 +150,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                             //rerender the view TODO: seems kinda wasteful to totally rerender the view rather than the question
                             this.render();
                     },
-                    highlightNodes: function() {
+                    getKnowledgeState: function() {
                             thisView = this;
                             var sid = agfkGlobals.auxModel.get('nodes').get(pvt.conceptName).get('sid');
 
@@ -158,33 +158,38 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                                 url: "/octal/knowledge/" + sid
 
                             }).done(function(data) {
-                                    //thisView.highlightNodes(data);
-                                    if(!agfkGlobals.linear) {
-                                        console.log(data)
-                                        //mega-ghetto
-                                        thisView.$el.find('ellipse').css('fill',pvt.viewConsts.neutralColor);
-                                        //for (var i = 0; i < unknownConcepts.length; i++) {
-                                        //	this.$el.find("#"  + unknownConcepts[i]).find('ellipse').css('fill', pvt.viewConsts.unknownColor);
-                                        //}
-                                        for (var i = 0; i < data.length; i++) {
-                                            try {
-                                                $($('#circlgG-' + pvt.expView.model.getNode(data[i]).cid ).find('circle')[0]).css('fill', pvt.viewConsts.knownColor);
-                                            } catch (TypeError) {
-                                                //do nothing, node not in graph
-                                            }
-                                        }
-                                    } else {
-                                        $('.learn-title-display').css('background-color', pvt.viewConsts.neutralColor);
-                                        for (var i = 0; i < data.length; i++) {
-                                            try {
-                                                $('#node-title-view-' + data[i]).css('background-color', pvt.viewConsts.knownColor);
-                                            } catch (TypeError) {
-                                                //do nothing, node not in graph
-                                            }
-                                        }
-                                    }
+                                    pvt.knownConcepts = data;
+                                    thisView.highlightNodes();
+                                    //thisView.getKnowledgeState(data);
+
                             });
 
+                    },
+                    highlightNodes: function() {
+                        if(!agfkGlobals.linear) {
+                            console.log(pvt.knownConcepts)
+                            //mega-ghetto
+                            thisView.$el.find('ellipse').css('fill',pvt.viewConsts.neutralColor);
+                            //for (var i = 0; i < unknownConcepts.length; i++) {
+                            //	this.$el.find("#"  + unknownConcepts[i]).find('ellipse').css('fill', pvt.viewConsts.unknownColor);
+                            //}
+                            for (var i = 0; i < pvt.knownConcepts.length; i++) {
+                                try {
+                                    $($('#circlgG-' + pvt.knownConcepts.expView.model.getNode(pvt.knownConcepts[i]).cid ).find('circle')[0]).css('fill', pvt.viewConsts.knownColor);
+                                } catch (TypeError) {
+                                    //do nothing, node not in graph
+                                }
+                            }
+                        } else {
+                            $('.learn-title-display').css('background-color', pvt.viewConsts.neutralColor);
+                            for (var i = 0; i < pvt.knownConcepts.length; i++) {
+                                try {
+                                    $('#node-title-view-' + pvt.knownConcepts[i]).css('background-color', pvt.viewConsts.knownColor);
+                                } catch (TypeError) {
+                                    //do nothing, node not in graph
+                                }
+                            }
+                        }
                     },
                     edit: function() {
 

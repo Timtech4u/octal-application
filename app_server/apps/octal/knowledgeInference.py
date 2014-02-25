@@ -70,6 +70,10 @@ def performInference(responses):
     pAComplexity = calculateProbability('pAComplexity', [lists, tail_recursion, tree_recursion])
     algorithmic_complexity = mc.Bernoulli('algorithmic_complexity', pAComplexity, value=1)
     concepts.append(algorithmic_complexity);
+
+    pMidterm = calculateProbability('pMidterm', [algorithmic_complexity, fractals, concurrency, tail_recursion, tree_recursion, lists, functions])
+    midterm = mc.Bernoulli('midterm', pMidterm, value=1)
+    concepts.append(midterm);
     ########################################################################
     
     pQuestion1 = mc.Lambda('pQuestion1', lambda lists=lists: pl.where(lists, 1-pS, pG))
@@ -101,7 +105,7 @@ def performInference(responses):
     
     ##################some simple tests##########
     
-    model = mc.Model([variables, variable_mutation, conditionals, functions, loops, concurrency, tail_recursion, tree_recursion, lists, algorithmic_complexity, question1, question2, question3, question4, question5, question6] + otherQuestions);
+    model = mc.Model(concepts + [question1, question2, question3, question4, question5, question6] + otherQuestions);
     
     
     samples = mc.MCMC(model)
