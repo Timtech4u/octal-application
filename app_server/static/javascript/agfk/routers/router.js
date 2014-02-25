@@ -349,9 +349,6 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
               thisRoute.expView.render();
             }
             //Then, load the quiz
-            if (paramsObj[qFocusConcept] === undefined){
-              paramsObj[qFocusConcept] = thisRoute.graphModel.getTopoSort().pop();
-            }
             if (!thisRoute.quizView || paramsObj[qFocusConcept] !== thisRoute.quizView.concept ){
                 doRender = true;
                 thisRoute.questionModel = thisRoute.getModel(paramsObj);

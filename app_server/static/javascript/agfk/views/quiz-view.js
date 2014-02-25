@@ -47,9 +47,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                     render: function() {
                             pvt.isRendered = false;
                             var thisView = this;
-
                             var thisModel = thisView.model;
-
                             //var thiseView = thisView.options.appRouter.eview;
 
                             thisView.concept = thisModel.get('concept');
