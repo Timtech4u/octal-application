@@ -45,15 +45,20 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
 
                     // Re-render the title of the todo item.
                     render: function() {
+
+                            //Get local variables
                             pvt.isRendered = false;
                             var thisView = this;
-
                             var thisModel = thisView.model;
 
-                            //var thiseView = thisView.options.appRouter.eview;
-
+                            //Get current concept, compare it to the concept last served by the view
+                            //If they don't match, we need a new question
                             thisView.concept = thisModel.get('concept');
-                            thisView.$el.empty();
+                            if(pvt.conceptName != thisView.concept) {
+                                pvt.newQuestion = true; //just changed concepts;
+                            }
+
+                            //Remove the
                             thisModel.set("concept",thisModel.get("concept").replace(/_/g, " "));
                             if(pvt.newQuestion) {
                                 ans = thisModel.get("a")[0];
