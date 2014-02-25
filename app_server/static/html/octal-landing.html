@@ -1,0 +1,44 @@
+{% extends "octal.html" %}
+{% load staticfiles %}
+
+{% block extra-css %}
+    <link rel="stylesheet" href="{% static "css/octal-landing.css" %}"/>
+{% endblock %}
+
+{% block header-search %}    
+{% endblock %}
+
+{% block jscript-extend %}
+<script type="text/javascript" src="{% static "javascript/landing.js" %}"></script>
+{% endblock %}
+    
+{% block main %}
+
+<div class="main-octal-wrap">
+    <h1 style="font-size:3em; font-weight: bold;">OCTAL</h1>
+    <h2 style="font-weight: bold">Online Course Tool for Adaptive Learning</h2>
+    <p style="margin: 1em auto; width: 50%">Welcome to OCTAL. It is a tool that provides you
+    with exercises in a variety of concepts for your learning. Although the
+    tool is designed to work with many subjects, we have restricted the list
+    to concepts between the Quest and Midterm in CS10. You may use this tool
+    as much or as little as you'd like, and your answers will not impact
+    your grade. We do hope you decide to use this tool to help in your
+    learning.</p> 
+    <p style="margin: 1em auto; width: 50%">If you are a participant in the 
+    CS10 OCTAL study, please enter your Participant ID in the field below, 
+    and click Go. If you are not a participant you may still continue by
+    clicking the appropriate link below.</p>
+
+    <div>
+        I am a participant and my participant ID is:
+        <input type="text" name="pID" id="main-search-input" />
+        <input type="submit" value="Go" />
+    </div>
+
+    <p style="margin: 1em auto; width: 50%">
+    <a href="/graphs/concepts/midterm">I am not a participant in the CS10 
+    study.</a>
+    </p>
+</div>
+
+{% endblock %}
