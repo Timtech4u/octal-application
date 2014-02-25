@@ -13,8 +13,13 @@ def get_agfk_app(request):
     concept_tag = request.path.split("/")[-1].split("#")[0]
     concept_data = get_concept_data(concept_tag)
     # pdb.set_trace()
+    #OCTAL experiment: graph linearity based on user id
+    if request.user.is_authenticated():
+        user_display = request.user.pk % 2
+    else:
+        user_display = 0
     return render_to_response("agfk-app.html",
-                              {"full_graph_skeleton": get_full_graph_json_str(), "user_data": json.dumps(concepts), "concept_data": concept_data},
+                              {"full_graph_skeleton": get_full_graph_json_str(), "user_data": json.dumps(concepts), "concept_data": concept_data, "user_display": user_display},
                               context_instance=RequestContext(request))
 
 

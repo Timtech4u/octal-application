@@ -43,9 +43,9 @@
       agfkGlobals.userInitData = {{ user_data|safe }};
       agfkGlobals.auxData = {{ full_graph_skeleton|safe }};
       agfkGlobals.auxModel = null; // init in main js app
-      agfkGlobals.linear = true;
+      agfkGlobals.linear = {{ user_display|default:0 }};
     </script>
-  {% if debug %}
+  {% if 1 %}
   <script data-main="{% static "javascript/main.js" %}" type="text/javascript" src="{% static "javascript/lib/require-min.js" %}"></script>
   {% else %}
   <script  src="{% static "javascript/lib/require-min.js" %}"></script>

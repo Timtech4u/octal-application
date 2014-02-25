@@ -164,6 +164,12 @@ def build_exercise_db(request):
         # add concepts to the exercise (concepts separated by |)
         ex.concepts = [concepts[x] for x in e['concepts'].split('|')]
 
+        # TODO: fix special case
+        if int(e['qid']) is 0:
+            ex.qtype = ex.SHORT
+            ex.save()
+            continue
+
         ex.save()
 
         # destroy existing answers, if any
@@ -172,6 +178,8 @@ def build_exercise_db(request):
         # add answer and distractors
         Responses.objects.get_or_create(exercise=ex, response=e['ans'])
         for d in [e['d1'], e['d2'], e['d3']]:
+            d = d.strip()
+            if not d: continue
             Responses.objects.get_or_create(exercise=ex, response=d, distract=True)
 
     return HttpResponse("Done")
