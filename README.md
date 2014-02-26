@@ -31,7 +31,7 @@ For Windows installation/requirements, please see the readme located in [/window
 
         node -v
 
-* You may need to additionally install freetype-devel (via a package manager like yum) and virtualenv (via easy_install virtualenv) packages.
+* You may need to additionally install freetype-devel, gcc-gfortran (via a package manager like yum) and virtualenv (via easy_install virtualenv) packages.
 
 ### Mac OSX and *nix
 
