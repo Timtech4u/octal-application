@@ -16,7 +16,7 @@ For Windows installation/requirements, please see the readme located in [/window
 
 ### Preliminary requirements
 * `python 2.7X`: NB: install `python-devel` if you're using a package manager such as apt-get. The following command should print a path (if this command raises an exception, make sure that you have the `python-devel` version installed):
-*
+
             python -c 'from distutils.sysconfig import get_makefile_filename as m; print m()'
 
 * `gcc`: Install [gcc](http://gcc.gnu.org) (OSX users: installing the [OSX developer tools](https://developer.apple.com/technologies/tools/) is probably the easiest way to do this). The following command should not throw an error:
@@ -31,6 +31,7 @@ For Windows installation/requirements, please see the readme located in [/window
 
         node -v
 
+* You may need to additionally install freetype-devel (via a package manager like yum) and virtualenv (via easy_install virtualenv) packages.
 
 ### Mac OSX and *nix
 
