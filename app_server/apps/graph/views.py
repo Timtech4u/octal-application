@@ -27,9 +27,13 @@ def get_agfk_app(request):
     if not p.presurvey:
         return presurveyRedirect(p)
 
-    return render_to_response("agfk-app.html",
-                              {"full_graph_skeleton": get_full_graph_json_str(), "user_data": json.dumps(concepts), "concept_data": concept_data, "user_display": int(p.linear)},
-                              context_instance=RequestContext(request))
+    return render_to_response("agfk-app.html",{
+                              "full_graph_skeleton": get_full_graph_json_str(), 
+                              "user_data": json.dumps(concepts),
+                              "concept_data": concept_data,
+                              "user_display": int(p.linear),
+                              "pid": int(p.pid),
+                              }, context_instance=RequestContext(request))
 
 
 def get_graph_creator(request):
