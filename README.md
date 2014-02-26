@@ -31,7 +31,15 @@ For Windows installation/requirements, please see the readme located in [/window
 
         node -v
 
-* You may need to additionally install freetype-devel (via a package manager like yum) and virtualenv (via easy_install virtualenv) packages.
+* Make sure you have installed the following packages:
+
+    freetype-devel gcc-gfortran (Linux)
+    freetype gfortran (Mac OS X, via homebrew)
+    easy_install virtualenv (both)
+
+* On Mac OS X, setup freetype:
+
+    ln -s /usr/local/opt/freetype/include/freetype2 /usr/local/include/freetype
 
 ### Mac OSX and *nix
 
