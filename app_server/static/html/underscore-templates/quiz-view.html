@@ -1,7 +1,17 @@
 <script type="text/template" id="quiz-view-template">
 
 	<div class="quiz" id="linear-quiz">
-	  <h1 class="title"><strong><% if(concept) { %>
+	<div id="logout">
+              <% if(pid != 99999) { %>
+                You are currently logged in as a participant, click <a href="/participants/logout/">here</a> to log out
+              <% } else { %>
+                You are not currently logged in.  If you are a participant in the CS10 study, click
+                <a href="/participants/logout/">here</a> to log in
+              <% } %>
+
+    </div>
+    <br />
+    <h1 class="title"><strong><% if(concept) { %>
 				<%= concept %>
     <%} else {%>
         Placeholder
@@ -10,7 +20,10 @@
     </h1>
 	  <hr />
 		<br />
-	  <div class="question-content"> <%= h %> </div>
+	  <div class="question-content">
+
+	    <%= h %>
+	  </div>
 		<br />
 	  <div>
     	<form class="answer">

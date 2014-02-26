@@ -66,6 +66,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                             }
                             thisModel.set("a", shuffle(thisModel.get("a")));
                             var h = _.clone(thisModel.toJSON());
+                            h.pid = agfkGlobals.pid;
 
                             thisView.$el.html(thisView.template(h));
                             if(!agfkGlobals.linear) {
