@@ -9,16 +9,20 @@
 {% endblock %}
 
 {% block jscript-extend %}
-<script type="text/javascript" src="{% static "javascript/landing.js" %}"></script>
 <script type="text/javascript">
 // <![CDATA[
-$('#pid').bind('keyup', function(event){
-    if (event.which === 13 || event.keyCode === 13){
-      var cval = event.currentTarget.value;
-      if (cval.length > 0){
-        window.location.href = "/participant/pid/" + window.encodeURI(event.currentTarget.value);
-      }
-    }
+window.onload = (function(){
+    "use strict";
+    $('#pid').focus();
+
+    $('#pid').bind('keyup', function(event){
+        if (event.which === 13 || event.keyCode === 13){
+          var cval = event.currentTarget.value;
+          if (cval.length > 0){
+            window.location.href = "/participant/pid/" + window.encodeURI(event.currentTarget.value);
+          }
+        }
+    });
 });
 // ]]>
 </script>
@@ -39,17 +43,24 @@ $('#pid').bind('keyup', function(event){
     learning.</p> 
     <p>If you are a participant in the 
     CS10 OCTAL study, please enter your Participant ID in the field below, 
-    and click Go. If you are not a participant you may still continue by
+    and hit return. If you are not a participant you may still continue by
     clicking the appropriate link below.</p>
+
+{% if err == '1' %}
+    <p class="error">That is not a valid participant ID. Please make sure 
+    it is the 5 numeric digits we provided to you and try again.</p>
+{% elif err == '2' %}
+    <p class="error">Please enter a participant ID before completing
+    your survey.</p>
+{% endif %}
 
     <div>
         I am a participant and my participant ID is:
         <input type="text" inputmode="numeric" maxlength=5 size=5 name="pID" id="pid" />
-        <input type="submit" value="Go" />
     </div>
 
     <p>
-    <a href="/graphs/concepts/midterm">I am not a participant in the CS10 
+    <a href="/participant/pid/99999">I am not a participant in the CS10 
     study.</a>
     </p>
 </div>

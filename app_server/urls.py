@@ -20,7 +20,7 @@ search_inst = search_view_factory(view_class=MultiSearchView, searchqueryset=sqs
 Django urls handler
 """
 urlpatterns = patterns('',
-                       url(r'^$', TemplateView.as_view(template_name="octal-landing.html")),
+                       url(r'^$', RedirectView.as_view(url="/graphs/concepts/midterm"), name='start'),
                        #url(r'^$', TemplateView.as_view(template_name="landing.html")),
                        #url(r'^(?i)search$', search_inst, name="haystack_search"),
                        #url(r'^(?i)list$', TemplateView.as_view(template_name="concept-list.html")),
@@ -34,7 +34,8 @@ urlpatterns = patterns('',
                        #url(r'^thanks/?$',  TemplateView.as_view(template_name='feedback_thanks.html')),
                        #(r'^admin/doc/', include('django.contrib.admindocs.urls')),
                        #url(r'^admin/', include(admin.site.urls)),
-                       url(r'^(?i)octal/', include('apps.octal.urls', namespace="graphs") ),
+                       url(r'^(?i)octal/', include('apps.octal.urls', namespace="octal")),
+                       url(r'^participant/', include('apps.participant.urls', namespace='part')),
                        url(r'^browser-tests', include('apps.browser_tests.urls', namespace="btests")),
 )
 

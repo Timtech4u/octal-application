@@ -23,6 +23,11 @@ p {
     width: 50%;
 }
 
+.error {
+    font-weight: bold;
+    color: #f00;
+}
+
 #pid {
     font-size: 70%;
     padding: 0.2ex 1ex;

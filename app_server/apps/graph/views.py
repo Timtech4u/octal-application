@@ -2,11 +2,12 @@ import json
 import pdb
 
 from django.shortcuts import render_to_response
+from django.http import HttpResponseRedirect
 from django.template import RequestContext
 
 from apps.cserver_comm.cserver_communicator import get_full_graph_json_str, get_concept_data
 from apps.user_management.models import Profile
-
+from apps.participant.utils import getParticipantByUID, presurveyRedirect
 
 def get_agfk_app(request):
     concepts = get_user_data(request)
@@ -14,12 +15,19 @@ def get_agfk_app(request):
     concept_data = get_concept_data(concept_tag)
     # pdb.set_trace()
     #OCTAL experiment: graph linearity based on user id
+    p = None
     if request.user.is_authenticated():
-        user_display = request.user.pk % 2
-    else:
-        user_display = 0
+        p = getParticipantByUID(request.user.pk)
+        # make sure participant completed the presurvey
+        if not p.presurvey:
+            return presurveyRedirect(p)
+
+    #user has no participant ID yet, ask them for it
+    if p is None:
+        return HttpResponseRedirect('/participant/')
+
     return render_to_response("agfk-app.html",
-                              {"full_graph_skeleton": get_full_graph_json_str(), "user_data": json.dumps(concepts), "concept_data": concept_data, "user_display": user_display},
+                              {"full_graph_skeleton": get_full_graph_json_str(), "user_data": json.dumps(concepts), "concept_data": concept_data, "user_display": int(p.linear)},
                               context_instance=RequestContext(request))
 
 
