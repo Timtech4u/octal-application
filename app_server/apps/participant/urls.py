@@ -7,6 +7,6 @@ urlpatterns = patterns('',
                        url(r'^(?P<err>[0-9]*)$', views.landing, name='landing'),
                        url(r'^pid/(?P<pid>\d{5})$', views.handle_pid, name='handlepid'),
                        url(r'^pid/', RedirectView.as_view(url='/participant/1')),
-                       url(r'^presurvey/$', views.presurvey, name='presurvey'),
-                       url(r'^logout/$', views.logout, name='logout'),
+                       url(r'^presurvey$', views.presurvey, name='presurvey'),
+                       url(r'^logout', views.logout, name='logout'),
                       )
