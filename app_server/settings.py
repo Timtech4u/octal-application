@@ -133,6 +133,7 @@ INSTALLED_APPS = (
     'apps.roadmaps',
     'apps.browser_tests',
     'apps.octal',
+    'apps.participant',
     'haystack',
     'captcha',
     'south',

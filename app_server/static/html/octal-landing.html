@@ -16,7 +16,7 @@ $('#pid').bind('keyup', function(event){
     if (event.which === 13 || event.keyCode === 13){
       var cval = event.currentTarget.value;
       if (cval.length > 0){
-        window.location.href = "/octal/pid/" + window.encodeURI(event.currentTarget.value);
+        window.location.href = "/participant/pid/" + window.encodeURI(event.currentTarget.value);
       }
     }
 });
