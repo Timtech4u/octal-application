@@ -18,7 +18,12 @@ h2{
     font-weight: bold;
 }
 
-#main-search-input{
+p {
+    margin: 1em auto;
+    width: 50%;
+}
+
+#pid {
     font-size: 70%;
     padding: 0.2ex 1ex;
     margin-top: 0.3em;
@@ -33,17 +38,17 @@ h2{
     -ms-box-sizing: border-box; /* IE */
     box-sizing: border-box;
 }
-#main-search-input:focus{
+#pid:focus{
     border-color: #501644;
     box-shadow: inset 3px 3px 4px rgba(0,0,0,0.075);
 }
-#main-search-input:hover{
+#pid:hover{
    box-shadow: inset 3px 3px 4px rgba(0,0,0,0.075);
 }
 
 
 @media only screen and (max-width: 767px){
-    #main-search-input{
+    #pid{
         width: 95%;
         display: inline-block;
     }
