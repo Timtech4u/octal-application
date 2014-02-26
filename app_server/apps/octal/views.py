@@ -11,6 +11,7 @@ from apps.cserver_comm.cserver_communicator import get_full_graph_json_str, get_
 from apps.user_management.models import Profile
 
 from apps.octal.knowledgeInference import performInference
+from apps.participant.utils import getParticipantByUID
 
 #TODO remove me
 from django.views.decorators.csrf import csrf_exempt
@@ -33,15 +34,16 @@ def get_octal_app(request):
                               },
                               context_instance=RequestContext(request))
 
-def fetch_attempt_id(user, con, ex):
+def fetch_attempt_id(user, p, con, ex):
     try:
         # try to recycle an unused attempt id
-        attempt = ExerciseAttempts.objects.get(uprofile=user, 
+        attempt = ExerciseAttempts.objects.get(participant=p,
                                                exercise=ex,
                                                submitted=False)
         #filter(uprofile=user).filter(exercise=ex).get(submitted=False)
     except ExerciseAttempts.DoesNotExist:
-        attempt = ExerciseAttempts(uprofile=user, exercise=ex, concept=con)
+        attempt = ExerciseAttempts(uprofile=user, participant=p, 
+                                   exercise=ex, concept=con)
         attempt.save()
     return attempt.pk;
 
@@ -56,15 +58,16 @@ def handle_exercise_request(request, conceptId=""):
     user, pcreated = Profile.objects.get_or_create(pk=request.user.pk)
     eCon, ccreated = ExerciseConcepts.objects.get_or_create(conceptId=conceptId,
                                 name=concept_dict[conceptId]['tag'])
+    p = getParticipantByUID(request.user.pk)
 
+    # well, this shouldn't happen
+    if p is None: return HttpResponse(status=401)
 
     completed = ExerciseAttempts.objects.filter(
-                    uprofile=user).filter(
+                    participant=p).filter(
                     concept=eCon).filter(
                     correct=True).values(
                     'exercise').distinct()
-
-    #return HttpResponse([x['exercise'] for x in completed])
 
     # fetch a question the user hasn't yet answered correctly
     try:
@@ -91,7 +94,7 @@ def handle_exercise_request(request, conceptId=""):
         'h': ex.question,
         't': ex.qtype,
         'a': [x.response for x in r],
-        'aid': fetch_attempt_id(user, eCon, ex),
+        'aid': fetch_attempt_id(user, p, eCon, ex),
     }
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
@@ -99,10 +102,15 @@ def handle_exercise_request(request, conceptId=""):
 @allow_lazy_user
 @csrf_exempt #TODO remove me
 def handle_exercise_attempt(request, attempt="", correct=""):
-    uprof, created = Profile.objects.get_or_create(pk=request.user.pk)
+    uprof, pc = Profile.objects.get_or_create(pk=request.user.pk)
+    p = getParticipantByUID(request.user.pk)
+
+    # well, this shouldn't happen
+    if p is None: return HttpResponse(status=401)
+
     try:
         # only inject attempts if we have not submitted for this attempt
-        ex = ExerciseAttempts.objects.filter(uprofile=uprof).filter(submitted=False).get(pk=attempt)
+        ex = ExerciseAttempts.objects.filter(participant=p).filter(submitted=False).get(pk=attempt)
     except ExerciseAttempts.DoesNotExist, ExerciseAttempts.MultipleObjectsReturned:
         ex = None
 
@@ -123,7 +131,7 @@ def handle_exercise_attempt(request, attempt="", correct=""):
         if correctness:
             return HttpResponse()
         else:
-            return HttpResponse(fetch_attempt_id(uprof, ex.concept, ex.exercise))
+            return HttpResponse(fetch_attempt_id(uprof, p, ex.concept, ex.exercise))
             
     else:
         return HttpResponse(status=405)
@@ -131,8 +139,12 @@ def handle_exercise_attempt(request, attempt="", correct=""):
 @allow_lazy_user
 def handle_knowledge_request(request, conceptID=""):
     if request.method == "GET":
-        uprof, created = Profile.objects.get_or_create(pk=request.user.pk)
-        ex = ExerciseAttempts.objects.filter(uprofile=uprof).filter(submitted=True)
+        p = getParticipantByUID(request.user.pk)
+
+        # well, this shouldn't happen
+        if p is None: return HttpResponse(status=401)
+
+        ex = ExerciseAttempts.objects.filter(participant=p).filter(submitted=True)
         r = [e.get_correctness() for e in ex.all()]
         inferences = performInference(r)
         return HttpResponse(json.dumps(inferences), mimetype='application/json')

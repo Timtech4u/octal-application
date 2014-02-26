@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from apps.user_management.models import Profile
+from apps.participant.models import Participants
 
 class ExerciseConcepts(models.Model):
     """
@@ -55,6 +56,7 @@ class ExerciseAttempts(models.Model):
     Store exercise attempts for every user
     """
     uprofile = models.ForeignKey(Profile)
+    participant = models.ForeignKey(Participants)
     concept = models.ForeignKey(ExerciseConcepts)
     exercise = models.ForeignKey(Exercises)
     correct = models.NullBooleanField()
