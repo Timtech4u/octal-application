@@ -18,13 +18,14 @@ def get_agfk_app(request):
     p = None
     if request.user.is_authenticated():
         p = getParticipantByUID(request.user.pk)
-        # make sure participant completed the presurvey
-        if not p.presurvey:
-            return presurveyRedirect(p)
 
     #user has no participant ID yet, ask them for it
     if p is None:
         return HttpResponseRedirect('/participant/')
+
+    # make sure participant completed the presurvey
+    if not p.presurvey:
+        return presurveyRedirect(p)
 
     return render_to_response("agfk-app.html",
                               {"full_graph_skeleton": get_full_graph_json_str(), "user_data": json.dumps(concepts), "concept_data": concept_data, "user_display": int(p.linear)},
