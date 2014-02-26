@@ -89,8 +89,8 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
 
 
                             pvt.isRendered = true;
-                            this.getKnowledgeState();
 
+                            this.getKnowledgeState();
                             return this;
 
 
@@ -167,15 +167,15 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                     },
                     highlightNodes: function() {
                         if(!agfkGlobals.linear) {
-                            console.log(pvt.knownConcepts)
+                            //console.log(pvt.knownConcepts)
                             //mega-ghetto
-                            thisView.$el.find('ellipse').css('fill',pvt.viewConsts.neutralColor);
+                            thisView.$el.find('circle').css('fill',pvt.viewConsts.neutralColor);
                             //for (var i = 0; i < unknownConcepts.length; i++) {
                             //	this.$el.find("#"  + unknownConcepts[i]).find('ellipse').css('fill', pvt.viewConsts.unknownColor);
                             //}
                             for (var i = 0; i < pvt.knownConcepts.length; i++) {
                                 try {
-                                    $($('#circlgG-' + pvt.knownConcepts.expView.model.getNode(pvt.knownConcepts[i]).cid ).find('circle')[0]).css('fill', pvt.viewConsts.knownColor);
+                                    $($('#circlgG-' + pvt.expView.model.getNode(pvt.knownConcepts[i]).cid ).find('circle')[0]).css('fill', pvt.viewConsts.knownColor);
                                 } catch (TypeError) {
                                     //do nothing, node not in graph
                                 }
