@@ -9,7 +9,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
     var QuizView = (function() {
             var pvt = {};
             pvt.viewConsts = {
-                    templateId: (agfkGlobals.linear) ? "quiz-view-template" : "quiz-view-nonlinear-template",
+                    templateId: "quiz-view-template",
                     viewId: "quiz",
                     knownColor: '#EDFFED',
                     neutralColor: "#F6FBFF",
@@ -66,7 +66,8 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                             }
                             thisModel.set("a", shuffle(thisModel.get("a")));
                             var h = _.clone(thisModel.toJSON());
-                            h.pid = agfkGlobals.pid;
+                            h.pid = agfkGlobals.pid,
+                                h.linear = agfkGlobals.linear;
 
                             thisView.$el.html(thisView.template(h));
                             if(!agfkGlobals.linear) {
@@ -132,16 +133,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
 
                             //request to get new question
                             if(correctness) {
-                                $.ajax({
-                                        url: "/octal/exercise/" + sid,
-                                        async:false
-                                }).done(function(data) {
-                                        if ( console && console.log ) {
-                                                thisView.model = new QuestionModel(data);
-                                                thisView.model.set("concept", pvt.conceptName);
-                                        }
-                                });
-                                pvt.newQuestion = true;
+
                             }
 
                             //console.log(thisView.model.get("aid"));
@@ -149,8 +141,23 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
 
                             //SOME LOGIC GOES HERE FOR HIGHLIGHTING NODES
                             //rerender the view TODO: seems kinda wasteful to totally rerender the view rather than the question
+
+                    },
+                    getNextQuestion: function() {
+                         $.ajax({
+                                url: "/octal/exercise/" + sid,
+                                async:false
+                            }).done(function(data) {
+                                if ( console && console.log ) {
+                                    thisView.model = new QuestionModel(data);
+                                    thisView.model.set("concept", pvt.conceptName);
+                                }
+                            });
+                            pvt.newQuestion = true;
                             this.render();
                     },
+
+
                     getKnowledgeState: function() {
                             thisView = this;
                             var sid = agfkGlobals.auxModel.get('nodes').get(pvt.conceptName).get('sid');

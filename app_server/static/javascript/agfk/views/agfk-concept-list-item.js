@@ -14,6 +14,23 @@ define(["backbone", "underscore", "lib/kmapjs/views/concept-list-item"], functio
 
   // return the list item view object
   return ConceptListItem.extend({
+    events: {
+        "click": function(evt){
+          var thisView = this,
+              modelId = thisView.model.id;
+
+          if (!thisView.$el.hasClass(pvt.consts.clickedItmClass)) {
+            // set focus if not currently focused
+            thisView.model.trigger("setFocusNode", modelId);
+          } else {
+            // else, if currently focused, toggle scope
+            thisView.model.trigger("toggleNodeScope", modelId);
+          }
+          // change url parameters if using a router
+          this.appRouter && this.appRouter.changeUrlParams({focus: this.model.id});
+        }
+    },
+
     template: _.template(document.getElementById( pvt.consts.templateId).innerHTML),
 
     className: function(){

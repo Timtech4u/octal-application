@@ -1,11 +1,11 @@
 <script type="text/template" id="quiz-view-template">
 
-	<div class="quiz" id="linear-quiz">
+	<div class="quiz" <% if (linear == 1)  { %> id="linear-quiz" <% } %> >
 	<div id="logout">
               <% if(pid != 99999) { %>
                 You are currently logged in as a participant, click <a href="/participant/logout/" target="_self">here</a> to log out
               <% } else { %>
-                You are not currently logged in.  If you are a participant in the CS10 study, click
+                If you are a participant in the CS10 study, click
                 <a href="/participant/logout/" target="_self">here</a> to log in
               <% } %>
 
