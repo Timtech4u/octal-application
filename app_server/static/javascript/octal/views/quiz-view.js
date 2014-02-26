@@ -60,7 +60,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "octal/models/q
 
 
 								pvt.isRendered = true;
-								this.highlightNodes();
+								this.getKnowledgeState();
 								
 								return this;
 																					 
@@ -111,7 +111,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "octal/models/q
 								//rerender the view TODO: seems kinda wasteful to totally rerender the view rather than the question
 								this.render();
 						},
-						highlightNodes: function() {
+						getKnowledgeState: function() {
 								thisView = this;
 								var sid = agfkGlobals.auxModel.get('nodes').get(pvt.conceptName).get('sid');
 
@@ -119,7 +119,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "octal/models/q
 									url: "/octal/knowledge/" + sid,
 
 								}).done(function(data) {
-										//thisView.highlightNodes(data);
+										//thisView.getKnowledgeState(data);
 										console.log(data)
 										//mega-ghetto
 										thisView.$el.find('ellipse').css('fill',pvt.viewConsts.neutralColor);
