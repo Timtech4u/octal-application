@@ -3,13 +3,19 @@
     position:absolute;
     #border:1px solid black;
     #border-radius: 5px;
-    width:40%;
+    width:46%;
     z-index:2;
     background-color: #FFFFFF;
     opacity: .8;
     height:100%;
     overflow-y: auto;
-    padding: 5%;
+    padding: 2%;
+    top: 0;
+}
+
+h1 {
+    margin: 0;
+    padding: 0;
 }
 
 p {
@@ -43,6 +49,8 @@ p {
 }
 
 .title {
+    padding: 0;
+    margin: 0;
     text-transform:capitalize;
 }
 
