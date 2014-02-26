@@ -58,7 +58,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                                 pvt.newQuestion = true; //just changed concepts;
                             }
 
-                            //Remove the
+                            //Remove the underscores for rendering the concept
                             thisModel.set("concept",thisModel.get("concept").replace(/_/g, " "));
                             if(pvt.newQuestion) {
                                 ans = thisModel.get("a")[0];
