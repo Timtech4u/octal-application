@@ -1,5 +1,5 @@
 .quiz {
-    text-align:center;
+    text-align:left;
     position:absolute;
     #border:1px solid black;
     #border-radius: 5px;
@@ -9,8 +9,13 @@
     opacity: .8;
     height:100%;
     overflow-y: auto;
+    padding: 2em;
 }
 
+p {
+    margin: 1em 0 0 0;
+    padding: 0;
+}
 
 .answer {
     position:relative;
@@ -22,8 +27,8 @@
 }
 
 .question-content {
-    padding: 0em 2em 0em 2em
 }
+
 .answer-choice {
     display:block;
     margin:auto;
@@ -38,17 +43,18 @@
 }
 
 .title {
-		text-transform:capitalize;
+    text-transform:capitalize;
 }
 
 #graph-wrapper {
-        position:absolute;
-        z-index: 1;
-		width:71%;
-        height:100%;
-        margin-left: 50%;
-        overflow-x:visible;
+    position:absolute;
+    z-index: 1;
+    width:71%;
+    height:100%;
+    margin-left: 50%;
+    overflow-x:visible;
 }
+
 #linear-quiz {
     height:100%;
     width:100%;
