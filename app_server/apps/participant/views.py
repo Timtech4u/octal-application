@@ -14,6 +14,20 @@ def landing(request, err=0):
                               context_instance=RequestContext(request))
 
 
+@allow_lazy_user
+def logout(request):
+    p = None
+    if request.user.is_authenticated():
+        p = getParticipantByUID(request.user.pk)
+
+    if p is None:
+        return HttpResponseRedirect("/")
+
+    uprof, created = Profile.objects.get_or_create(pk=request.user.pk)
+
+    ParticipantLogins.objects.filter(participant=p, uprofile=uprof).delete()
+    return HttpResponseRedirect("/")
+
 
 @allow_lazy_user
 def handle_pid(request, pid=0):
