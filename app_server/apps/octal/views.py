@@ -13,9 +13,6 @@ from apps.user_management.models import Profile
 from apps.octal.knowledgeInference import performInference
 from apps.participant.utils import getParticipantByUID
 
-#TODO remove me
-from django.views.decorators.csrf import csrf_exempt
-
 
 def get_octal_app(request):
     if request.user.is_authenticated():
