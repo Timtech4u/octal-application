@@ -100,7 +100,6 @@ def handle_exercise_request(request, conceptId=""):
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
 @allow_lazy_user
-@csrf_exempt #TODO remove me
 def handle_exercise_attempt(request, attempt="", correct=""):
     uprof, pc = Profile.objects.get_or_create(pk=request.user.pk)
     p = getParticipantByUID(request.user.pk)

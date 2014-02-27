@@ -45,6 +45,7 @@
       agfkGlobals.auxModel = null; // init in main js app
       agfkGlobals.linear = {{ user_display }};
       agfkGlobals.pid = {{ pid }};
+      agfkGlobals.csrftoken = '{{ csrf_token }}';
     </script>
   {% if 1 %}
   <script data-main="{% static "javascript/main.js" %}" type="text/javascript" src="{% static "javascript/lib/require-min.js" %}"></script>

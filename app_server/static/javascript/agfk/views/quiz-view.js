@@ -122,6 +122,21 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                             else
                                     alert('incorrect');
 
+                            // csrf protection
+                            // https://docs.djangoproject.com/en/dev/ref/contrib/csrf/
+                            function csrfSafeMethod(method) {
+                                // these HTTP methods do not require CSRF protection
+                                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                            }
+                            $.ajaxSetup({
+                                crossDomain: false, // obviates need for sameOrigin test
+                                beforeSend: function(xhr, settings) {
+                                    if (!csrfSafeMethod(settings.type)) {
+                                        xhr.setRequestHeader("X-CSRFToken", agfkGlobals.csrftoken);
+                                    }
+                                }
+                            });
+
                             //get new model from the server
                             //request to submit an answer
 
