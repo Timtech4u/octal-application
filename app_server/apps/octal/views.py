@@ -82,16 +82,15 @@ def handle_exercise_request(request, conceptId="", qid=""):
     # filter out the current question, if provided and if possible
     if qid and numRemaining > 1: ex = ex.exclude(pk=int(qid))
 
+    # if student has completed all, pick one from the total set
+    if numRemaining == 0: ex = Exercises.objects.filter(concepts=eCon)
+
     # fetch a question the user hasn't yet answered correctly
     try:
         ex = ex.order_by('?')[:1].get()
     except Exercises.DoesNotExist:
-        # seems they've gotten them all right! pick one at random
-        try:
-            #documentation warns order_by('?') may be slow
-            ex = Exercises.objects.filter(concepts=eCon).order_by('?')[:1].get()
-        except Exercises.DoesNotExist:
-            return HttpResponse(status=404) 
+        # uh oh, none to give?
+        return HttpResponse(status=404) 
 
     # fetch the question answers
     try:
