@@ -21,6 +21,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
             pvt.graphRendered = false;
             pvt.newQuestion = true;
             pvt.conceptName = window.location.href.split('/').pop().split('#').shift();
+            pvt.correct = false;
 
 
             var ans = "";
@@ -112,46 +113,53 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                     submit: function() {
                             var thisView = this;
                             var attempt = $("input[type='radio'][name='answer']:checked").val();
-                            console.log(ans);
-                            var correctness = (ans==attempt) ? 1 : 0;
-                            var aid = thisView.model.get('aid');
-                            console.log(aid);
+                            if(attempt && !pvt.correct) {
+                                console.log(ans);
+                                pvt.correct = (ans==attempt) ? 1 : 0;
+                                correctness = pvt.correct;
+                                var aid = thisView.model.get('aid');
+                                console.log(aid);
 
-                            if(correctness)
-                                    alert('correct');
-                            else
-                                    alert('incorrect');
+                                if(correctness)
+                                        $('#question-feedback').fadeOut(500,function(){$(this).html('Correct!  Great job!').css('color','#46a546').fadeIn()});
+                                else
+                                        $('#question-feedback').fadeOut(500,function(){$(this).html('Try again!').css('color','black').fadeIn()});
 
-                            // csrf protection
-                            // https://docs.djangoproject.com/en/dev/ref/contrib/csrf/
-                            function csrfSafeMethod(method) {
-                                // these HTTP methods do not require CSRF protection
-                                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-                            }
-                            $.ajaxSetup({
-                                crossDomain: false, // obviates need for sameOrigin test
-                                beforeSend: function(xhr, settings) {
-                                    if (!csrfSafeMethod(settings.type)) {
-                                        xhr.setRequestHeader("X-CSRFToken", agfkGlobals.csrftoken);
-                                    }
+                                // csrf protection
+                                // https://docs.djangoproject.com/en/dev/ref/contrib/csrf/
+                                function csrfSafeMethod(method) {
+                                    // these HTTP methods do not require CSRF protection
+                                    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
                                 }
-                            });
-
-                            //get new model from the server
-                            //request to submit an answer
-
-                            $.ajax({
-                                    url: "/octal/attempt/" + aid + "/" + correctness,
-                                    type: "PUT",
-                                    async: false,
-                                    dataType: "text",
-                                    success: function(data) {
-                                        thisView.model.set('aid',data);
+                                $.ajaxSetup({
+                                    crossDomain: false, // obviates need for sameOrigin test
+                                    beforeSend: function(xhr, settings) {
+                                        if (!csrfSafeMethod(settings.type)) {
+                                            xhr.setRequestHeader("X-CSRFToken", agfkGlobals.csrftoken);
+                                        }
                                     }
+                                });
 
-                            })
-                            //request to get new question
-                            thisView.getKnowledgeState();
+                                //get new model from the server
+                                //request to submit an answer
+
+                                $.ajax({
+                                        url: "/octal/attempt/" + aid + "/" + correctness,
+                                        type: "PUT",
+                                        async: false,
+                                        dataType: "text",
+                                        success: function(data) {
+                                            //Don't allow resubmission if the question was correct
+                                            if(!correctness)
+                                                thisView.model.set('aid',data);
+                                        }
+
+                                })
+                                //request to get new question
+                                thisView.getKnowledgeState();
+                            } else if(!attempt) {
+                                $('#question-feedback').fadeOut(500,function(){$(this).html('Make sure to select a response!').css('color','black').fadeIn()});
+                            }
 
                             //console.log(thisView.model.get("aid"));
 
@@ -174,6 +182,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                                 }
                             });
                             pvt.newQuestion = true;
+                            pvt.correct = false;
                             this.render();
                     },
 

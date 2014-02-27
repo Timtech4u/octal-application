@@ -101,3 +101,7 @@ strong {
 .lil-icons {
     font-size:x-large;
 }
+
+#question-feedback {
+    display:none;
+}
