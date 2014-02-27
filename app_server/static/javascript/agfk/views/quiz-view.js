@@ -165,7 +165,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                          var sid = agfkGlobals.auxModel.get('nodes').get(pvt.conceptName).get('sid');
 
                          $.ajax({
-                                url: "/octal/exercise/" + sid,
+                                url: "/octal/exercise/" + sid + "/" + thisView.model.get('qid'),
                                 async:false
                             }).done(function(data) {
                                 if ( console && console.log ) {

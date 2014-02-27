@@ -46,7 +46,7 @@ def fetch_attempt_id(user, p, con, ex):
 
 
 @allow_lazy_user
-def handle_exercise_request(request, conceptId=""):
+def handle_exercise_request(request, conceptId="", qid=""):
     #does the requested concept exist?
     concept_dict = get_id_to_concept_dict()
     if conceptId not in concept_dict: 
@@ -67,15 +67,24 @@ def handle_exercise_request(request, conceptId=""):
 
     # we need to differentiate non-participants by their user profile id
     if not p.isParticipant(): completed = completed.filter(uprofile=user)
-
+    
     completed = completed.values('exercise').distinct()
+
+    numComplete = completed.count()
+
+    # filter out questions the user has answered
+    ex = Exercises.objects.filter(concepts=eCon).exclude(
+            pk__in = [x['exercise'] for x in completed])
+
+    # how many are in this set?
+    numRemaining = ex.count()
+
+    # filter out the current question, if provided and if possible
+    if qid and numRemaining > 1: ex = ex.exclude(pk=int(qid))
 
     # fetch a question the user hasn't yet answered correctly
     try:
-        ex = Exercises.objects.filter(
-                    concepts=eCon).exclude(
-                    pk__in = [x['exercise'] for x in completed]).order_by(
-                    '?')[:1].get()
+        ex = ex.order_by('?')[:1].get()
     except Exercises.DoesNotExist:
         # seems they've gotten them all right! pick one at random
         try:
@@ -96,6 +105,8 @@ def handle_exercise_request(request, conceptId=""):
         't': ex.qtype,
         'a': [x.response for x in r],
         'aid': fetch_attempt_id(user, p, eCon, ex),
+        'cr': numRemaining, # expose how many left they have
+        'ct': numComplete+numRemaining, # expose how many total questions in concept
     }
 
     return HttpResponse(json.dumps(data), mimetype='application/json')

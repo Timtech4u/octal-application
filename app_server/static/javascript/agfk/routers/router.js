@@ -89,8 +89,9 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
             var concept = paramsObj[pvt.consts.qFocusConcept];
             var sid = agfkGlobals.auxModel.get('nodes').get(concept).get('sid');
 
-            $.ajax({url: "/octal/exercise/" + sid, async:false}).done(function(data) {
+            $.ajax({url: "/octal/exercise/" + sid + "/", async:false}).done(function(data) {
                      if ( console && console.log ) {
+                         console.log(data);
                              model = new QuestionModel(data);
                              model.set("concept",concept);
                      }
