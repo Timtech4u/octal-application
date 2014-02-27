@@ -85,3 +85,19 @@ strong {
     font-size:smaller;
     opacity:.5;
 }
+
+#check-answer {
+    float:left;
+    color:#46a546;
+    cursor:pointer;
+}
+
+#next-question-button {
+    float:right;
+    color:#0069D6;
+    cursor:pointer;
+}
+
+.lil-icons {
+    font-size:x-large;
+}

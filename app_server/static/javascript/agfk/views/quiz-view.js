@@ -89,6 +89,13 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                                 }
                             }
 
+                            thisView.$el.find('#check-answer').click(function() {
+                               thisView.submit();
+                            });
+
+                            thisView.$el.find('#next-question-button').click(function() {
+                               thisView.getNextQuestion();
+                            });
 
                             pvt.isRendered = true;
 
@@ -107,8 +114,6 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                             var attempt = $("input[type='radio'][name='answer']:checked").val();
                             console.log(ans);
                             var correctness = (ans==attempt) ? 1 : 0;
-                            pvt.conceptName = window.location.href.split('/').pop().split('#').pop().split('&').shift().split('=').pop();
-                            var sid = agfkGlobals.auxModel.get('nodes').get(pvt.conceptName).get('sid');
                             var aid = thisView.model.get('aid');
                             console.log(aid);
 
@@ -144,6 +149,9 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
 
                     },
                     getNextQuestion: function() {
+                         pvt.conceptName = window.location.href.split('/').pop().split('#').pop().split('&').shift().split('=').pop();
+                         var sid = agfkGlobals.auxModel.get('nodes').get(pvt.conceptName).get('sid');
+
                          $.ajax({
                                 url: "/octal/exercise/" + sid,
                                 async:false
