@@ -32,12 +32,12 @@ def get_octal_app(request):
                               context_instance=RequestContext(request))
 
 def fetch_attempt_id(user, p, con, ex):
+    attempt = ExerciseAttempts.objects.filter(participant=p)
+    if not p.isParticipant(): attempt = attempt.filter(uprofile=user)
+
     try:
         # try to recycle an unused attempt id
-        attempt = ExerciseAttempts.objects.get(participant=p,
-                                               exercise=ex,
-                                               submitted=False)
-        #filter(uprofile=user).filter(exercise=ex).get(submitted=False)
+        attempt = attempt.get(exercise=ex, submitted=False)
     except ExerciseAttempts.DoesNotExist:
         attempt = ExerciseAttempts(uprofile=user, participant=p, 
                                    exercise=ex, concept=con)
@@ -63,8 +63,12 @@ def handle_exercise_request(request, conceptId=""):
     completed = ExerciseAttempts.objects.filter(
                     participant=p).filter(
                     concept=eCon).filter(
-                    correct=True).values(
-                    'exercise').distinct()
+                    correct=True)
+
+    # we need to differentiate non-participants by their user profile id
+    if not p.isParticipant(): completed = completed.filter(uprofile=user)
+
+    completed = completed.values('exercise').distinct()
 
     # fetch a question the user hasn't yet answered correctly
     try:
@@ -104,9 +108,12 @@ def handle_exercise_attempt(request, attempt="", correct=""):
     # well, this shouldn't happen
     if p is None: return HttpResponse(status=401)
 
+    exs = ExerciseAttempts.objects.filter(participant=p).filter(submitted=False)
+    if not p.isParticipant(): exs.filter(uprofile=uprof)
+
     try:
         # only inject attempts if we have not submitted for this attempt
-        ex = ExerciseAttempts.objects.filter(participant=p).filter(submitted=False).get(pk=attempt)
+        ex = exs.get(pk=attempt)
     except ExerciseAttempts.DoesNotExist, ExerciseAttempts.MultipleObjectsReturned:
         ex = None
 
@@ -135,13 +142,15 @@ def handle_exercise_attempt(request, attempt="", correct=""):
 @allow_lazy_user
 def handle_knowledge_request(request, conceptID=""):
     if request.method == "GET":
+        user, pcreated = Profile.objects.get_or_create(pk=request.user.pk)
         p = getParticipantByUID(request.user.pk)
 
         # well, this shouldn't happen
         if p is None: return HttpResponse(status=401)
 
         ex = ExerciseAttempts.objects.filter(participant=p).filter(submitted=True)
-        r = [e.get_correctness() for e in ex.all()]
+        if not p.isParticipant(): ex = ex.filter(uprofile=user)
+        r = [e.get_correctness() for e in ex]
         inferences = performInference(r)
         return HttpResponse(json.dumps(inferences), mimetype='application/json')
     else:

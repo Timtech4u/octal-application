@@ -14,6 +14,9 @@ class Participants(models.Model):
     def __unicode__(self):
         return u'%d' % (int(self.pid))
 
+    def isParticipant(self):
+        return self.pid != '99999'
+
 class ParticipantLogins(models.Model):
     """
     Stores information about participants
