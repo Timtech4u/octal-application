@@ -33,13 +33,13 @@ For Windows installation/requirements, please see the readme located in [/window
 
 * Make sure you have installed the following packages:
 
-    freetype-devel gcc-gfortran (Linux)
-    freetype gfortran (Mac OS X, via homebrew)
-    easy_install virtualenv (both)
+        freetype-devel gcc-gfortran (Linux)
+        freetype gfortran (Mac OS X, via homebrew)
+        easy_install virtualenv (both)
 
 * On Mac OS X, setup freetype:
 
-    ln -s /usr/local/opt/freetype/include/freetype2 /usr/local/include/freetype
+        ln -s /usr/local/opt/freetype/include/freetype2 /usr/local/include/freetype
 
 ### Mac OSX and *nix
 
@@ -57,16 +57,12 @@ For Windows installation/requirements, please see the readme located in [/window
 
         make
 
-1. verify the installation
-
-        make test
-
 #### Optional: create a superuser
 
         python app_server/manage.py createsuperuser
 
-#### Very Optional: Scipy dependency
-Some of metacademy's ancillary functions currently depend on `scipy`. Scipy can be tricky to install (`pip install scipy` won't work unless you have all of the systems-level dependencies) so we have made it an optional dependency. Once you have scipy installed on your machine (google will help here...), link it's site-packages folder to to your virtual environment's `lib/python2.7/site-packages/` folder. On my machine, this command was:
+#### Scipy dependency
+OCTAL currently depends `scipy`. Scipy can be tricky to install (`pip install scipy` won't work unless you have all of the systems-level dependencies), but Google might help here. Once that's done, link its site-packages folder to to your virtual environment's `lib/python2.7/site-packages/` folder. One example (you might have to adapt to your install):
 
         ln -s /usr/local/lib/python2.7/site-packages/scipy lib/python2.7/site-packages/
 
