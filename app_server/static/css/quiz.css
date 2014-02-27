@@ -88,6 +88,7 @@ strong {
 
 #check-answer {
     float:left;
+    clear:left;
     color:#46a546;
     cursor:pointer;
 }
@@ -103,5 +104,6 @@ strong {
 }
 
 #question-feedback {
+    float:left;
     display:none;
 }

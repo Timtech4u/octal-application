@@ -120,10 +120,12 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                                 var aid = thisView.model.get('aid');
                                 console.log(aid);
 
-                                if(correctness)
-                                        $('#question-feedback').fadeOut(500,function(){$(this).html('Correct!  Great job!').css('color','#46a546').fadeIn()});
+                                if(correctness) {
+                                        $('#question-feedback').fadeOut('slow',function(){$(this).html('Correct!  Great job!').css('color','#46a546').fadeIn()});
+                                        $('#check-answer').hide();
+                                }
                                 else
-                                        $('#question-feedback').fadeOut(500,function(){$(this).html('Try again!').css('color','black').fadeIn()});
+                                        $('#question-feedback').fadeOut('slow',function(){$(this).html('Try again!').css('color','black').fadeIn()});
 
                                 // csrf protection
                                 // https://docs.djangoproject.com/en/dev/ref/contrib/csrf/
@@ -158,7 +160,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                                 //request to get new question
                                 thisView.getKnowledgeState();
                             } else if(!attempt) {
-                                $('#question-feedback').fadeOut(500,function(){$(this).html('Make sure to select a response!').css('color','black').fadeIn()});
+                                $('#question-feedback').fadeOut('slow',function(){$(this).html('Make sure to select a response!').css('color','black').fadeIn()});
                             }
 
                             //console.log(thisView.model.get("aid"));
