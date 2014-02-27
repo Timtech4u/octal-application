@@ -203,7 +203,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                             //}
                             for (var i = 0; i < pvt.knownConcepts.length; i++) {
                                 try {
-                                    $($('#circlgG-' + pvt.expView.model.getNode(pvt.knownConcepts[i]).cid ).find('circle')[0]).css('fill', pvt.viewConsts.knownColor);
+                                    $($('#circlgG-' + pvt.knownConcepts[i]).find('circle')[0]).css('fill', pvt.viewConsts.knownColor);
                                 } catch (TypeError) {
                                     //do nothing, node not in graph
                                 }
