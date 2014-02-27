@@ -75,24 +75,6 @@ def performInference(responses):
     midterm = mc.Bernoulli('midterm', pMidterm, value=1)
     concepts.append(midterm);
     ########################################################################
-    
-    pQuestion1 = mc.Lambda('pQuestion1', lambda lists=lists: pl.where(lists, 1-pS, pG))
-    question1 = mc.Bernoulli('question1', pQuestion1, value=[1,1,1,1], observed=True)
-    
-    pQuestion2 = mc.Lambda('pQuestion2', lambda tail_recursion=tail_recursion: pl.where(tail_recursion, 1-pS, pG))
-    question2 = mc.Bernoulli('question2', pQuestion2, value=[1, 1, 1, 1, 1], observed=True)
-
-    pQuestion3 = mc.Lambda('pQuestion3', lambda concurrency=concurrency: pl.where(concurrency, 1-pS, pG))
-    question3 = mc.Bernoulli('question3', pQuestion3, value=[1,1,1,1,1], observed=True)
-
-    pQuestion4 = mc.Lambda('pQuestion4', lambda variables=variables: pl.where(variables, 1-pS, pG))
-    question4 = mc.Bernoulli('question4', pQuestion4, value=1, observed=True)
-
-    pQuestion5 = mc.Lambda('pQuestion5', lambda conditionals=conditionals: pl.where(conditionals, 1-pS, pG))
-    question5 = mc.Bernoulli('question5', pQuestion5, value=1, observed=True)
-
-    pQuestion6 = mc.Lambda('pQuestion6', lambda loops=loops: pl.where(loops, 1-pS, pG))
-    question6 = mc.Bernoulli('question6', pQuestion6, value=[1,1,1], observed=True)
 
     #pQuestion7 = mc.Lambda('pQuestion7', lambda algorithmic_complexity=algorithmic_complexity: pl.where(algorithmic_complexity, 1-pS, pG))
     #question7 = mc.Bernoulli('question7', pQuestion7, value=[0], observed=True)
@@ -105,7 +87,7 @@ def performInference(responses):
     
     ##################some simple tests##########
     
-    model = mc.Model(concepts + [question1, question2, question3, question4, question5, question6] + otherQuestions);
+    model = mc.Model(concepts + otherQuestions);
     
     
     samples = mc.MCMC(model)

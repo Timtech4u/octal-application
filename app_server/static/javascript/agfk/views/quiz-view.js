@@ -135,11 +135,8 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                                     }
 
                             })
-
                             //request to get new question
-                            if(correctness) {
-
-                            }
+                            thisView.getKnowledgeState();
 
                             //console.log(thisView.model.get("aid"));
 
