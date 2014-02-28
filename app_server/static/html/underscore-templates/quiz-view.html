@@ -11,14 +11,14 @@
 
     </div>
     <br />
-    <h1 class="title"><strong><% if(concept) { %>
+    <h1 class="title"><strong><% if (concept) { %>
 				<%= concept %>
     <%} else {%>
         Placeholder
     <% } %>
 		</strong>
     </h1>
-    <div id="questions-remaining"> <%= cr %> out of <%= ct %> questions completed </div>
+    <div id="questions-remaining"> <span id="correct-count"><%= ct-cr %></span> out of <%= ct %> questions completed </div>
 	  <hr />
 		<br />
 	  <div class="question-content">

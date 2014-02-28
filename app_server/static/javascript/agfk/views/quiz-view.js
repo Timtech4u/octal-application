@@ -123,6 +123,8 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                                 if(correctness) {
                                         $('#question-feedback').fadeOut(100,function(){$(this).html('Correct!  Great job!').css('color','#46a546').fadeIn()});
                                         $('#check-answer').hide();
+                                        $cc = $('#correct-count');
+                                        $cc.fadeOut(100,function(){$(this).html(parseInt($cc.html()) + 1).fadeIn()});
                                 }
                                 else
                                         $('#question-feedback').fadeOut(100,function(){$(this).html('Try again!').css('color','black').fadeIn()});
