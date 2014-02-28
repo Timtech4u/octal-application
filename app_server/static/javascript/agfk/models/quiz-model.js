@@ -2,7 +2,7 @@
 	This file contains the model for questions, retrieved from the server
 */
 
-define(["backbone", "underscore", "octal/utils/utils"], function(Backbone, _, Utils) {
+define(["backbone", "underscore"], function(Backbone) {
 
 		var QuestionModel = Backbone.Model.extend({
 				urlRoot:"../api/questions",
@@ -12,7 +12,9 @@ define(["backbone", "underscore", "octal/utils/utils"], function(Backbone, _, Ut
 								h: "<p>Given the function definition:</p> <p style='text-align:center'><strong><em>f(N) = f(N -1) + f(N - 2)</em></strong></p><p>and an implementation not making use of memoization, what is the most likely asymptotic runtime as a function of N?</p>", //html of the question
 								t: "0", //type of the question
 								a: ["O(2^N)","O(N)","O(1)","O(N^2)"], //array including correct answer and perhaps distractors
-								aid: "1"
+								aid: "1",
+                                cr:"0",
+                                ct:"1"
 						}
 				},
 				initialize: function() {
@@ -23,7 +25,7 @@ define(["backbone", "underscore", "octal/utils/utils"], function(Backbone, _, Ut
 				
 		});
 		var QuestionCollection = Backbone.Collection.extend({
-				model: QuestionModel,
+				model: QuestionModel
 
 		});
 		return QuestionModel;
