@@ -93,10 +93,18 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                             thisView.$el.find('#check-answer').click(function() {
                                thisView.submit();
                             });
-
                             thisView.$el.find('#next-question-button').click(function() {
                                thisView.getNextQuestion();
                             });
+
+                        
+                            //If this is the last question, take away the next button
+                            if(thisModel.get('cr') == 1) {
+                                thisView.$el.find('#next-question-button').hide();
+                            }
+
+
+
 
                             pvt.isRendered = true;
 
@@ -125,6 +133,10 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                                         $('#check-answer').hide();
                                         $cc = $('#correct-count');
                                         $cc.fadeOut(100,function(){$(this).html(parseInt($cc.html()) + 1).fadeIn()});
+                                        //Make the next question button available again if a user has finished all the questions in a category
+                                        if($cc.html() == "0") {
+                                            $('#next-question-button').show()
+                                        }
                                 }
                                 else
                                         $('#question-feedback').fadeOut(100,function(){$(this).html('Try again!').css('color','black').fadeIn()});
