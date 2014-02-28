@@ -132,11 +132,12 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                                         $('#question-feedback').fadeOut(100,function(){$(this).html('Correct!  Great job!').css('color','#46a546').fadeIn()});
                                         $('#check-answer').hide();
                                         $cc = $('#correct-count');
-                                        $cc.fadeOut(100,function(){$(this).html(parseInt($cc.html()) + 1).fadeIn()});
-                                        //Make the next question button available again if a user has finished all the questions in a category
-                                        if($cc.html() == "0") {
+                                        if((parseInt($cc.html()) + 1) == thisView.model.get('ct')) {
                                             $('#next-question-button').show()
                                         }
+                                        $cc.fadeOut(100,function(){$(this).html(parseInt($cc.html()) + 1).fadeIn()});
+                                        //Make the next question button available again if a user has finished all the questions in a category
+
                                 }
                                 else
                                         $('#question-feedback').fadeOut(100,function(){$(this).html('Try again!').css('color','black').fadeIn()});
