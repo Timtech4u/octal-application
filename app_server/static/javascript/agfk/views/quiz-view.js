@@ -122,11 +122,11 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                             var thisView = this;
                             var attempt = $("input[type='radio'][name='answer']:checked").val();
                             if(attempt && !pvt.correct) {
-                                console.log(ans);
+                                //console.log(ans);
                                 pvt.correct = (ans==attempt) ? 1 : 0;
                                 correctness = pvt.correct;
                                 var aid = thisView.model.get('aid');
-                                console.log(aid);
+                                //console.log(aid);
 
                                 if(correctness) {
                                         $('#question-feedback').fadeOut(100,function(){$(this).html('Correct!  Great job!').css('color','#46a546').fadeIn()});
@@ -192,10 +192,8 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                                 url: "/octal/exercise/" + sid + "/" + thisView.model.get('qid'),
                                 async:false
                             }).done(function(data) {
-                                if ( console && console.log ) {
-                                    thisView.model = new QuestionModel(data);
-                                    thisView.model.set("concept", pvt.conceptName);
-                                }
+                                thisView.model = new QuestionModel(data);
+                                thisView.model.set("concept", pvt.conceptName);
                             });
                             pvt.newQuestion = true;
                             pvt.correct = false;

@@ -17,5 +17,4 @@ def getParticipantByPID(p):
         return None
 
 def presurveyRedirect(p):
-    #TODO change to surveymonkey link - can we pass in pid?
-    return HttpResponseRedirect("http://cnn.com") 
+    return HttpResponseRedirect("https://www.surveymonkey.com/s/BLDLBCW?c="+p.pid) 

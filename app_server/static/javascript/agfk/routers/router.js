@@ -298,7 +298,7 @@ define(["backbone", "underscore", "jquery", "agfk/views/explore-graph-view", "ag
 
           // set the document title as the key concept
           if (!isCreating){
-            document.title = thisRoute.graphModel.getNode(thisRoute.graphModel.get("leafs")[0]).get("title") + " - Metacademy";
+            document.title = thisRoute.graphModel.getNode(thisRoute.graphModel.get("leafs")[0]).get("title") + " - OCTAL";
           } else {
             document.title = "Graph Creation - Metacademy";
           }
