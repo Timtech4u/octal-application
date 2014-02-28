@@ -51,7 +51,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                             pvt.isRendered = false;
                             var thisView = this;
                             var thisModel = thisView.model;
-
+                            pvt.correct = false;
                             //Get current concept, compare it to the concept last served by the view
                             //If they don't match, we need a new question
                             thisView.concept = thisModel.get('concept');
