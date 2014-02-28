@@ -32,12 +32,12 @@ def get_octal_app(request):
                               context_instance=RequestContext(request))
 
 def fetch_attempt_id(user, p, con, ex):
+    attempt = ExerciseAttempts.objects.filter(participant=p)
+    if not p.isParticipant(): attempt = attempt.filter(uprofile=user)
+
     try:
         # try to recycle an unused attempt id
-        attempt = ExerciseAttempts.objects.get(participant=p,
-                                               exercise=ex,
-                                               submitted=False)
-        #filter(uprofile=user).filter(exercise=ex).get(submitted=False)
+        attempt = attempt.get(exercise=ex, submitted=False)
     except ExerciseAttempts.DoesNotExist:
         attempt = ExerciseAttempts(uprofile=user, participant=p, 
                                    exercise=ex, concept=con)
@@ -46,7 +46,7 @@ def fetch_attempt_id(user, p, con, ex):
 
 
 @allow_lazy_user
-def handle_exercise_request(request, conceptId=""):
+def handle_exercise_request(request, conceptId="", qid=""):
     #does the requested concept exist?
     concept_dict = get_id_to_concept_dict()
     if conceptId not in concept_dict: 
@@ -63,22 +63,34 @@ def handle_exercise_request(request, conceptId=""):
     completed = ExerciseAttempts.objects.filter(
                     participant=p).filter(
                     concept=eCon).filter(
-                    correct=True).values(
-                    'exercise').distinct()
+                    correct=True)
+
+    # we need to differentiate non-participants by their user profile id
+    if not p.isParticipant(): completed = completed.filter(uprofile=user)
+    
+    completed = completed.values('exercise').distinct()
+
+    numComplete = completed.count()
+
+    # filter out questions the user has answered
+    ex = Exercises.objects.filter(concepts=eCon).exclude(
+            pk__in = [x['exercise'] for x in completed])
+
+    # how many are in this set?
+    numRemaining = ex.count()
+
+    # filter out the current question, if provided and if possible
+    if qid and numRemaining > 1: ex = ex.exclude(pk=int(qid))
+
+    # if student has completed all, pick one from the total set
+    if numRemaining == 0: ex = Exercises.objects.filter(concepts=eCon)
 
     # fetch a question the user hasn't yet answered correctly
     try:
-        ex = Exercises.objects.filter(
-                    concepts=eCon).exclude(
-                    pk__in = [x['exercise'] for x in completed]).order_by(
-                    '?')[:1].get()
+        ex = ex.order_by('?')[:1].get()
     except Exercises.DoesNotExist:
-        # seems they've gotten them all right! pick one at random
-        try:
-            #documentation warns order_by('?') may be slow
-            ex = Exercises.objects.filter(concepts=eCon).order_by('?')[:1].get()
-        except Exercises.DoesNotExist:
-            return HttpResponse(status=404) 
+        # uh oh, none to give?
+        return HttpResponse(status=404) 
 
     # fetch the question answers
     try:
@@ -92,6 +104,8 @@ def handle_exercise_request(request, conceptId=""):
         't': ex.qtype,
         'a': [x.response for x in r],
         'aid': fetch_attempt_id(user, p, eCon, ex),
+        'cr': numRemaining, # expose how many left they have
+        'ct': numComplete+numRemaining, # expose how many total questions in concept
     }
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
@@ -104,9 +118,12 @@ def handle_exercise_attempt(request, attempt="", correct=""):
     # well, this shouldn't happen
     if p is None: return HttpResponse(status=401)
 
+    exs = ExerciseAttempts.objects.filter(participant=p).filter(submitted=False)
+    if not p.isParticipant(): exs.filter(uprofile=uprof)
+
     try:
         # only inject attempts if we have not submitted for this attempt
-        ex = ExerciseAttempts.objects.filter(participant=p).filter(submitted=False).get(pk=attempt)
+        ex = exs.get(pk=attempt)
     except ExerciseAttempts.DoesNotExist, ExerciseAttempts.MultipleObjectsReturned:
         ex = None
 
@@ -135,13 +152,15 @@ def handle_exercise_attempt(request, attempt="", correct=""):
 @allow_lazy_user
 def handle_knowledge_request(request, conceptID=""):
     if request.method == "GET":
+        user, pcreated = Profile.objects.get_or_create(pk=request.user.pk)
         p = getParticipantByUID(request.user.pk)
 
         # well, this shouldn't happen
         if p is None: return HttpResponse(status=401)
 
         ex = ExerciseAttempts.objects.filter(participant=p).filter(submitted=True)
-        r = [e.get_correctness() for e in ex.all()]
+        if not p.isParticipant(): ex = ex.filter(uprofile=user)
+        r = [e.get_correctness() for e in ex]
         inferences = performInference(r)
         return HttpResponse(json.dumps(inferences), mimetype='application/json')
     else:
