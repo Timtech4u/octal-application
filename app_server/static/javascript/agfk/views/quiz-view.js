@@ -121,11 +121,11 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                                 console.log(aid);
 
                                 if(correctness) {
-                                        $('#question-feedback').fadeOut('slow',function(){$(this).html('Correct!  Great job!').css('color','#46a546').fadeIn()});
+                                        $('#question-feedback').fadeOut(100,function(){$(this).html('Correct!  Great job!').css('color','#46a546').fadeIn()});
                                         $('#check-answer').hide();
                                 }
                                 else
-                                        $('#question-feedback').fadeOut('slow',function(){$(this).html('Try again!').css('color','black').fadeIn()});
+                                        $('#question-feedback').fadeOut(100,function(){$(this).html('Try again!').css('color','black').fadeIn()});
 
                                 // csrf protection
                                 // https://docs.djangoproject.com/en/dev/ref/contrib/csrf/
@@ -160,7 +160,7 @@ define(["backbone", "underscore", "jquery", "octal/utils/utils", "agfk/models/qu
                                 //request to get new question
                                 thisView.getKnowledgeState();
                             } else if(!attempt) {
-                                $('#question-feedback').fadeOut('slow',function(){$(this).html('Make sure to select a response!').css('color','black').fadeIn()});
+                                $('#question-feedback').fadeOut(100,function(){$(this).html('Make sure to select a response!').css('color','black').fadeIn()});
                             }
 
                             //console.log(thisView.model.get("aid"));
