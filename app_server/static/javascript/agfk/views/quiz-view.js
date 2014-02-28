@@ -97,7 +97,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                                thisView.getNextQuestion();
                             });
 
-                        
+
                             //If this is the last question, take away the next button
                             if(thisModel.get('cr') == 1) {
                                 thisView.$el.find('#next-question-button').hide();
