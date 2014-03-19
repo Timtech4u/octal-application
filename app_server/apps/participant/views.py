@@ -47,6 +47,9 @@ def handle_pid(request, pid=0):
     if not p.presurvey:
         return presurveyRedirect(p)
 
+    if not p.postsurvey:
+        return postsurveyRedirect(p)
+
     return HttpResponseRedirect("/")
 
 def presurvey(request):
@@ -58,6 +61,19 @@ def presurvey(request):
         return HttpResponseRedirect("/participant/")
 
     p.presurvey = True
+    p.save()
+
+    return HttpResponseRedirect("/")
+
+def postsurvey(request):
+    p = None
+    if requeset.user.is_authenticated():
+        p = getParticipantByUID(request.user.pk)
+
+    if p is None:
+        return HttpResponseRedirect("/participant/")
+
+    p.postsurvey = True
     p.save()
 
     return HttpResponseRedirect("/")

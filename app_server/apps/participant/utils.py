@@ -18,3 +18,6 @@ def getParticipantByPID(p):
 
 def presurveyRedirect(p):
     return HttpResponseRedirect("https://www.surveymonkey.com/s/BLDLBCW?c="+p.pid) 
+
+def postsurveyRedirect(p):
+    return HttpResponseRedirect("https://www.cnn.com/"+p.pid)
