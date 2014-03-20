@@ -1,6 +1,5 @@
 from django.db import models
-
-from apps.user_management.models import Profile
+from django.contrib.auth.models import User
 
 class Participants(models.Model):
     """
@@ -22,6 +21,6 @@ class ParticipantLogins(models.Model):
     Stores information about participants
     A participant might use multiple browsers
     """
-    uprofile = models.OneToOneField(Profile)
+    user = models.OneToOneField(User)
     participant = models.ForeignKey(Participants)
     timestamp = models.DateTimeField(auto_now_add=True)

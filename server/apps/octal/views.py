@@ -1,45 +1,26 @@
 import json
 import requests, csv
 
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.http import HttpResponse
 from lazysignup.decorators import allow_lazy_user
+from django.contrib.auth.models import User
 
 from apps.octal.models import Exercises, Responses, ExerciseAttempts, ExerciseConcepts
 from apps.cserver_comm.cserver_communicator import get_full_graph_json_str, get_id_to_concept_dict
-from apps.user_management.models import Profile
 
 from apps.octal.knowledgeInference import performInference
 from apps.participant.utils import getParticipantByUID
 
 
-def get_octal_app(request):
-    if request.user.is_authenticated():
-        uprof, created = Profile.objects.get_or_create(pk=request.user.pk)
-        lset = set()
-        sset = set()
-        [lset.add(lc.id) for lc in uprof.learned.all()]
-        [sset.add(sc.id) for sc in uprof.starred.all()]
-        concepts = {"concepts": [{"id": uid, "learned": uid in lset, "starred": uid in sset} for uid in lset.union(sset)]}
-    else:
-        concepts = {"concepts": []}
-    return render_to_response("octal-app.html", 
-                              {
-                                "full_graph_skeleton": get_full_graph_json_str(),
-                                "user_data": json.dumps(concepts)
-                              },
-                              context_instance=RequestContext(request))
-
-def fetch_attempt_id(user, p, con, ex):
+def fetch_attempt_id(u, p, con, ex):
     attempt = ExerciseAttempts.objects.filter(participant=p)
-    if not p.isParticipant(): attempt = attempt.filter(uprofile=user)
+    if not p.isParticipant(): attempt = attempt.filter(user=u)
 
     try:
         # try to recycle an unused attempt id
         attempt = attempt.get(exercise=ex, submitted=False)
     except ExerciseAttempts.DoesNotExist:
-        attempt = ExerciseAttempts(uprofile=user, participant=p, 
+        attempt = ExerciseAttempts(user=u, participant=p, 
                                    exercise=ex, concept=con)
         attempt.save()
     return attempt.pk;
@@ -52,7 +33,7 @@ def handle_exercise_request(request, conceptId="", qid=""):
     if conceptId not in concept_dict: 
         return HttpResponse(status=422)
 
-    user, pcreated = Profile.objects.get_or_create(pk=request.user.pk)
+    user, ucreated = User.objects.get_or_create(pk=request.user.pk)
     eCon, ccreated = ExerciseConcepts.objects.get_or_create(conceptId=conceptId,
                                 name=concept_dict[conceptId]['tag'])
     p = getParticipantByUID(request.user.pk)
@@ -66,7 +47,7 @@ def handle_exercise_request(request, conceptId="", qid=""):
                     correct=True)
 
     # we need to differentiate non-participants by their user profile id
-    if not p.isParticipant(): completed = completed.filter(uprofile=user)
+    if not p.isParticipant(): completed = completed.filter(user=user)
     
     completed = completed.values('exercise').distinct()
 
@@ -112,14 +93,14 @@ def handle_exercise_request(request, conceptId="", qid=""):
 
 @allow_lazy_user
 def handle_exercise_attempt(request, attempt="", correct=""):
-    uprof, pc = Profile.objects.get_or_create(pk=request.user.pk)
+    u, pc = User.objects.get_or_create(pk=request.user.pk)
     p = getParticipantByUID(request.user.pk)
 
     # well, this shouldn't happen
     if p is None: return HttpResponse(status=401)
 
     exs = ExerciseAttempts.objects.filter(participant=p).filter(submitted=False)
-    if not p.isParticipant(): exs.filter(uprofile=uprof)
+    if not p.isParticipant(): exs.filter(user=u)
 
     try:
         # only inject attempts if we have not submitted for this attempt
@@ -144,7 +125,7 @@ def handle_exercise_attempt(request, attempt="", correct=""):
         if correctness:
             return HttpResponse()
         else:
-            return HttpResponse(fetch_attempt_id(uprof, p, ex.concept, ex.exercise))
+            return HttpResponse(fetch_attempt_id(u, p, ex.concept, ex.exercise))
             
     else:
         return HttpResponse(status=405)
@@ -152,14 +133,14 @@ def handle_exercise_attempt(request, attempt="", correct=""):
 @allow_lazy_user
 def handle_knowledge_request(request, conceptID=""):
     if request.method == "GET":
-        user, pcreated = Profile.objects.get_or_create(pk=request.user.pk)
+        u, uc = User.objects.get_or_create(pk=request.user.pk)
         p = getParticipantByUID(request.user.pk)
 
         # well, this shouldn't happen
         if p is None: return HttpResponse(status=401)
 
         ex = ExerciseAttempts.objects.filter(participant=p).filter(submitted=True)
-        if not p.isParticipant(): ex = ex.filter(uprofile=user)
+        if not p.isParticipant(): ex = ex.filter(user=u)
         r = [e.get_correctness() for e in ex]
         inferences = performInference(r)
         return HttpResponse(json.dumps(inferences), mimetype='application/json')

@@ -131,29 +131,11 @@ INSTALLED_APPS = (
     'apps.cserver_comm',
     'apps.octal',
     'apps.participant',
-    'haystack',
-    'captcha',
     'south',
     'compressor',
     'lazysignup',
     'reversion',
 )
-
-# apps settings
-CAPTCHA_NOISE_FUNCTIONS = ()
-CAPTCHA_LETTER_ROTATION = (-10,10)
-CAPTCHA_FONT_SIZE = 24
-CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-        'PATH': os.path.join(config.APP_SERVER_SEARCH_INDEX_PATH, 'whoosh_index'),
-    },
-}
-# TODO we may want to eventually switch to queued processing
-# https://github.com/toastdriven/queued_search
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 # context processors
 TEMPLATE_CONTEXT_PROCESSORS = ("django.contrib.auth.context_processors.auth",
@@ -205,8 +187,6 @@ LOGIN_REDIRECT_URL = '/user'
 
 INTERNAL_IPS = ("127.0.0.1",)
 
-CONTENT_SERVER = 'http://'+ str(config.CONTENT_SERVER_IP) + ":" + str(config.CONTENT_SERVER_PORT)
-
-APP_SERVER = 'http://'+ str(config.FRONTEND_SERVER_IP) + ":" + str(config.FRONTEND_SERVER_PORT)
+SERVER = 'http://'+ str(config.SERVER_IP) + ":" + str(config.SERVER_PORT)
 
 from settings_local import *

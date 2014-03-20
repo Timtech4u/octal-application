@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from apps.user_management.models import Profile
 from apps.participant.models import Participants
 
 class ExerciseConcepts(models.Model):
@@ -55,7 +54,7 @@ class ExerciseAttempts(models.Model):
     """
     Store exercise attempts for every user
     """
-    uprofile = models.ForeignKey(Profile)
+    user = models.ForeignKey(User)
     participant = models.ForeignKey(Participants)
     concept = models.ForeignKey(ExerciseConcepts)
     exercise = models.ForeignKey(Exercises)
@@ -65,8 +64,8 @@ class ExerciseAttempts(models.Model):
 
     def __unicode__(self):
         if self.submitted is True:
-            return u'%s %i SUBMITTED %i' % (self.uprofile, self.exercise, self.correct)
-        return u'%s %i NOT SUBMITTED' % (self.uprofile, self.exercise)
+            return u'%s %i SUBMITTED %i' % (self.user.username, self.exercise, self.correct)
+        return u'%s %i NOT SUBMITTED' % (self.user.username, self.exercise)
 
     def get_correctness(self):
         if self.submitted is True:
