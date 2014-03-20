@@ -44,7 +44,10 @@ def handle_pid(request, pid=0):
     redirect = handleSurveys(p)
 
     if redirect is None:
-        redirect = HttpResponseRedirect("/")
+        if STUDY_COMPLETE and p.isParticipant():
+            redirect = HttpResponseRedirect("/participant/complete")
+        else:
+            redirect = HttpResponseRedirect("/")
 
     return redirect
 
