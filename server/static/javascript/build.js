@@ -7,11 +7,9 @@
     underscore: "lib/underscore",
     backbone: "lib/backbone-min",
     d3: "lib/d3",
-    "dagre": "lib/dagre",
     "btouch": "lib/backbone.touch",
     "colorbox": "lib/jquery.colorbox-min",
     "sidr": "lib/jquery.sidr.min",
-    "filesaver": "lib/FileSaver",
     "completely": "lib/complete.ly.1.0.1"
   },
   shim: {
@@ -24,13 +22,7 @@
     colorbox: {
       deps: ["jquery"]
     },
-    filesaver: {
-      exports: "Blob"
-    },
-    dagre: {
-      exports: "dagre"
-    },
-    underscore: {
+   underscore: {
       exports: "_"
     },
     backbone: {

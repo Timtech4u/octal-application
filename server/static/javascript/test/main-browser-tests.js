@@ -7,7 +7,6 @@ require.config({
     underscore: "lib/underscore-min",
     backbone: "lib/backbone-min",
     d3: "lib/d3",
-    "dagre": "lib/dagre",
     "btouch": "lib/backbone.touch",
     "sidr": "lib/jquery.sidr.min",
     "chai": "lib/chai",
@@ -17,9 +16,6 @@ require.config({
   shim: {
     'underscore': {
       exports: '_'
-    },
-    dagre: {
-      exports: "dagre"
     },
     'jquery': {
       exports: '$'
