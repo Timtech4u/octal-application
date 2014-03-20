@@ -5,7 +5,7 @@ from lazysignup.decorators import allow_lazy_user
 
 from apps.participant.models import Participants, ParticipantLogins
 from apps.user_management.models import Profile
-from apps.participant.utils import getParticipantByPID, getParticipantByUID, presurveyRedirect 
+from apps.participant.utils import getParticipantByPID, getParticipantByUID, handleSurveys, participantLogout, STUDY_COMPLETE
 
 @allow_lazy_user
 def landing(request, err=0):
@@ -13,19 +13,16 @@ def landing(request, err=0):
                               {"err":err},
                               context_instance=RequestContext(request))
 
+@allow_lazy_user
+def complete(request):
+    participantLogout(request.user)
+    return render_to_response("octal-complete.html",
+                              context_instance=RequestContext(request))
+
 
 @allow_lazy_user
 def logout(request):
-    p = None
-    if request.user.is_authenticated():
-        p = getParticipantByUID(request.user.pk)
-
-    if p is None:
-        return HttpResponseRedirect("/")
-
-    uprof, created = Profile.objects.get_or_create(pk=request.user.pk)
-
-    ParticipantLogins.objects.filter(participant=p, uprofile=uprof).delete()
+    participantLogout(request.user)
     return HttpResponseRedirect("/")
 
 
@@ -43,14 +40,13 @@ def handle_pid(request, pid=0):
     # remember the participant's lazy signup id to rebuild progress
     ParticipantLogins.objects.get_or_create(participant=p, uprofile=uprof)
 
-    # has the user completed the presurvey yet?
-    if not p.presurvey:
-        return presurveyRedirect(p)
+    # redirect to pre- or post-survey, as appropriate
+    redirect = handleSurveys(p)
 
-    if not p.postsurvey:
-        return postsurveyRedirect(p)
+    if redirect is None:
+        redirect = HttpResponseRedirect("/")
 
-    return HttpResponseRedirect("/")
+    return redirect
 
 def presurvey(request):
     p = None
@@ -66,8 +62,11 @@ def presurvey(request):
     return HttpResponseRedirect("/")
 
 def postsurvey(request):
+    if not STUDY_COMPLETE:
+        return HttpResponseRedirect("/")
+
     p = None
-    if requeset.user.is_authenticated():
+    if request.user.is_authenticated():
         p = getParticipantByUID(request.user.pk)
 
     if p is None:
@@ -76,4 +75,4 @@ def postsurvey(request):
     p.postsurvey = True
     p.save()
 
-    return HttpResponseRedirect("/")
+    return HttpResponseRedirect("/participant/complete")

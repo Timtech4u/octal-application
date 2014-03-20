@@ -7,7 +7,7 @@ from django.template import RequestContext
 
 from apps.cserver_comm.cserver_communicator import get_full_graph_json_str, get_concept_data
 from apps.user_management.models import Profile
-from apps.participant.utils import getParticipantByUID, presurveyRedirect
+from apps.participant.utils import getParticipantByUID, handleSurveys
 
 def get_agfk_app(request):
     concepts = get_user_data(request)
@@ -24,8 +24,8 @@ def get_agfk_app(request):
         return HttpResponseRedirect('/participant/')
 
     # make sure participant completed the presurvey
-    if not p.presurvey:
-        return presurveyRedirect(p)
+    r = handleSurveys(p)
+    if r is not None: return r
 
     return render_to_response("agfk-app.html",{
                               "full_graph_skeleton": get_full_graph_json_str(), 

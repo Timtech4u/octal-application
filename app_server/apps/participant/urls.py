@@ -9,5 +9,6 @@ urlpatterns = patterns('',
                        url(r'^pid/', RedirectView.as_view(url='/participant/1')),
                        url(r'^presurvey$', views.presurvey, name='presurvey'),
                        url(r'^postsurvey$', views.postsurvey, name='postsurvey'),
+                       url(r'^complete$', views.complete, name='complete'),
                        url(r'^logout', views.logout, name='logout'),
                       )
