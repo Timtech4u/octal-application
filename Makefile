@@ -11,32 +11,30 @@ BASE_DIR := $(realpath $(MAKEFILE_DIR)/..)
 LOCAL_DBS_DIR = $(BASE_DIR)/local_dbs
 # custom vars: define names of local database directories
 DJANGO_DB_DIR = django_db
-CONTENT_INDEX_DIR = content_index
-APP_INDEX_DIR = app_index
 # virtual environment directory location
 VENV = $(BASE_DIR)/meta_venv
 VENV_ACTIVATE = $(VENV)/bin/activate
 
 # derived vars
-LOCAL_DBS = $(LOCAL_DBS_DIR)/$(DJANGO_DB_DIR) $(LOCAL_DBS_DIR)/$(CONTENT_INDEX_DIR) $(LOCAL_DBS_DIR)/$(APP_INDEX_DIR)
+LOCAL_DBS = $(LOCAL_DBS_DIR)/$(DJANGO_DB_DIR)
 DJANGO_DB_FILE := $(LOCAL_DBS_DIR)/$(DJANGO_DB_DIR)/django_db.sqlite
 CONTENT_DIR = $(BASE_DIR)/octal-content
 
-$(DJANGO_DB_FILE): config.py app_server/settings_local.py $VENV $(LOCAL_DBS) | app_server/static/lib/kmap/* python_path $(CONTENT_DIR)
-	. $(VENV_ACTIVATE); python app_server/manage.py syncdb --noinput
-	. $(VENV_ACTIVATE); python app_server/manage.py migrate
+$(DJANGO_DB_FILE): config.py server/settings_local.py $VENV $(LOCAL_DBS) | server/static/lib/kmap/* python_path $(CONTENT_DIR)
+	. $(VENV_ACTIVATE); python server/manage.py syncdb --noinput
+	. $(VENV_ACTIVATE); python server/manage.py migrate
 
 $(CONTENT_DIR):
 	git clone https://github.com/danallan/octal-content.git $(CONTENT_DIR)
 
-app_server/static/lib/kmap/*:
-	git clone https://github.com/cjrd/kmap.git app_server/static/lib/kmap
+server/static/lib/kmap/*:
+	git clone https://github.com/cjrd/kmap.git server/static/lib/kmap
 
 config.py:
 	cp config-template.py config.py
 
-app_server/settings_local.py:
-	cp app_server/settings_local-template.py app_server/settings_local.py
+server/settings_local.py:
+	cp server/settings_local-template.py server/settings_local.py
 
 # append the meta-app path to the virtual env PYTHONPATH
 python_path: |$VENV
@@ -74,12 +72,12 @@ test: $(VENV_ACTIVATE) | node_modules/mocha-phantomjs
 	./Tests.sh
 
 build_production:
-	cd app_server/static/javascript; node lib/r.js -o build.js
-	$(VENV); python app_server/manage.py collectstatic --noinput
+	cd server/static/javascript; node lib/r.js -o build.js
+	$(VENV); python server/manage.py collectstatic --noinput
 
 update:
 	git pull
-	cd app_server/static/lib/kmap; git pull
+	cd server/static/lib/kmap; git pull
 
 # print the vars used in the makefile
 vars:
