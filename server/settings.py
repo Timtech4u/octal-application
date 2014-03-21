@@ -78,7 +78,8 @@ STATICFILES_DIRS = (
     ('images',os.path.join(CLIENT_SERVER_PATH, 'static/images')),
     ('fonts',os.path.join(CLIENT_SERVER_PATH, 'static/fonts')),
     ('javascript',os.path.join(CLIENT_SERVER_PATH, 'static/javascript')),
-    ('lib',os.path.join(CLIENT_SERVER_PATH, 'static/lib'))
+    ('lib',os.path.join(CLIENT_SERVER_PATH, 'static/lib')),
+    ('khan','/Users/dan/Dropbox/Documents/School/octal/repos/kmap')
 )
 
 # List of finder classes that know how to find static files in

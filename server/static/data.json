@@ -36,7 +36,7 @@
   },
   {
     id: "midterm",
-    title: "Midterm"
+    title: "Midterm",
     deps: ["algorithmic_complexity", "fractals", "concurrency"]
   },
   {
@@ -46,7 +46,7 @@
   },
   {
     id: "tree_recursion",
-    title: "Tree Recursion"
+    title: "Tree Recursion",
     deps: ["functions"]
   },
   {
@@ -58,6 +58,5 @@
     id: "variables",
     title: "Variables",
     deps: []
-  },
-
+  }
 ]

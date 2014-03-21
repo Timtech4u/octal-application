@@ -11,12 +11,6 @@
 {% block extra-css %}
 <link rel="stylesheet" href="{% static "css/lib/kmapcss/graph.css" %}"/>
 <link rel="stylesheet" href="{% static "css/lib/kmapcss/list.css" %}"/>
-<link rel="stylesheet" href="{% static "css/apptools.css" %}" />
-<link rel="stylesheet" href="{% static "css/explore-learn.css" %}"/>
-<link rel="stylesheet" href="{% static "css/concept-list.css" %}"/>
-<link rel="stylesheet" href="{% static "css/concept-details.css" %}"/>
-<link rel="stylesheet" href="{% static "css/explore-graph.css" %}"/>
-<link rel="stylesheet" href="{% static "css/lib/ionicons.css" %}"/>
 <link rel="stylesheet" href="{% static "css/quiz.css" %}" />
 
 {% endblock %}
@@ -25,20 +19,17 @@
 
 <div id="main-display-view">
   <div id="quiz-view-wrapper">
+    Loading, please wait.
   </div>
 </div>
 {% include "quiz-view.html" %}
 
-    <script>
-      var el = document.getElementById("nojs-content");
-      el.parentElement.removeChild(el);
-    </script>
 {% endblock %}
 
   {% block jscript %}
     <script>
       window.agfkGlobals = {};
-      agfkGlobals.userInitData = {{ user_data|safe }};
+      //agfkGlobals.userInitData = {{ user_data|safe }};
       agfkGlobals.auxData = {{ full_graph_skeleton|safe }};
       agfkGlobals.auxModel = null; // init in main js app
       agfkGlobals.linear = {{ user_display }};

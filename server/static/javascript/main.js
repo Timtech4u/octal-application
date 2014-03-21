@@ -12,6 +12,7 @@ requirejs.config({
     underscore: "lib/underscore",
     backbone: "lib/backbone-min",
     d3: "lib/d3",
+    "dagre": "lib/dagre",
     "btouch": "lib/backbone.touch",
     "colorbox": "lib/jquery.colorbox-min",
     "sidr": "lib/jquery.sidr.min",
@@ -23,6 +24,9 @@ requirejs.config({
     },
     d3: {
       exports: "d3"
+    },
+    dagre: {
+      exports: "dagre"
     },
     colorbox: {
       deps: ["jquery"]
@@ -63,7 +67,7 @@ if (window.PRODUCTION){
 }
 
 // agfk app & gen-utils
-requirejs(["backbone", "utils/utils", "agfk/routers/router", "gc/routers/router", "gen-utils","agfk/models/aux-model", "jquery", "btouch", "sidr", "colorbox"], function(Backbone, Utils, AppRouter, GCRouter, GenPageUtils, AuxModel, $){
+requirejs(["backbone", "utils/utils", "agfk/routers/router", "gen-utils","agfk/models/aux-model", "jquery", "btouch", "sidr", "colorbox"], function(Backbone, Utils, AppRouter, GenPageUtils, AuxModel, $){
   "use strict";
 
   // handle noscript content
@@ -105,13 +109,7 @@ requirejs(["backbone", "utils/utils", "agfk/routers/router", "gc/routers/router"
     }
   });
 
-  var appRouter;
-  // start the appropriate router
-  // FIXME hardcoded hack
-  if (window.location.pathname.split("/").pop() === "new"){
-    appRouter = new GCRouter();
-  } else {
-    appRouter = new AppRouter();  }
+  var appRouter = new AppRouter();
   Backbone.history.start();
 
 });
