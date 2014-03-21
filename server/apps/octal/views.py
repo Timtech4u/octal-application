@@ -6,11 +6,12 @@ from lazysignup.decorators import allow_lazy_user
 from django.contrib.auth.models import User
 
 from apps.octal.models import Exercises, Responses, ExerciseAttempts, ExerciseConcepts
-from apps.cserver_comm.cserver_communicator import get_full_graph_json_str, get_id_to_concept_dict
 
 from apps.octal.knowledgeInference import performInference
 from apps.participant.utils import getParticipantByUID
 
+def get_id_to_concept_dict():
+    return {}
 
 def fetch_attempt_id(u, p, con, ex):
     attempt = ExerciseAttempts.objects.filter(participant=p)

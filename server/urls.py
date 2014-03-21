@@ -6,7 +6,7 @@ from django.contrib import admin
 from django.views.decorators.cache import cache_page
 from django.views.generic.base import TemplateView, RedirectView
 
-from views import OctalView, ContactView
+from views import OctalView
 
 admin.autodiscover()
 

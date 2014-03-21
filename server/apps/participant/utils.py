@@ -1,13 +1,13 @@
-from apps.user_management.models import Profile
 from apps.participant.models import Participants, ParticipantLogins
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.models import User
 
 STUDY_COMPLETE = True
 
 def getParticipantByUID(uid):
-    uprof, created = Profile.objects.get_or_create(pk=uid)
+    u, created = User.objects.get_or_create(pk=uid)
     try:
-        p = ParticipantLogins.objects.filter(uprofile=uprof).get()
+        p = ParticipantLogins.objects.filter(user=u).get()
     except ParticipantLogins.DoesNotExist:
         return None
     return p.participant 
@@ -26,8 +26,8 @@ def participantLogout(user):
     if p is None:
         return False
 
-    uprof, created = Profile.objects.get_or_create(pk=user.pk)
-    ParticipantLogins.objects.filter(participant=p, uprofile=uprof).delete()
+    u, created = User.objects.get_or_create(pk=user.pk)
+    ParticipantLogins.objects.filter(participant=p, user=u).delete()
     return True
 
 def presurveyRedirect(p):

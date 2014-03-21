@@ -55,10 +55,8 @@
     {% block hackscript %}
     <script type="text/javascript">
       // current hack for multiple development environments will change for server
-      window.CONTENT_SERVER = "{{ content_server }}";
       window.STATIC_PATH = "{% static "" %}";
-      window.GRAPH_CONCEPT_PATH = "{% url 'graphs:concepts' %}";
-      window.PRODUCTION = window.location.href.match('metacademy') !== null;
+      window.PRODUCTION = window.location.href.match('octal.danallan.net') !== null;
       window.CSRF_TOKEN = "{{ csrf_token }}";
     </script>
     {% endblock %}
@@ -93,58 +91,6 @@
     {% endblock %}
 
     {% block body %}
-    <!--
-    <div class="header-pull-right header-menu" id="header">
-      {% block header-search %}
-      <div id="meta-heading-search" class="header-title"> <a class="home-nav" href="/" target="_self"><span class="meta-home-link">&nbsp;</span></a> <input type="text" id="header-search-input" class="searchbox" placeholder="search" value="{% block search-text %}{% endblock %}" autocapitalize="off" tabindex="1"> </div>
-      {% endblock %}
-      <ul>
-        <li>
-          <a href="/list" target="_self">Concept list</a>
-        </li>
-        <li>
-          <a href="/roadmaps" target="_self">Roadmap list</a>
-        </li>
-        <li>
-          <a href="/feedback" target="_self">Feedback/Questions</a>
-        </li>
-        <li>
-          <a href="/about" target="_self">About</a>
-        </li>
-        {% if user.is_authenticated and not user|is_lazy_user %}
-        <li>
-          <a target="_self" href="{% url 'user:user_main' %}" class="heleft">{{ user.username }}</a>
-        </li>
-
-        <li class="join-line">
-          &#124;
-        </li>
-
-        <li>
-          <a target="_self" href="{% url 'user:logout' %}" class="heright">Sign out</a>
-        </li>
-
-        {% else %}
-        <li>
-          <a target="_self" href="{% url 'user:login' %}" class="heleft">Sign in</a>
-        </li>
-
-        <li class="join-line">
-          &#124;
-        </li>
-
-        <li>
-          <a target="_self" href="{% url 'user:register' %}" class="heright">Sign up</a>
-        </li>
-        {% endif %}
-      </ul>
-
-      <div id="mobile-header">
-        <button id="responsive-menu-button">Menu</button>
-      </div>
-    </div>
-    -->
-
     <div id="main">
       {% block main %}
 

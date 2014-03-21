@@ -1,9 +1,7 @@
 {% extends "octal.html" %}
 {% load staticfiles %}
-{% load std_extras %}
-
 {% block meta-description %}
-    <meta name="description" content="{{ concept_data.title}}: {{concept_data.summary|shorten_to_sentence}}">
+    <meta name="description" content="{{ concept_data.title}}: {{concept_data.summary}}">
 {% endblock %}
 
 {% block targetblank %}
@@ -24,10 +22,6 @@
 {% endblock %}
 
 {% block main %}
-
-<div id="nojs-content">
-  {% include "concept-presentation.html" %}
-</div>
 
 <div id="main-display-view">
   <div id="quiz-view-wrapper">

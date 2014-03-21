@@ -11,6 +11,8 @@ from apps.participant.utils import getParticipantByUID, handleSurveys
 
 from forms import ContactForm
 
+def get_full_graph_json_str():
+    return '[{id:"algorithmic_complexity",title:"Algorithmic Complexity",deps:["lists","tail_recursion","tree_recursion"]},{id:"concurrency",title:"Concurrency",deps:["functions"]},{id:"conditionals",title:"Conditionals",deps:["variables"]},{id:"fractals",title:"Fractals",deps:["tree_recursion","tail_recursion"]},{id:"functions",title:"Functions",deps:["variables"]},{id:"lists",title:"Lists",deps:["loops"]},{id:"loops",title:"Loops",deps:["variable_mutation","conditionals"]},{id:"midterm",title:"Midterm"deps:["algorithmic_complexity","fractals","concurrency"]},{id:"tail_recursion",title:"Tail Recursion",deps:["functions"]},{id:"tree_recursion",title:"Tree Recursion"deps:["functions"]},{id:"variable_mutation",title:"Variable Mutation",deps:["variables"]},{id:"variables",title:"Variables",deps:[]},]'
 
 def OctalView(request):
     concept_tag = request.path.split("/")[-1].split("#")[0]
@@ -34,16 +36,3 @@ def OctalView(request):
                               "pid": int(p.pid),
                               }, context_instance=RequestContext(request))
 
-"""
-Main application views that do not nicely fit into an app, i.e. because they span
-multiple apps or are app agnostic
-"""
-
-class ContactView(FormView):
-    template_name = 'feedback.html'
-    form_class = ContactForm
-    success_url = '/thanks'
-
-    def form_valid(self, form):
-        form.send_email()
-        return super(ContactView, self).form_valid(form)
