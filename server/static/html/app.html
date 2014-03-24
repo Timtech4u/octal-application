@@ -1,0 +1,47 @@
+{% extends "octal.html" %}
+{% load staticfiles %}
+{% block meta-description %}
+    <meta name="description" content="{{ concept_data.title}}: {{concept_data.summary}}">
+{% endblock %}
+
+{% block targetblank %}
+<base target="_blank">
+{% endblock %}
+
+{% block extra-css %}
+<link rel="stylesheet" href="{% static "css/lib/kmapcss/graph.css" %}"/>
+<link rel="stylesheet" href="{% static "css/lib/kmapcss/list.css" %}"/>
+<link rel="stylesheet" href="{% static "css/quiz.css" %}" />
+
+{% endblock %}
+
+{% block main %}
+
+<div id="main-display-view">
+  <div id="quiz-view-wrapper">
+    Loading, please wait.
+  </div>
+  <div id="graph-view-wrapper">
+  </div>
+</div>
+{% include "quiz-view.html" %}
+
+{% endblock %}
+
+  {% block jscript %}
+    <script>
+      window.agfkGlobals = {};
+      //agfkGlobals.userInitData = {{ user_data|safe }};
+      agfkGlobals.auxData = {{ full_graph_skeleton|safe }};
+      agfkGlobals.auxModel = null; // init in main js app
+      agfkGlobals.linear = {{ user_display }};
+      agfkGlobals.pid = {{ pid }};
+      agfkGlobals.csrftoken = '{{ csrf_token }}';
+    </script>
+  {% if 1 %}
+  <script data-main="{% static "javascript/main.js" %}" type="text/javascript" src="{% static "javascript/lib/require-min.js" %}"></script>
+  {% else %}
+  <script  src="{% static "javascript/lib/require-min.js" %}"></script>
+  <script src="{% static "javascript/main-built.js" %}"></script>
+  {% endif %}
+  {% endblock %}
