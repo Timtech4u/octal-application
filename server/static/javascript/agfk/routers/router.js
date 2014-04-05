@@ -32,7 +32,10 @@ define(["backbone", "jquery", "agfk/models/quiz-model", "agfk/views/quiz-view", 
 						$("#quiz-view-wrapper").html(thisRoute.qview.$el).show();
                         $("#graph-view-wrapper").html(thisRoute.graphView.$el).show();
 
-				}
+				},
+                changeUrlParams: function(paramsObj) {
+                    this.navigate("/concepts/" + paramsObj.focus, true);
+                }
 		});
 
 });
