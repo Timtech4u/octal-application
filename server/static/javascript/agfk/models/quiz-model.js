@@ -21,12 +21,25 @@ define(["backbone", "underscore"], function(Backbone) {
 						this.on('change:a', function(){
 								console.log('- the answer value for this model has been changed');
 						});
-				}
+				},
+                getNextQuestion: function(conceptName) {
+
+                         $.ajax({
+                                url: "/octal/exercise/" + sid + "/" + thisView.model.get('qid'),
+                                async:false
+                            }).done(function(data) {
+                                thisView.model = new QuestionModel(data);
+                                thisView.model.set("concept", pvt.conceptName);
+                            });
+                            pvt.newQuestion = true;
+                            pvt.correct = false;
+                            this.render();
+                    },
 				
 		});
 		var QuestionCollection = Backbone.Collection.extend({
-				model: QuestionModel
-
+				model: QuestionModel,
+                url:"../api/questions"
 		});
 		return QuestionModel;
 });

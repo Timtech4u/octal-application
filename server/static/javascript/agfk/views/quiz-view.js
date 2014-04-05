@@ -20,15 +20,12 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
             pvt.knownConcepts = [];
             pvt.graphRendered = false;
             pvt.newQuestion = true;
-            pvt.conceptName = window.location.href.split('/').pop().split('#').shift();
             pvt.correct = false;
 
 
             var ans = "";
 
             return Backbone.View.extend({
-
-                    concept: pvt.conceptName,
 
                     template: _.template(document.getElementById( pvt.viewConsts.templateId).innerHTML),
 
@@ -61,6 +58,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
 
                             //Remove the underscores for rendering the concept
                             thisModel.set("concept",thisModel.get("concept").replace(/_/g, " "));
+
                             if(pvt.newQuestion) {
                                 ans = thisModel.get("a")[0];
                                 pvt.newQuestion = false;
@@ -71,6 +69,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                                 h.linear = agfkGlobals.linear;
 
                             thisView.$el.html(thisView.template(h));
+   /*
                             if(!agfkGlobals.linear) {
                                 if( !pvt.graphRendered) {
                                     //add graph view as subview to quiz view.  view.
@@ -89,6 +88,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                                     thisView.$el.find('#graph-wrapper').append(pvt.expView.el);
                                 }
                             }
+   */
 
                             thisView.$el.find('#check-answer').click(function() {
                                thisView.submit();
@@ -108,7 +108,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
 
                             pvt.isRendered = true;
 
-                            this.getKnowledgeState();
+                            //this.getKnowledgeState();
                             return this;
 
 
@@ -185,6 +185,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                             //rerender the view TODO: seems kinda wasteful to totally rerender the view rather than the question
 
                     },
+                    //TODO: Move this to the question model
                     getNextQuestion: function() {
                          pvt.conceptName = window.location.href.split('/').pop().split('#').pop().split('&').shift().split('=').pop();
                          var sid = agfkGlobals.auxModel.get('nodes').get(pvt.conceptName).get('sid');

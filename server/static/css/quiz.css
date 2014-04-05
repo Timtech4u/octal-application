@@ -1,4 +1,4 @@
-.quiz {
+#quiz-view-wrapper {
     text-align:left;
     position:absolute;
     #border:1px solid black;
@@ -54,7 +54,7 @@ p {
     text-transform:capitalize;
 }
 
-#graph-wrapper {
+#graph-view-wrapper {
     position:absolute;
     z-index: 1;
     width:71%;
