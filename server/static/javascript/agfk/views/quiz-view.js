@@ -16,7 +16,6 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                     unknownColor: "#FA3333"
             };
             pvt.isRendered = false;
-            pvt.expView;
             pvt.knownConcepts = [];
             pvt.graphRendered = false;
             pvt.newQuestion = true;
@@ -57,7 +56,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                             }
 
                             //Remove the underscores for rendering the concept
-                            thisModel.set("concept",thisModel.get("concept").replace(/_/g, " "));
+                            thisModel.set("title",thisModel.get("concept").replace(/_/g, " "));
 
                             if(pvt.newQuestion) {
                                 ans = thisModel.get("a")[0];
@@ -148,6 +147,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                                     // these HTTP methods do not require CSRF protection
                                     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
                                 }
+
                                 $.ajaxSetup({
                                     crossDomain: false, // obviates need for sameOrigin test
                                     beforeSend: function(xhr, settings) {
@@ -185,13 +185,13 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                             //rerender the view TODO: seems kinda wasteful to totally rerender the view rather than the question
 
                     },
-                    //TODO: Move this to the question model
+
                     getNextQuestion: function() {
-                         pvt.conceptName = window.location.href.split('/').pop().split('#').pop().split('&').shift().split('=').pop();
-                         var sid = agfkGlobals.auxModel.get('nodes').get(pvt.conceptName).get('sid');
+                         pvt.conceptName = this.model.get("concept");
+                         var thisView = this;
 
                          $.ajax({
-                                url: "/octal/exercise/" + sid + "/" + thisView.model.get('qid'),
+                                url: "/octal/exercise/" + pvt.conceptName + "/" + thisView.model.get('qid'),
                                 async:false
                             }).done(function(data) {
                                 thisView.model = new QuestionModel(data);
