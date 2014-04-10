@@ -12,8 +12,8 @@ from apps.participant.utils import getParticipantByUID, handleSurveys
 from forms import ContactForm
 
 def get_full_graph_json_str():
-    return '[{id:"algorithmic_complexity",title:"Algorithmic Complexity",deps:["lists","tail_recursion","tree_recursion"]},{id:"concurrency",title:"Concurrency",deps:["functions"]},{id:"conditionals",title:"Conditionals",deps:["variables"]},{id:"fractals",title:"Fractals",deps:["tree_recursion","tail_recursion"]},{id:"functions",title:"Functions",deps:["variables"]},{id:"lists",title:"Lists",deps:["loops"]},{id:"loops",title:"Loops",deps:["variable_mutation","conditionals"]},{id:"midterm",title:"Midterm",deps:["algorithmic_complexity","fractals","concurrency"]},{id:"tail_recursion",title:"Tail Recursion",deps:["functions"]},{id:"tree_recursion",title:"Tree Recursion",deps:["functions"]},{id:"variable_mutation",title:"Variable Mutation",deps:["variables"]},{id:"variables",title:"Variables",deps:[]}]'
-
+    #return '[{id:"algorithmic_complexity",title:"Algorithmic Complexity",dependencies:["lists","tail_recursion","tree_recursion"]},{id:"concurrency",title:"Concurrency",dependencies:["functions"]},{id:"conditionals",title:"Conditionals",dependencies:["variables"]},{id:"fractals",title:"Fractals",dependencies:["tree_recursion","tail_recursion"]},{id:"functions",title:"Functions",dependencies:["variables"]},{id:"lists",title:"Lists",dependencies:["loops"]},{id:"loops",title:"Loops",dependencies:["variable_mutation","conditionals"]},{id:"midterm",title:"Midterm",dependencies:["algorithmic_complexity","fractals","concurrency"]},{id:"tail_recursion",title:"Tail Recursion",dependencies:["functions"]},{id:"tree_recursion",title:"Tree Recursion",dependencies:["functions"]},{id:"variable_mutation",title:"Variable Mutation",dependencies:["variables"]},{id:"variables",title:"Variables",dependencies:[]}]'
+    return '[{id:"algorithmic_complexity",title:"Algorithmic Complexity",dependencies:[]}]'
 def OctalView(request):
     concept_tag = request.path.split("/")[-1].split("#")[0]
 

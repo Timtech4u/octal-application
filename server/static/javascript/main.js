@@ -110,6 +110,6 @@ requirejs(["backbone", "utils/utils", "agfk/routers/router", "gen-utils","agfk/m
   });
 
   var appRouter = new AppRouter();
-  Backbone.history.start();
+  Backbone.history.start({ pushState:true} );
 
 });
