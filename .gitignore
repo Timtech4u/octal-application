@@ -38,6 +38,7 @@ nosetests.xml
 tmp
 *~
 \#*\#
+*.swp
 
 # Mac
 .DS_Store
