@@ -4,6 +4,8 @@ import pdb
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
+from content_server import database
+import config
 
 from os import system
 
@@ -12,8 +14,10 @@ from apps.participant.utils import getParticipantByUID, handleSurveys
 from forms import ContactForm
 
 def get_full_graph_json_str():
-    #return '[{id:"algorithmic_complexity",title:"Algorithmic Complexity",dependencies:["lists","tail_recursion","tree_recursion"]},{id:"concurrency",title:"Concurrency",dependencies:["functions"]},{id:"conditionals",title:"Conditionals",dependencies:["variables"]},{id:"fractals",title:"Fractals",dependencies:["tree_recursion","tail_recursion"]},{id:"functions",title:"Functions",dependencies:["variables"]},{id:"lists",title:"Lists",dependencies:["loops"]},{id:"loops",title:"Loops",dependencies:["variable_mutation","conditionals"]},{id:"midterm",title:"Midterm",dependencies:["algorithmic_complexity","fractals","concurrency"]},{id:"tail_recursion",title:"Tail Recursion",dependencies:["functions"]},{id:"tree_recursion",title:"Tree Recursion",dependencies:["functions"]},{id:"variable_mutation",title:"Variable Mutation",dependencies:["variables"]},{id:"variables",title:"Variables",dependencies:[]}]'
-    return '[{id:"algorithmic_complexity",title:"Algorithmic Complexity",dependencies:[]}]'
+    #db = database.Database.load(config.CONTENT_PATH)
+    #return db.full_graph_json()
+    return '[{"id":"algorithmic_complexity","title":"AlgorithmicComplexity","dependencies":[{"source":"lists"},{"source":"tail_recursion"},{"source":"tree_recursion"}]},{"id":"concurrency","title":"Concurrency","dependencies":[{"source":"functions"}]},{"id":"conditionals","title":"Conditionals","dependencies":[{"source":"variables"}]},{"id":"fractals","title":"Fractals","dependencies":[{"source":"tree_recursion"},{"source":"tail_recursion"}]},{"id":"functions","title":"Functions","dependencies":[{"source":"variables"}]},{"id":"lists","title":"Lists","dependencies":[{"source":"loops"}]},{"id":"loops","title":"Loops","dependencies":[{"source":"variable_mutation"},{"source":"conditionals"}]},{"id":"midterm","title":"Midterm","dependencies":[{"source":"algorithmic_complexity"},{"source":"fractals"},{"source":"concurrency"}]},{"id":"tail_recursion","title":"TailRecursion","dependencies":[{"source":"functions"}]},{"id":"tree_recursion","title":"TreeRecursion","dependencies":[{"source":"functions"}]},{"id":"variable_mutation","title":"VariableMutation","dependencies":[{"source":"variables"}]},{"id":"variables","title":"Variables","dependencies":[]}]'
+    #return '[{id:"algorithmic_complexity",title:"Algorithmic Complexity",dependencies:[]}]'
 def OctalView(request):
     concept_tag = request.path.split("/")[-1].split("#")[0]
 

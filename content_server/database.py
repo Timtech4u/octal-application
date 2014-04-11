@@ -83,9 +83,9 @@ class Database:
     def full_graph_json(self):
         def format_dep(dep, node):
             if isinstance(node, concepts.Shortcut):
-                return {'from_tag': dep.tag, 'to_tag': node.concept.tag, 'shortcut': dep.shortcut}
+                return {'source': dep.tag, 'to_tag': node.concept.tag, 'shortcut': dep.shortcut}
             else:
-                return {'from_tag': dep.tag, 'to_tag': node.tag, 'shortcut': dep.shortcut}
+                return {'source': dep.tag, 'to_tag': node.tag, 'shortcut': dep.shortcut}
 
         nodes = []
         for tag, node in self.nodes.items():
