@@ -2,7 +2,7 @@ import os
 
 import formats
 import graphs
-
+import database
 import config
 
 
@@ -17,14 +17,15 @@ def generate_full_graph(path, outp_title):
     svg_file = '%s.svg' % outp_title
     json_file = '%s.json' % outp_title
     
-    nodes = formats.read_nodes(path)
+    nodes = database.read_nodes(path)
     nodes = graphs.remove_missing_links(nodes)
     graph = graphs.Graph.from_node_dependencies(nodes)
 
-    formats.write_graph_dot(nodes, graph, open(dot_file, 'w'))
+    #formats.write_graph_dot(nodes, graph, open(dot_file, 'w'))
     os.system('dot -Tsvg %s -o %s' % (dot_file, svg_file))
+    #formats.write_graph_json(nodes, graph, open(json_file, 'w'))
     formats.write_graph_json(nodes, graph, open(json_file, 'w'))
-
+    return graph;
         
 
 def visualize_related_nodes(path, tag, outp_title):

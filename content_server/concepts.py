@@ -27,9 +27,9 @@ def compute_outlinks(tag, db):
                 reason = d.reason
 
         if reason:
-            result.append({'from_tag': tag, 'to_tag': t, 'reason': reason})
+            result.append({'source': tag, 'to_tag': t, 'reason': reason})
         else:
-            result.append({'from_tag': tag, 'to_tag': t})
+            result.append({'source': tag, 'to_tag': t})
 
     return result
     
@@ -64,7 +64,7 @@ class Concept:
         
         outlinks = compute_outlinks(self.tag, db)
 
-        dependencies = [{'from_tag': dep.tag, 'to_tag': self.tag, 'reason': dep.reason}
+        dependencies = [{'source': dep.tag, 'source': self.tag, 'reason': dep.reason}
                         for dep in self.dependencies]
 
         pointers = [p.json_repr(db.nodes) for p in self.pointers]
@@ -125,7 +125,7 @@ class Shortcut:
         
         outlinks = compute_outlinks(self.concept.tag, db)
 
-        dependencies = [{'from_tag': dep.tag, 'to_tag': self.concept.tag, 'reason': dep.reason}
+        dependencies = [{'source': dep.tag, 'to_tag': self.concept.tag, 'reason': dep.reason}
                         for dep in self.dependencies]
 
         pointers = [p.json_repr(db.nodes) for p in self.concept.pointers]

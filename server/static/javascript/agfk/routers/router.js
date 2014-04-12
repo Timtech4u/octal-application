@@ -9,11 +9,12 @@ define(["backbone", "jquery", "agfk/models/quiz-model", "agfk/views/quiz-view", 
         },
 
         routes: {
-                "":"showError",
-                "concepts/:concept": "showQuiz"
+                "concepts/:concept": "showQuiz",
+                "*path": "showError"
         },
 
         showError: function() {
+              $('#quiz-view-wrapper').html("<p>Sorry!  We don't recognize the URL you have entered!</p>");
               console.log("you must specify a concept");
         },
 
@@ -31,16 +32,21 @@ define(["backbone", "jquery", "agfk/models/quiz-model", "agfk/views/quiz-view", 
                     console.log(e);
                 }
 
+
+
                 //Initialize the graph model and view if they have not been initialized yet
                 if(!thisRoute.graphModel) {
                     thisRoute.graphModel = new GraphModel();
                 }
-                if(!thisRoute.graphView) {
-                thisRoute.graphView = new GraphView({model: thisRoute.graphModel, appRouter: thisRoute, includeShortestOutlink: true });
-                thisRoute.graphModel.addJsonNodesToGraph(agfkGlobals.auxData);
 
-                thisRoute.graphView.optimizeGraphPlacement(false, false);
-                thisRoute.graphView.render();
+
+
+                if(!thisRoute.graphView) {
+                    thisRoute.graphView = new GraphView({model: thisRoute.graphModel, appRouter: thisRoute, includeShortestOutlink: true });
+                    thisRoute.graphModel.addJsonNodesToGraph(agfkGlobals.auxData);
+
+                    thisRoute.graphView.optimizeGraphPlacement(false, false);
+                    thisRoute.graphView.render();
                 }
 
                 $("#quiz-view-wrapper").html(thisRoute.qview.$el).show();
