@@ -34,7 +34,7 @@ def handle_exercise_request(request, graphId="", conceptId="", qid=""):
         return HttpResponse(status=422)
 
     try:
-        eCon = graph.concepts.get(conceptId=conceptId)
+        eCon = Concepts.objects.get(graph=graph, conceptId=conceptId)
     except Concepts.DoesNotExist:
         return HttpResponse(status=422)
 
@@ -165,18 +165,20 @@ def build_graph(request):
         return HttpResponse("Error: %s" % e.value)
 
     # graph checks out, let's insert it
-    graph,c = Graph.objects.get_or_create(pk=0)
+    graph, new = Graph.objects.get_or_create(pk=0)
+
+    if not new: graph.concepts_set.all().delete()
 
     def _build(cid):
         if "db" in concepts[cid]: return concepts[cid]["db"]
-        db = Concepts(conceptId=cid, name=concepts[cid]["name"])
+        db = Concepts(graph=graph, conceptId=cid, name=concepts[cid]["name"])
         db.save()
         for depid in concepts[cid]["deps"]:
             db.dependencies.add(_build(depid))
         concepts[cid]["db"] = db
         return db
 
-    for c in concepts: graph.concepts.add(_build(c))
+    for c in concepts: _build(c)
 
     return HttpResponse("successful: %s" % graph)
 
@@ -187,11 +189,11 @@ def build_exercise_db(request, graphId=""):
     except Graph.DoesNotExist:
         return HttpResponse(status=422)
 
-    graph_concepts = graph.concepts.all()
+    graph_concepts = graph.concepts_set.all()
     concepts = {}
     for c in graph_concepts:
         cid = c.conceptId
-        concepts[cid],t = Concepts.objects.get(conceptId=cid)
+        concepts[cid] = Concepts.objects.get(conceptId=cid)
 
     gdoc = requests.get('https://docs.google.com/spreadsheet/pub?key=0ApfeFyIuuj_MdF9ZS3hXU0pUN0NnMDVIcHFkTlN6V0E&single=true&gid=0&output=csv')
 

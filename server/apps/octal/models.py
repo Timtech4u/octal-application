@@ -4,22 +4,6 @@ import json
 
 from apps.participant.models import Participants
 
-class Concepts(models.Model):
-    """
-    Skeleton to factor out concepts from exercise attempts
-    """
-    conceptId = models.CharField(max_length=32)
-    name = models.CharField(max_length=100)
-    dependencies = models.ManyToManyField('self', symmetrical=False)
-
-    def __unicode__(self):
-        return self.name
-
-    def _get_title(self):
-        return self.name.encode('ascii')
-    title = property(_get_title)
-
-
 class Graph(models.Model):
     """
     Store the graph in the database.
@@ -30,11 +14,10 @@ class Graph(models.Model):
     http://django-mongodb-engine.readthedocs.org/en/latest/
     """
     name = models.CharField(max_length=100)
-    concepts = models.ManyToManyField(Concepts)
 
     def _adjacency_list(self):
         adj = []
-        for c in self.concepts.all():
+        for c in self.concepts_set.all():
             deps = [{"source": d.conceptId} for d in c.dependencies.all()]
             adj.append({ "id": c.conceptId, "title": c.name, "dependencies": deps })
         return adj
@@ -42,6 +25,24 @@ class Graph(models.Model):
 
     def __unicode__(self):
         return json.dumps(self.flat)
+
+
+class Concepts(models.Model):
+    """
+    Skeleton to factor out concepts from exercise attempts
+    """
+    conceptId = models.CharField(max_length=32)
+    name = models.CharField(max_length=100)
+    dependencies = models.ManyToManyField('self', symmetrical=False)
+    graph = models.ForeignKey(Graph)
+
+    def __unicode__(self):
+        return self.name
+
+    def _get_title(self):
+        return self.name.encode('ascii')
+    title = property(_get_title)
+
 
 
 class Exercises(models.Model):
