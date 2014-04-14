@@ -16,10 +16,9 @@ Django urls handler
 urlpatterns = patterns('',
                        #url(r'^$', RedirectView.as_view(url="/concepts/midterm"), name='start'),
                        #url(r'^$', TemplateView.as_view(template_name="landing.html")),
-                       url(r'^(?i)graph/', include('apps.graph.urls', namespace="graph")),
+                       url(r'^(?i)maps/', include('apps.maps.urls', namespace="maps")),
                        url(r'^(?i)octal/', include('apps.octal.urls', namespace="octal")),
                        url(r'^participant/', include('apps.participant.urls', namespace='part')),
-                       url(r'^(?i)', OctalView, name='graphs'),
 )
 
 urlpatterns += staticfiles_urlpatterns()

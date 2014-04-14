@@ -6,7 +6,7 @@ from lazysignup.decorators import allow_lazy_user
 from django.contrib.auth.models import User
 
 from apps.octal.models import Exercises, Responses, ExerciseAttempts
-from apps.graph.models import Maps, Concepts
+from apps.maps.models import Graphs, Concepts
 
 from apps.octal.knowledgeInference import performInference
 from apps.participant.utils import getParticipantByUID
@@ -29,8 +29,8 @@ def fetch_attempt_id(u, p, con, ex):
 def handle_exercise_request(request, graphId="", conceptId="", qid=""):
     #does the requested concept exist in the graph?
     try:
-        graph = Maps.objects.get(pk=graphId)
-    except Maps.DoesNotExist:
+        graph = Graphs.objects.get(pk=graphId)
+    except Graphs.DoesNotExist:
         return HttpResponse(status=422)
 
     try:
@@ -153,8 +153,8 @@ def handle_knowledge_request(request, conceptID=""):
 def build_exercise_db(request, graphId=""):
     #does the requested concept exist?
     try:
-        graph = Maps.objects.get(pk=graphId)
-    except Maps.DoesNotExist:
+        graph = Graphs.objects.get(pk=graphId)
+    except Graphs.DoesNotExist:
         return HttpResponse(status=422)
 
     graph_concepts = graph.concepts_set.all()
