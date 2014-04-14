@@ -34,7 +34,7 @@ def graphCheck(graph_list):
             raise GraphIntegrityError("one or more dependencies in concept %d missing 'source' key" % index)
 
         cid = c['id']
-        concepts[cid] = { "check": 0, "deps": d, "name": c['title'] }
+        concepts[cid] = { "deps": d, "name": c['title'] }
         check[cid] = 0
         count[cid] = -1
 
@@ -53,9 +53,9 @@ def graphCheck(graph_list):
     # check for cyclic dependencies and report an error if one exists
     for c in concepts: _dfs_fwd_edge(c)
 
-    roots = [c for c in count if count[c] is 0]
-    if len(roots) > 1:
-        raise GraphIntegrityError("Graph contains multiple roots: %s" % ', '.join(roots))
+    roots = [c for c in count if count[c]+len(concepts[c]["deps"]) is 0]
+    if roots:
+        raise GraphIntegrityError("Graph has orphaned concepts: %s" % ', '.join(roots))
 
     return concepts
 
