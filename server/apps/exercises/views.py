@@ -5,10 +5,9 @@ from django.http import HttpResponse
 from lazysignup.decorators import allow_lazy_user
 from django.contrib.auth.models import User
 
-from apps.octal.models import Exercises, Responses, ExerciseAttempts
+from models import Exercises, Responses, ExerciseAttempts
 from apps.maps.models import Graphs, Concepts
 
-from apps.octal.knowledgeInference import performInference
 from apps.participant.utils import getParticipantByUID
 
 def fetch_attempt_id(u, p, con, ex):
@@ -26,10 +25,10 @@ def fetch_attempt_id(u, p, con, ex):
 
 
 @allow_lazy_user
-def handle_exercise_request(request, graphId="", conceptId="", qid=""):
+def fetch_ex(request, gid="", conceptId="", qid=""):
     #does the requested concept exist in the graph?
     try:
-        graph = Graphs.objects.get(pk=graphId)
+        graph = Graphs.objects.get(pk=gid)
     except Graphs.DoesNotExist:
         return HttpResponse(status=422)
 
@@ -95,7 +94,7 @@ def handle_exercise_request(request, graphId="", conceptId="", qid=""):
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
 @allow_lazy_user
-def handle_exercise_attempt(request, attempt="", correct=""):
+def attempt(request, attempt="", correct=""):
     u, pc = User.objects.get_or_create(pk=request.user.pk)
     p = getParticipantByUID(request.user.pk)
 
@@ -133,27 +132,10 @@ def handle_exercise_attempt(request, attempt="", correct=""):
     else:
         return HttpResponse(status=405)
 
-@allow_lazy_user
-def handle_knowledge_request(request, conceptID=""):
-    if request.method == "GET":
-        u, uc = User.objects.get_or_create(pk=request.user.pk)
-        p = getParticipantByUID(request.user.pk)
-
-        # well, this shouldn't happen
-        if p is None: return HttpResponse(status=401)
-
-        ex = ExerciseAttempts.objects.filter(participant=p).filter(submitted=True)
-        if not p.isParticipant(): ex = ex.filter(user=u)
-        r = [e.get_correctness() for e in ex]
-        inferences = performInference(r)
-        return HttpResponse(json.dumps(inferences), mimetype='application/json')
-    else:
-        return HttpResponse(status=405)
-
-def build_exercise_db(request, graphId=""):
+def build(request, gid=""):
     #does the requested concept exist?
     try:
-        graph = Graphs.objects.get(pk=graphId)
+        graph = Graphs.objects.get(pk=gid)
     except Graphs.DoesNotExist:
         return HttpResponse(status=422)
 

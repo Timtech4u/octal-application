@@ -79,7 +79,6 @@ STATICFILES_DIRS = (
     ('fonts',os.path.join(CLIENT_SERVER_PATH, 'static/fonts')),
     ('javascript',os.path.join(CLIENT_SERVER_PATH, 'static/javascript')),
     ('lib',os.path.join(CLIENT_SERVER_PATH, 'static/lib')),
-    ('khan','/Users/dan/Dropbox/Documents/School/octal/repos/kmap')
 )
 
 # List of finder classes that know how to find static files in
@@ -128,7 +127,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'apps.maps',
-    'apps.octal',
+    'apps.exercises',
     'apps.participant',
     'south',
     'compressor',
