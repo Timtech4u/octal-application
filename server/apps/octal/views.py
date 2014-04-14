@@ -5,13 +5,11 @@ from django.http import HttpResponse
 from lazysignup.decorators import allow_lazy_user
 from django.contrib.auth.models import User
 
-from apps.octal.models import Exercises, Responses, ExerciseAttempts, ExerciseConcepts
+from apps.octal.models import Concepts, Graph, Exercises, Responses, ExerciseAttempts
+from apps.octal.utils import graphCheck, GraphIntegrityError
 
 from apps.octal.knowledgeInference import performInference
 from apps.participant.utils import getParticipantByUID
-
-def get_id_to_concept_dict():
-    return {}
 
 def fetch_attempt_id(u, p, con, ex):
     attempt = ExerciseAttempts.objects.filter(participant=p)
@@ -21,22 +19,26 @@ def fetch_attempt_id(u, p, con, ex):
         # try to recycle an unused attempt id
         attempt = attempt.get(exercise=ex, submitted=False)
     except ExerciseAttempts.DoesNotExist:
-        attempt = ExerciseAttempts(user=u, participant=p, 
+        attempt = ExerciseAttempts(user=u, participant=p,
                                    exercise=ex, concept=con)
         attempt.save()
     return attempt.pk;
 
 
 @allow_lazy_user
-def handle_exercise_request(request, conceptId="", qid=""):
-    #does the requested concept exist?
-    concept_dict = get_id_to_concept_dict()
-    if conceptId not in concept_dict: 
+def handle_exercise_request(request, graphId="", conceptId="", qid=""):
+    #does the requested concept exist in the graph?
+    try:
+        graph = Graph.objects.get(pk=graphId)
+    except Graph.DoesNotExist:
+        return HttpResponse(status=422)
+
+    try:
+        eCon = graph.concepts.get(conceptId=conceptId)
+    except Concepts.DoesNotExist:
         return HttpResponse(status=422)
 
     user, ucreated = User.objects.get_or_create(pk=request.user.pk)
-    eCon, ccreated = ExerciseConcepts.objects.get_or_create(conceptId=conceptId,
-                                name=concept_dict[conceptId]['tag'])
     p = getParticipantByUID(request.user.pk)
 
     # well, this shouldn't happen
@@ -148,13 +150,48 @@ def handle_knowledge_request(request, conceptID=""):
     else:
         return HttpResponse(status=405)
 
-def build_exercise_db(request):
-    concept_dict = get_id_to_concept_dict()
+def build_graph(request):
+    graph_json = '[{"id":"algorithmic_complexity","title":"Algorithmic Complexity","dependencies":[{"source":"lists"},{"source":"tail_recursion"},{"source":"tree_recursion"}]},{"id":"concurrency","title":"Concurrency","dependencies":[{"source":"functions"}]},{"id":"conditionals","title":"Conditionals","dependencies":[{"source":"variables"}]},{"id":"fractals","title":"Fractals","dependencies":[{"source":"tree_recursion"},{"source":"tail_recursion"}]},{"id":"functions","title":"Functions","dependencies":[{"source":"variables"}]},{"id":"lists","title":"Lists","dependencies":[{"source":"loops"}]},{"id":"loops","title":"Loops","dependencies":[{"source":"variable_mutation"},{"source":"conditionals"}]},{"id":"midterm","title":"Midterm","dependencies":[{"source":"algorithmic_complexity"},{"source":"fractals"},{"source":"concurrency"}]},{"id":"tail_recursion","title":"Tail Recursion","dependencies":[{"source":"functions"}]},{"id":"tree_recursion","title":"Tree Recursion","dependencies":[{"source":"functions"}]},{"id":"variable_mutation","title":"Variable Mutation","dependencies":[{"source":"variables"}]},{"id":"variables","title":"Variables","dependencies":[]}]'
+
+    # make a list of concepts from the json
+    try:
+        graph_list = json.loads(graph_json)
+    except ValueError:
+        return HttpResponse("Error: malformed JSON")
+
+    try:
+        concepts = graphCheck(graph_list)
+    except GraphIntegrityError as e:
+        return HttpResponse("Error: %s" % e.value)
+
+    # graph checks out, let's insert it
+    graph,c = Graph.objects.get_or_create(pk=0)
+
+    def _build(cid):
+        if "db" in concepts[cid]: return concepts[cid]["db"]
+        db = Concepts(conceptId=cid, name=concepts[cid]["name"])
+        db.save()
+        for depid in concepts[cid]["deps"]:
+            db.dependencies.add(_build(depid))
+        concepts[cid]["db"] = db
+        return db
+
+    for c in concepts: graph.concepts.add(_build(c))
+
+    return HttpResponse("successful: %s" % graph)
+
+def build_exercise_db(request, graphId=""):
+    #does the requested concept exist?
+    try:
+        graph = Graph.objects.get(pk=graphId)
+    except Graph.DoesNotExist:
+        return HttpResponse(status=422)
+
+    graph_concepts = graph.concepts.all()
     concepts = {}
-    for c in concept_dict:
-        tag = concept_dict[c]['tag']
-        concepts[tag],t = ExerciseConcepts.objects.get_or_create(conceptId=c, 
-                                        name=tag)
+    for c in graph_concepts:
+        cid = c.conceptId
+        concepts[cid],t = Concepts.objects.get(conceptId=cid)
 
     gdoc = requests.get('https://docs.google.com/spreadsheet/pub?key=0ApfeFyIuuj_MdF9ZS3hXU0pUN0NnMDVIcHFkTlN6V0E&single=true&gid=0&output=csv')
 

@@ -1,20 +1,47 @@
 from django.db import models
 from django.contrib.auth.models import User
+import json
 
 from apps.participant.models import Participants
 
-class ExerciseConcepts(models.Model):
+class Concepts(models.Model):
     """
     Skeleton to factor out concepts from exercise attempts
     """
-    conceptId = models.CharField(max_length=10, unique=True)
-    name = models.CharField(max_length=100, unique=True)
+    conceptId = models.CharField(max_length=32)
+    name = models.CharField(max_length=100)
+    dependencies = models.ManyToManyField('self', symmetrical=False)
 
     def __unicode__(self):
         return self.name
 
-    def get_tag(self):
+    def _get_title(self):
         return self.name.encode('ascii')
+    title = property(_get_title)
+
+
+class Graph(models.Model):
+    """
+    Store the graph in the database.
+    A NRDBMS like Mongo might be a good choice for this structure.
+    However, as of this writing, Django does not support NRDBM 
+    systems out of the box; it would require using the django-nonrel 
+    fork. I'd rather maintain support for the main django branch at this time.
+    http://django-mongodb-engine.readthedocs.org/en/latest/
+    """
+    name = models.CharField(max_length=100)
+    concepts = models.ManyToManyField(Concepts)
+
+    def _adjacency_list(self):
+        adj = []
+        for c in self.concepts.all():
+            deps = [{"source": d.conceptId} for d in c.dependencies.all()]
+            adj.append({ "id": c.conceptId, "title": c.name, "dependencies": deps })
+        return adj
+    flat = property(_adjacency_list)
+
+    def __unicode__(self):
+        return json.dumps(self.flat)
 
 
 class Exercises(models.Model):
@@ -29,7 +56,7 @@ class Exercises(models.Model):
     )
 
     question = models.TextField()
-    concepts = models.ManyToManyField(ExerciseConcepts)
+    concepts = models.ManyToManyField(Concepts)
     qtype = models.CharField(max_length=1, 
                              choices=EXERCISE_TYPES,
                              default=MULTIPLE)
@@ -56,7 +83,7 @@ class ExerciseAttempts(models.Model):
     """
     user = models.ForeignKey(User)
     participant = models.ForeignKey(Participants)
-    concept = models.ForeignKey(ExerciseConcepts)
+    concept = models.ForeignKey(Concepts)
     exercise = models.ForeignKey(Exercises)
     correct = models.NullBooleanField()
     timestamp = models.DateTimeField(auto_now=True)
