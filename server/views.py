@@ -9,14 +9,14 @@ import config
 from os import system
 
 from apps.participant.utils import getParticipantByUID, handleSurveys
+from apps.octal.models import Graph
 
 from forms import ContactForm
 
-def get_full_graph_json_str():
-    return '[{"id":"algorithmic_complexity","title":"Algorithmic Complexity","dependencies":[{"source":"lists"},{"source":"tail_recursion"},{"source":"tree_recursion"}]},{"id":"concurrency","title":"Concurrency","dependencies":[{"source":"functions"}]},{"id":"conditionals","title":"Conditionals","dependencies":[{"source":"variables"}]},{"id":"fractals","title":"Fractals","dependencies":[{"source":"tree_recursion"},{"source":"tail_recursion"}]},{"id":"functions","title":"Functions","dependencies":[{"source":"variables"}]},{"id":"lists","title":"Lists","dependencies":[{"source":"loops"}]},{"id":"loops","title":"Loops","dependencies":[{"source":"variable_mutation"},{"source":"conditionals"}]},{"id":"midterm","title":"Midterm","dependencies":[{"source":"algorithmic_complexity"},{"source":"fractals"},{"source":"concurrency"}]},{"id":"tail_recursion","title":"Tail Recursion","dependencies":[{"source":"functions"}]},{"id":"tree_recursion","title":"Tree Recursion","dependencies":[{"source":"functions"}]},{"id":"variable_mutation","title":"Variable Mutation","dependencies":[{"source":"variables"}]},{"id":"variables","title":"Variables","dependencies":[]}]'
-
 def OctalView(request):
     concept_tag = request.path.split("/")[-1].split("#")[0]
+
+    graph = Graph.objects.get(pk=0)
 
     #OCTAL experiment: graph linearity based on user id
     p = None
@@ -32,7 +32,7 @@ def OctalView(request):
     if r is not None: return r
 
     return render_to_response("app.html",{
-                              "full_graph_skeleton": get_full_graph_json_str(), 
+                              "full_graph_skeleton": graph, 
                               "user_display": int(p.linear),
                               "pid": int(p.pid),
                               }, context_instance=RequestContext(request))
