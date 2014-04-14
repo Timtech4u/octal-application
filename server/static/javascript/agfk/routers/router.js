@@ -5,8 +5,8 @@ define(["backbone", "jquery", "agfk/models/quiz-model", "agfk/views/quiz-view", 
         initialize: function() {},
         gid: null,
         routes: {
-            "maps/map-:gid(/)": "showIntro",
             "maps/map-:gid/concepts/:concept": "showQuiz",
+            "maps/map-:gid*path": "showIntro",
             "*path": "showError"
         },
 
