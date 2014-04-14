@@ -11,5 +11,4 @@ urlpatterns = patterns('',
                        url(r'^knowledge/([^/]*)$', views.handle_knowledge_request, name='getknowledge'),
                        url(r'^build_exercise_db/(?P<graphId>[^/]*)/', 
                            views.build_exercise_db, name='buildexercises'),
-                       url(r'build_graph/', views.build_graph, name='buildgraph'),
                       )

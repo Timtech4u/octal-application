@@ -6,7 +6,7 @@ class GraphIntegrityError(Exception):
         self.value = value
 
 
-def graphCheck(graph_list):
+def graphCheck(adjacency_list):
     """
     Static method to verify the structure of a string is as expected
     """
@@ -22,7 +22,7 @@ def graphCheck(graph_list):
     expected = ["title", "id", "dependencies"]
 
     # build a dictionary of concepts
-    for index, c in enumerate(graph_list):
+    for index, c in enumerate(adjacency_list):
         # check that this concept contains all expected keys
         if any(key not in c for key in expected):
             raise GraphIntegrityError("missing key (title, id, or dependencies) from concept %d" % index)

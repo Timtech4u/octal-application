@@ -5,8 +5,8 @@ from django.http import HttpResponse
 from lazysignup.decorators import allow_lazy_user
 from django.contrib.auth.models import User
 
-from apps.octal.models import Concepts, Graph, Exercises, Responses, ExerciseAttempts
-from apps.octal.utils import graphCheck, GraphIntegrityError
+from apps.octal.models import Exercises, Responses, ExerciseAttempts
+from apps.graph.models import Maps, Concepts
 
 from apps.octal.knowledgeInference import performInference
 from apps.participant.utils import getParticipantByUID
@@ -29,8 +29,8 @@ def fetch_attempt_id(u, p, con, ex):
 def handle_exercise_request(request, graphId="", conceptId="", qid=""):
     #does the requested concept exist in the graph?
     try:
-        graph = Graph.objects.get(pk=graphId)
-    except Graph.DoesNotExist:
+        graph = Maps.objects.get(pk=graphId)
+    except Maps.DoesNotExist:
         return HttpResponse(status=422)
 
     try:
@@ -150,49 +150,11 @@ def handle_knowledge_request(request, conceptID=""):
     else:
         return HttpResponse(status=405)
 
-def build_graph(request):
-    graph_json = '[{"id":"algorithmic_complexity","title":"Algorithmic Complexity","dependencies":[{"source":"lists"},{"source":"tail_recursion"},{"source":"tree_recursion"}]},{"id":"concurrency","title":"Concurrency","dependencies":[{"source":"functions"}]},{"id":"conditionals","title":"Conditionals","dependencies":[{"source":"variables"}]},{"id":"fractals","title":"Fractals","dependencies":[{"source":"tree_recursion"},{"source":"tail_recursion"}]},{"id":"functions","title":"Functions","dependencies":[{"source":"variables"}]},{"id":"lists","title":"Lists","dependencies":[{"source":"loops"}]},{"id":"loops","title":"Loops","dependencies":[{"source":"variable_mutation"},{"source":"conditionals"}]},{"id":"midterm","title":"Midterm","dependencies":[{"source":"algorithmic_complexity"},{"source":"fractals"},{"source":"concurrency"}]},{"id":"tail_recursion","title":"Tail Recursion","dependencies":[{"source":"functions"}]},{"id":"tree_recursion","title":"Tree Recursion","dependencies":[{"source":"functions"}]},{"id":"variable_mutation","title":"Variable Mutation","dependencies":[{"source":"variables"}]},{"id":"variables","title":"Variables","dependencies":[]}]'
-
-    # cyclic
-    #graph_json = '[{"id":"algorithmic_complexity","title":"Algorithmic Complexity","dependencies":[{"source":"lists"},{"source":"tail_recursion"},{"source":"tree_recursion"}]},{"id":"concurrency","title":"Concurrency","dependencies":[{"source":"functions"}]},{"id":"conditionals","title":"Conditionals","dependencies":[{"source":"variables"}]},{"id":"fractals","title":"Fractals","dependencies":[{"source":"tree_recursion"},{"source":"tail_recursion"}]},{"id":"functions","title":"Functions","dependencies":[{"source":"variables"}]},{"id":"lists","title":"Lists","dependencies":[{"source":"loops"}]},{"id":"loops","title":"Loops","dependencies":[{"source":"variable_mutation"},{"source":"conditionals"}]},{"id":"midterm","title":"Midterm","dependencies":[{"source":"algorithmic_complexity"},{"source":"fractals"},{"source":"concurrency"}]},{"id":"tail_recursion","title":"Tail Recursion","dependencies":[{"source":"functions"}]},{"id":"tree_recursion","title":"Tree Recursion","dependencies":[{"source":"functions"}]},{"id":"variable_mutation","title":"Variable Mutation","dependencies":[{"source":"variables"},{"source":"loops"}]},{"id":"variables","title":"Variables","dependencies":[]}]'
-
-    # orphaned concept
-    #graph_json = '[{"id":"algorithmic_complexity","title":"Algorithmic Complexity","dependencies":[{"source":"lists"},{"source":"tail_recursion"},{"source":"tree_recursion"}]},{"id":"concurrency","title":"Concurrency","dependencies":[{"source":"functions"}]},{"id":"conditionals","title":"Conditionals","dependencies":[{"source":"variables"}]},{"id":"fractals","title":"Fractals","dependencies":[{"source":"tree_recursion"},{"source":"tail_recursion"}]},{"id":"functions","title":"Functions","dependencies":[{"source":"variables"}]},{"id":"lists","title":"Lists","dependencies":[{"source":"loops"}]},{"id":"loops","title":"Loops","dependencies":[{"source":"variable_mutation"},{"source":"conditionals"}]},{"id":"midterm","title":"Midterm","dependencies":[]},{"id":"tail_recursion","title":"Tail Recursion","dependencies":[{"source":"functions"}]},{"id":"tree_recursion","title":"Tree Recursion","dependencies":[{"source":"functions"}]},{"id":"variable_mutation","title":"Variable Mutation","dependencies":[{"source":"variables"}]},{"id":"variables","title":"Variables","dependencies":[]}]'
-
-    # make a list of concepts from the json
-    try:
-        graph_list = json.loads(graph_json)
-    except ValueError:
-        return HttpResponse("Error: malformed JSON")
-
-    try:
-        concepts = graphCheck(graph_list)
-    except GraphIntegrityError as e:
-        return HttpResponse("Error: %s" % e.value)
-
-    # graph checks out, let's insert it
-    graph, new = Graph.objects.get_or_create(pk=0)
-
-    if not new: graph.concepts_set.all().delete()
-
-    def _build(cid):
-        if "db" in concepts[cid]: return concepts[cid]["db"]
-        db = Concepts(graph=graph, conceptId=cid, name=concepts[cid]["name"])
-        db.save()
-        for depid in concepts[cid]["deps"]:
-            db.dependencies.add(_build(depid))
-        concepts[cid]["db"] = db
-        return db
-
-    for c in concepts: _build(c)
-
-    return HttpResponse("successful: %s" % graph)
-
 def build_exercise_db(request, graphId=""):
     #does the requested concept exist?
     try:
-        graph = Graph.objects.get(pk=graphId)
-    except Graph.DoesNotExist:
+        graph = Maps.objects.get(pk=graphId)
+    except Maps.DoesNotExist:
         return HttpResponse(status=422)
 
     graph_concepts = graph.concepts_set.all()

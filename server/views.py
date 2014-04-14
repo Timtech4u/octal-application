@@ -9,14 +9,14 @@ import config
 from os import system
 
 from apps.participant.utils import getParticipantByUID, handleSurveys
-from apps.octal.models import Graph
+from apps.graph.models import Maps
 
 from forms import ContactForm
 
 def OctalView(request):
     concept_tag = request.path.split("/")[-1].split("#")[0]
 
-    graph = Graph.objects.get(pk=0)
+    graph = Maps.objects.get(pk=0)
 
     #OCTAL experiment: graph linearity based on user id
     p = None
