@@ -79,7 +79,6 @@ STATICFILES_DIRS = (
     ('fonts',os.path.join(CLIENT_SERVER_PATH, 'static/fonts')),
     ('javascript',os.path.join(CLIENT_SERVER_PATH, 'static/javascript')),
     ('lib',os.path.join(CLIENT_SERVER_PATH, 'static/lib')),
-    ('khan','/Users/dan/Dropbox/Documents/School/octal/repos/kmap')
 )
 
 # List of finder classes that know how to find static files in
@@ -116,7 +115,6 @@ WSGI_APPLICATION = 'wsgi.application'
 TEMPLATE_DIRS = (
     os.path.join(CLIENT_SERVER_PATH,'static/html/'),
     os.path.join(CLIENT_SERVER_PATH,'static/html/underscore-templates/'),
-    os.path.join(CLIENT_SERVER_PATH,'static/html/content-editing/'),
 )
 
 INSTALLED_APPS = (
@@ -128,9 +126,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    'apps.graph',
-    'apps.cserver_comm',
-    'apps.octal',
+    'apps.maps',
+    'apps.exercises',
     'apps.participant',
     'south',
     'compressor',

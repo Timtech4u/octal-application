@@ -2,20 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from apps.participant.models import Participants
-
-class ExerciseConcepts(models.Model):
-    """
-    Skeleton to factor out concepts from exercise attempts
-    """
-    conceptId = models.CharField(max_length=10, unique=True)
-    name = models.CharField(max_length=100, unique=True)
-
-    def __unicode__(self):
-        return self.name
-
-    def get_tag(self):
-        return self.name.encode('ascii')
-
+from apps.maps.models import Concepts
 
 class Exercises(models.Model):
     """
@@ -29,7 +16,7 @@ class Exercises(models.Model):
     )
 
     question = models.TextField()
-    concepts = models.ManyToManyField(ExerciseConcepts)
+    concepts = models.ManyToManyField(Concepts)
     qtype = models.CharField(max_length=1, 
                              choices=EXERCISE_TYPES,
                              default=MULTIPLE)
@@ -56,7 +43,7 @@ class ExerciseAttempts(models.Model):
     """
     user = models.ForeignKey(User)
     participant = models.ForeignKey(Participants)
-    concept = models.ForeignKey(ExerciseConcepts)
+    concept = models.ForeignKey(Concepts)
     exercise = models.ForeignKey(Exercises)
     correct = models.NullBooleanField()
     timestamp = models.DateTimeField(auto_now=True)

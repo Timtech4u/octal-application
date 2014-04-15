@@ -5,13 +5,10 @@ from django.http import HttpResponse
 from lazysignup.decorators import allow_lazy_user
 from django.contrib.auth.models import User
 
-from apps.octal.models import Exercises, Responses, ExerciseAttempts, ExerciseConcepts
+from models import Exercises, Responses, ExerciseAttempts
+from apps.maps.models import Graphs, Concepts
 
-from apps.octal.knowledgeInference import performInference
 from apps.participant.utils import getParticipantByUID
-
-def get_id_to_concept_dict():
-    return {}
 
 def fetch_attempt_id(u, p, con, ex):
     attempt = ExerciseAttempts.objects.filter(participant=p)
@@ -21,22 +18,26 @@ def fetch_attempt_id(u, p, con, ex):
         # try to recycle an unused attempt id
         attempt = attempt.get(exercise=ex, submitted=False)
     except ExerciseAttempts.DoesNotExist:
-        attempt = ExerciseAttempts(user=u, participant=p, 
+        attempt = ExerciseAttempts(user=u, participant=p,
                                    exercise=ex, concept=con)
         attempt.save()
     return attempt.pk;
 
 
 @allow_lazy_user
-def handle_exercise_request(request, conceptId="", qid=""):
-    #does the requested concept exist?
-    concept_dict = get_id_to_concept_dict()
-    if conceptId not in concept_dict: 
+def fetch_ex(request, gid="", conceptId="", qid=""):
+    #does the requested concept exist in the graph?
+    try:
+        graph = Graphs.objects.get(pk=gid)
+    except Graphs.DoesNotExist:
+        return HttpResponse(status=422)
+
+    try:
+        eCon = Concepts.objects.get(graph=graph, conceptId=conceptId)
+    except Concepts.DoesNotExist:
         return HttpResponse(status=422)
 
     user, ucreated = User.objects.get_or_create(pk=request.user.pk)
-    eCon, ccreated = ExerciseConcepts.objects.get_or_create(conceptId=conceptId,
-                                name=concept_dict[conceptId]['tag'])
     p = getParticipantByUID(request.user.pk)
 
     # well, this shouldn't happen
@@ -93,7 +94,7 @@ def handle_exercise_request(request, conceptId="", qid=""):
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
 @allow_lazy_user
-def handle_exercise_attempt(request, attempt="", correct=""):
+def attempt(request, attempt="", correct=""):
     u, pc = User.objects.get_or_create(pk=request.user.pk)
     p = getParticipantByUID(request.user.pk)
 
@@ -131,30 +132,18 @@ def handle_exercise_attempt(request, attempt="", correct=""):
     else:
         return HttpResponse(status=405)
 
-@allow_lazy_user
-def handle_knowledge_request(request, conceptID=""):
-    if request.method == "GET":
-        u, uc = User.objects.get_or_create(pk=request.user.pk)
-        p = getParticipantByUID(request.user.pk)
+def build(request, gid=""):
+    #does the requested concept exist?
+    try:
+        graph = Graphs.objects.get(pk=gid)
+    except Graphs.DoesNotExist:
+        return HttpResponse(status=422)
 
-        # well, this shouldn't happen
-        if p is None: return HttpResponse(status=401)
-
-        ex = ExerciseAttempts.objects.filter(participant=p).filter(submitted=True)
-        if not p.isParticipant(): ex = ex.filter(user=u)
-        r = [e.get_correctness() for e in ex]
-        inferences = performInference(r)
-        return HttpResponse(json.dumps(inferences), mimetype='application/json')
-    else:
-        return HttpResponse(status=405)
-
-def build_exercise_db(request):
-    concept_dict = get_id_to_concept_dict()
+    graph_concepts = graph.concepts_set.all()
     concepts = {}
-    for c in concept_dict:
-        tag = concept_dict[c]['tag']
-        concepts[tag],t = ExerciseConcepts.objects.get_or_create(conceptId=c, 
-                                        name=tag)
+    for c in graph_concepts:
+        cid = c.conceptId
+        concepts[cid] = Concepts.objects.get(graph=graph, conceptId=cid)
 
     gdoc = requests.get('https://docs.google.com/spreadsheet/pub?key=0ApfeFyIuuj_MdF9ZS3hXU0pUN0NnMDVIcHFkTlN6V0E&single=true&gid=0&output=csv')
 
@@ -174,10 +163,10 @@ def build_exercise_db(request):
         ex.concepts = [concepts[x] for x in e['concepts'].split('|')]
 
         # TODO: fix special case
-        if int(e['qid']) is 0:
-            ex.qtype = ex.SHORT
-            ex.save()
-            continue
+        #if int(e['qid']) is 0:
+            #ex.qtype = ex.SHORT
+            #ex.save()
+            #continue
 
         ex.save()
 
