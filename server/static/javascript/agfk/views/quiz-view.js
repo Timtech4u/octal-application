@@ -6,7 +6,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
         return array;
     }
 
-    var QuizView = (function() {
+    return (function() {
             var pvt = {};
             pvt.viewConsts = {
                     templateId: "quiz-view-template",
@@ -20,7 +20,6 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
             pvt.graphRendered = false;
             pvt.newQuestion = true;
             pvt.correct = false;
-
 
             var ans = "";
 
@@ -45,20 +44,25 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                     var thisView = this;
                     var thisModel = thisView.model;
                     pvt.correct = false;
-                    //Get current concept, compare it to the concept last served by the view
-                    //If they don't match, we need a new question
+
+                    //Get the current concept, compare it to the concept last served by the view
+                    //If they don't match, we need to deal with the new question
                     thisView.concept = thisModel.get('concept');
                     if(pvt.conceptName != thisView.concept) {
-                        pvt.newQuestion = true; //just changed concepts;
+                        pvt.newQuestion = true;
                     }
 
                     //Remove the underscores for rendering the concept
                     thisModel.set("title",thisModel.get("concept").replace(/_/g, " "));
 
+                    //If we are serving a new question, update the correct answer we
+                    //are looking for
                     if(pvt.newQuestion) {
                         ans = thisModel.get("a")[0];
                         pvt.newQuestion = false;
                     }
+
+                    //Shuffle the order of the answer choices and render the view
                     thisModel.set("a", shuffle(thisModel.get("a")));
                     var h = _.clone(thisModel.toJSON());
                     h.pid = agfkGlobals.pid,
@@ -85,16 +89,15 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                         }
                     }
 */
-
+                    //Add some behavior to the check-answer and next question buttons
+                    //TODO: I wonder if there isn't a better way/place to do this
                     thisView.$el.find('#check-answer').click(function() {
                        thisView.submit();
                     });
                     thisView.$el.find('#next-question-button').click(function() {
                        thisView.getNextQuestion();
                     });
-
-
-                    //If this is the last question, take away the next button
+                    //If this is the last question in a concept, take away the next button
                     if(thisModel.get('cr') == 1) {
                         thisView.$el.find('#next-question-button').hide();
                     }
@@ -109,17 +112,18 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                     this.$el.find('#graph-wrapper').append(pvt.expView.el);
                 },
 
-                //If no button selected, returns undefined
+                //Logic dictating attempt submission
                 submit: function() {
                     var thisView = this;
                     var attempt = $("input[type='radio'][name='answer']:checked").val();
-                    if(attempt && !pvt.correct) {
-                        //console.log(ans);
-                        pvt.correct = (ans==attempt) ? 1 : 0;
-                        correctness = pvt.correct;
-                        var aid = thisView.model.get('aid');
-                        //console.log(aid);
 
+                    if(attempt && !pvt.correct) {
+                        //Check client-side if the question answer is correct
+                        pvt.correct = (ans==attempt) ? 1 : 0;
+                        var correctness = pvt.correct;
+                        var aid = thisView.model.get('aid');
+
+                        //If the question is correct, indicate that this is the case
                         if(correctness) {
                             $('#question-feedback').fadeOut(100,function(){$(this).html('Correct!  Great job!').css('color','#46a546').fadeIn()});
                             $('#check-answer').hide();
@@ -153,7 +157,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                         //request to submit an answer
 
                         $.ajax({
-                            url: thisView.options.baseurl + "/exercises/attempt/" + aid + "/" + correctness,
+                            url: thisView.model.getBaseUrl() + "/exercises/attempt/" + aid + "/" + correctness,
                             type: "PUT",
                             async: false,
                             dataType: "text",
@@ -179,7 +183,15 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                 getNextQuestion: function() {
                     pvt.conceptName = this.model.get("concept");
                     var thisView = this;
-
+                    thisView.model.fetch({
+                        success: function(model, response, options) {
+                            pvt.newQuestion = true;
+                            pvt.correct = false;
+                            thisView.model = model;
+                            thisView.render();
+                        }
+                    });
+                    /*)
                     $.ajax({
                         url: thisView.options.baseurl + "/exercises/fetch/" + pvt.conceptName + "/" + thisView.model.get('qid'),
                         async:false
@@ -190,6 +202,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                     pvt.newQuestion = true;
                     pvt.correct = false;
                     this.render();
+                    */
                 },
 
 
@@ -197,7 +210,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                     thisView = this;
 
                     $.ajax({
-                        url: thisView.options.baseurl+"/ki/"
+                        url: thisView.model.getBaseUrl()+"/ki/"
                     }).done(function(data) {
                         pvt.knownConcepts = data;
                         thisView.highlightNodes();
@@ -243,5 +256,4 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
 
     // log reference to a DOM element that corresponds to the view instance
 
-    return QuizView;
 });

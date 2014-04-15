@@ -23,10 +23,21 @@ define(["backbone", "jquery", "agfk/models/quiz-model", "agfk/views/quiz-view", 
 
         showQuiz: function(gid, concept) {
             this.gid = gid;
-            qviewId = pvt.qViewId;
             console.log("you have selected the concept: " + concept);
 
-            this.getQuestionModel(concept);
+
+            var questionModel = new QuestionModel({concept: concept.toLowerCase(), gid: gid})
+            var that = this;
+            questionModel.fetch({
+                success: function(model, response, options) {
+                    that.qview = new QuizView({model: model});
+                    that.qview.render();
+                    $("#quiz-view-wrapper").html(that.qview.$el).show();
+                },
+                error: function(model, response, options) {
+                    console.log(response);
+                }
+            });
 
             this.renderGraph();
         },
@@ -51,17 +62,13 @@ define(["backbone", "jquery", "agfk/models/quiz-model", "agfk/views/quiz-view", 
         },
         changeUrlParams: function(paramsObj) {
             this.navigate("/maps/"+this.gid+"/concepts/" + paramsObj.focus, true);
-        },
-        getQuestionModel: function(concept) {
-            gid = this.gid;
-            $.ajax({url: "/maps/"+this.gid+"/exercises/fetch/" + concept + "/", async:false}).done(function(data) {
+        }
+
+            /**$.ajax({url: "/maps/"+this.gid+"/exercises/fetch/" + concept + "/", async:false}).done(function(data) {
                 model = new QuestionModel(data);
                 model.set("concept",concept.toLowerCase());
-                this.qview = new QuizView({model: model, baseurl: "/maps/"+gid});
-                this.qview.render();
-                $("#quiz-view-wrapper").html(this.qview.$el).show();
-             });
-        }
+
+             });**/
 
     });
 
