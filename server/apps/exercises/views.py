@@ -5,21 +5,20 @@ from django.http import HttpResponse
 from lazysignup.decorators import allow_lazy_user
 from django.contrib.auth.models import User
 
-from models import Exercises, Responses, ExerciseAttempts
+from models import Exercises, Responses, Attempts
 from apps.maps.models import Graphs, Concepts
 
 from apps.participant.utils import getParticipantByUID
 
 def fetch_attempt_id(u, p, con, ex):
-    attempt = ExerciseAttempts.objects.filter(participant=p)
+    attempt = Attempts.objects.filter(participant=p)
     if not p.isParticipant(): attempt = attempt.filter(user=u)
 
     try:
         # try to recycle an unused attempt id
         attempt = attempt.get(exercise=ex, submitted=False)
-    except ExerciseAttempts.DoesNotExist:
-        attempt = ExerciseAttempts(user=u, participant=p,
-                                   exercise=ex, concept=con)
+    except Attempts.DoesNotExist:
+        attempt = Attempts(user=u, participant=p, exercise=ex, concept=con)
         attempt.save()
     return attempt.pk;
 
@@ -43,7 +42,7 @@ def fetch_ex(request, gid="", conceptId="", qid=""):
     # well, this shouldn't happen
     if p is None: return HttpResponse(status=401)
 
-    completed = ExerciseAttempts.objects.filter(
+    completed = Attempts.objects.filter(
                     participant=p).filter(
                     concept=eCon).filter(
                     correct=True)
@@ -94,20 +93,20 @@ def fetch_ex(request, gid="", conceptId="", qid=""):
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
 @allow_lazy_user
-def attempt(request, attempt="", correct=""):
+def set_attempt(request, gid="", attempt="", correct=""):
     u, pc = User.objects.get_or_create(pk=request.user.pk)
     p = getParticipantByUID(request.user.pk)
 
     # well, this shouldn't happen
     if p is None: return HttpResponse(status=401)
 
-    exs = ExerciseAttempts.objects.filter(participant=p).filter(submitted=False)
+    exs = Attempts.objects.filter(participant=p).filter(submitted=False)
     if not p.isParticipant(): exs.filter(user=u)
 
     try:
         # only inject attempts if we have not submitted for this attempt
         ex = exs.get(pk=attempt)
-    except ExerciseAttempts.DoesNotExist, ExerciseAttempts.MultipleObjectsReturned:
+    except Attempts.DoesNotExist, Attempts.MultipleObjectsReturned:
         ex = None
 
     if request.method == "GET":

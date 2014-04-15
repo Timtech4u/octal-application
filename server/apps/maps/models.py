@@ -20,6 +20,14 @@ class Graphs(models.Model):
         return adj
     flat = property(_adjacency_list)
 
+    def _concept_dict(self):
+        concepts = {}
+        for c in self.concepts_set.all():
+            deps = [d.conceptId for d in c.dependencies.all()]
+            concepts[c.conceptId] = { "title": c.name, "dependencies": deps }
+        return concepts
+    concept_dict = property(_concept_dict)
+
     def __unicode__(self):
         return json.dumps(self.flat)
 

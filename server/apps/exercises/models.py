@@ -37,7 +37,7 @@ class Responses(models.Model):
         return u'%s' % (self.response)
 
 
-class ExerciseAttempts(models.Model):
+class Attempts(models.Model):
     """
     Store exercise attempts for every user
     """
@@ -56,5 +56,5 @@ class ExerciseAttempts(models.Model):
 
     def get_correctness(self):
         if self.submitted is True:
-            return (self.concept.get_tag(), self.correct)
+            return (self.concept.conceptId, self.correct)
         return None
