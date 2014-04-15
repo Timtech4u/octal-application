@@ -42,7 +42,7 @@ class Attempts(models.Model):
     Store exercise attempts for every user
     """
     user = models.ForeignKey(User)
-    participant = models.ForeignKey(Participants)
+    participant = models.ForeignKey(Participants, null=True, default=None)
     graph = models.ForeignKey(Graphs)
     concept = models.ForeignKey(Concepts)
     exercise = models.ForeignKey(Exercises)

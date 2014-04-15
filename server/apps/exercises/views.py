@@ -37,19 +37,19 @@ def fetch_ex(request, gid="", conceptId="", qid=""):
         return HttpResponse(status=422)
 
     user, ucreated = User.objects.get_or_create(pk=request.user.pk)
+
+    completed = Attempts.objects.filter(concept=eCon).filter(correct=True)
+
+    # we need to collect data by participant IDs for studies
     p = getParticipantByUID(request.user.pk)
-
-    # well, this shouldn't happen
-    if p is None: return HttpResponse(status=401)
-
-    completed = Attempts.objects.filter(
-                    participant=p).filter(
-                    concept=eCon).filter(
-                    correct=True)
-
+    if g.study_active:
+        if p is None: return HttpResponse(status=401)
+        completed = completed.filter(participant=p)
+     
     # we need to differentiate non-participants by their user profile id
-    if not p.isParticipant(): completed = completed.filter(user=user)
-    
+     if not g.study_active or not p.isParticipant():
+         completed = completed.filter(user=user)
+   
     completed = completed.values('exercise').distinct()
 
     numComplete = completed.count()
@@ -100,13 +100,16 @@ def set_attempt(request, gid="", attempt="", correct=""):
         return HttpResponse(status=422)
 
     u, pc = User.objects.get_or_create(pk=request.user.pk)
+
+    exs = Attempts.objects.filter(submitted=False).filter(graph=g)
+
     p = getParticipantByUID(request.user.pk)
+    if g.study_active:
+        if p is None: return HttpResponse(status=401)
+        exs = exs.filter(participant=p)
 
-    # well, this shouldn't happen
-    if p is None: return HttpResponse(status=401)
-
-    exs = Attempts.objects.filter(participant=p).filter(submitted=False).filter(graph=g)
-    if not p.isParticipant(): exs.filter(user=u)
+    if not g.study_active or not p.isParticipant():
+        exs = exs.filter(user=u)
 
     try:
         # only inject attempts if we have not submitted for this attempt

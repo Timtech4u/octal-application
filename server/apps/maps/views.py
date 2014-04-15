@@ -21,21 +21,27 @@ def display(request, gid):
 
     #OCTAL experiment: graph linearity based on user id
     p = None
-    if request.user.is_authenticated():
-        p = getParticipantByUID(request.user.pk)
+    linear = 1
+    pid = -1
+    if graph.study_active:
+        if request.user.is_authenticated():
+            p = getParticipantByUID(request.user.pk)
 
-    #user has no participant ID yet, ask them for it
-    if p is None:
-        return HttpResponseRedirect('/participant/')
+        #user has no participant ID yet, ask them for it
+        if p is None:
+            return HttpResponseRedirect('/participant/')
 
-    # make sure participant completed the presurvey
-    r = handleSurveys(p)
-    if r is not None: return r
+        # make sure participant completed the presurvey
+        r = handleSurveys(p)
+        if r is not None: return r
+
+        linear = int(p.linear)
+        pid = int(p.pid)
 
     return render_to_response("app.html",{
                               "full_graph_skeleton": graph, 
-                              "user_display": int(p.linear),
-                              "pid": int(p.pid),
+                              "user_display": linear,
+                              "pid": pid,
                               }, context_instance=RequestContext(request))
 
 def new_graph(request):

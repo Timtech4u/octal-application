@@ -11,6 +11,7 @@ class Graphs(models.Model):
     http://django-mongodb-engine.readthedocs.org/en/latest/
     """
     name = models.CharField(max_length=100)
+    study_active = models.BooleanField(default=False)
 
     def _adjacency_list(self):
         """
