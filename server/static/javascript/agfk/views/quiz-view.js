@@ -21,7 +21,6 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
             pvt.newQuestion = true;
             pvt.correct = false;
 
-
             var ans = "";
 
             return Backbone.View.extend({
@@ -29,6 +28,10 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                     template: _.template(document.getElementById( pvt.viewConsts.templateId).innerHTML),
 
                     tagName:  'div',
+
+                    initialize: function(options) {
+
+                    },
 
 
                     isViewRendered: function(){

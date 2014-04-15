@@ -23,10 +23,10 @@ define(["backbone", "jquery", "agfk/models/quiz-model", "agfk/views/quiz-view", 
                 var thisRoute = this,
                 qviewId = pvt.qViewId;
                 console.log("you have selected the concept: " + concept);
-
+                var gid = "1"
                 var questionModel = this.getQuestionModel(concept);
                 try {
-                    thisRoute.qview = new QuizView({model: questionModel});
+                    thisRoute.qview = new QuizView({gid: gid, model: questionModel});
                     thisRoute.qview.render();
                 } catch(e) {
                     console.log(e);
