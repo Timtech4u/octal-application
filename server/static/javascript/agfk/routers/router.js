@@ -28,7 +28,7 @@ define(["backbone", "jquery", "agfk/models/quiz-model", "agfk/views/quiz-view", 
 
             this.getQuestionModel(concept);
 
-            thisRoute.renderGraph();
+            this.renderGraph();
         },
         renderGraph: function() {
             var thisRoute = this;
