@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from apps.participant.models import Participants
-from apps.maps.models import Concepts
+from apps.maps.models import Graphs, Concepts
 
 class Exercises(models.Model):
     """
@@ -43,6 +43,7 @@ class Attempts(models.Model):
     """
     user = models.ForeignKey(User)
     participant = models.ForeignKey(Participants)
+    graph = models.ForeignKey(Graphs)
     concept = models.ForeignKey(Concepts)
     exercise = models.ForeignKey(Exercises)
     correct = models.NullBooleanField()

@@ -10,15 +10,15 @@ from apps.maps.models import Graphs, Concepts
 
 from apps.participant.utils import getParticipantByUID
 
-def fetch_attempt_id(u, p, con, ex):
-    attempt = Attempts.objects.filter(participant=p)
+def fetch_attempt_id(u, p, g, con, ex):
+    attempt = Attempts.objects.filter(graph=g).filter(participant=p)
     if not p.isParticipant(): attempt = attempt.filter(user=u)
 
     try:
         # try to recycle an unused attempt id
         attempt = attempt.get(exercise=ex, submitted=False)
     except Attempts.DoesNotExist:
-        attempt = Attempts(user=u, participant=p, exercise=ex, concept=con)
+        attempt = Attempts(user=u, participant=p, graph=g, exercise=ex, concept=con)
         attempt.save()
     return attempt.pk;
 
@@ -27,12 +27,12 @@ def fetch_attempt_id(u, p, con, ex):
 def fetch_ex(request, gid="", conceptId="", qid=""):
     #does the requested concept exist in the graph?
     try:
-        graph = Graphs.objects.get(pk=gid)
+        g = Graphs.objects.get(pk=gid)
     except Graphs.DoesNotExist:
         return HttpResponse(status=422)
 
     try:
-        eCon = Concepts.objects.get(graph=graph, conceptId=conceptId)
+        eCon = Concepts.objects.get(graph=g, conceptId=conceptId)
     except Concepts.DoesNotExist:
         return HttpResponse(status=422)
 
@@ -85,7 +85,7 @@ def fetch_ex(request, gid="", conceptId="", qid=""):
         'h': ex.question,
         't': ex.qtype,
         'a': [x.response for x in r],
-        'aid': fetch_attempt_id(user, p, eCon, ex),
+        'aid': fetch_attempt_id(user, p, g, eCon, ex),
         'cr': numRemaining, # expose how many left they have
         'ct': numComplete+numRemaining, # expose how many total questions in concept
     }
@@ -94,13 +94,18 @@ def fetch_ex(request, gid="", conceptId="", qid=""):
 
 @allow_lazy_user
 def set_attempt(request, gid="", attempt="", correct=""):
+    try:
+        g = Graphs.objects.get(pk=gid)
+    except Graphs.DoesNotExist:
+        return HttpResponse(status=422)
+
     u, pc = User.objects.get_or_create(pk=request.user.pk)
     p = getParticipantByUID(request.user.pk)
 
     # well, this shouldn't happen
     if p is None: return HttpResponse(status=401)
 
-    exs = Attempts.objects.filter(participant=p).filter(submitted=False)
+    exs = Attempts.objects.filter(participant=p).filter(submitted=False).filter(graph=g)
     if not p.isParticipant(): exs.filter(user=u)
 
     try:
@@ -112,7 +117,7 @@ def set_attempt(request, gid="", attempt="", correct=""):
     if request.method == "GET":
         return HttpResponse(ex)
     elif request.method == "PUT":
-        # only accept data if we were waiting for it
+        # only accept if we're waiting for data
         if ex is None:
             return HttpResponse(status=401)
 
@@ -126,7 +131,7 @@ def set_attempt(request, gid="", attempt="", correct=""):
         if correctness:
             return HttpResponse()
         else:
-            return HttpResponse(fetch_attempt_id(u, p, ex.concept, ex.exercise))
+            return HttpResponse(fetch_attempt_id(u, p, g, ex.concept, ex.exercise))
             
     else:
         return HttpResponse(status=405)

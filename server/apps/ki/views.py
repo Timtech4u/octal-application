@@ -14,7 +14,7 @@ from apps.participant.utils import getParticipantByUID
 def knowledge_inference(request, gid=""):
     if request.method == "GET":
         try:
-            graph = Graphs.objects.get(pk=gid)
+            g = Graphs.objects.get(pk=gid)
         except Graphs.DoesNotExist:
             return HttpResponse(status=422)
         u, uc = User.objects.get_or_create(pk=request.user.pk)
@@ -23,12 +23,14 @@ def knowledge_inference(request, gid=""):
         # well, this shouldn't happen
         if p is None: return HttpResponse(status=401)
 
-        ex = Attempts.objects.filter(participant=p).filter(submitted=True)
+        ex = Attempts.objects.filter(graph=g).filter(participant=p)
+        ex.filter(submitted=True)
         if not p.isParticipant(): ex = ex.filter(user=u)
+
         inferences = []
         if ex.count() > 1:
             r = [e.get_correctness() for e in ex]
-            inferences = performInference(graph.concept_dict, r)
+            inferences = performInference(g.concept_dict, r)
         return HttpResponse(json.dumps(inferences), mimetype='application/json')
     else:
         return HttpResponse(status=405)
