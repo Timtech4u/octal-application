@@ -42,6 +42,7 @@ def display(request, gid):
                               "full_graph_skeleton": graph, 
                               "user_display": linear,
                               "pid": pid,
+                              "study_active": int(graph.study_active),
                               }, context_instance=RequestContext(request))
 
 def new_graph(request):
