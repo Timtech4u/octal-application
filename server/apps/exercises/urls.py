@@ -7,6 +7,6 @@ urlpatterns = patterns('',
                        url(r'^fetch/(?P<conceptId>[^/]*)/(?P<qid>[0-9]*)$',
                            views.fetch_ex, name='getexercise'),
                        url(r'^attempt/(?P<attempt>[^/]*)/(?P<correct>[01])$', 
-                           views.attempt, name='addattempt'),
+                           views.set_attempt, name='addattempt'),
                        url(r'^build$', views.build, name='buildexercises'),
                       )

@@ -13,12 +13,29 @@ class Graphs(models.Model):
     name = models.CharField(max_length=100)
 
     def _adjacency_list(self):
+        """
+        Builds an adjacency list in the hierarchy mimicking Metacademy
+        This is well-suited to be dumped as a JSON and used by kmapjs
+        [ { id: conceptID, title: conceptName, dependencies: [conceptIDs]} ]
+        """
         adj = []
         for c in self.concepts_set.all():
             deps = [{"source": d.conceptId} for d in c.dependencies.all()]
             adj.append({ "id": c.conceptId, "title": c.name, "dependencies": deps })
         return adj
     flat = property(_adjacency_list)
+
+    def _concept_dict(self):
+        """
+        Builds a dictionary with concept IDs as keys
+        { conceptID: { title: conceptName, dependencies: [conceptIDs] },[..] }
+        """
+        concepts = {}
+        for c in self.concepts_set.all():
+            deps = [d.conceptId for d in c.dependencies.all()]
+            concepts[c.conceptId] = { "title": c.name, "dependencies": deps }
+        return concepts
+    concept_dict = property(_concept_dict)
 
     def __unicode__(self):
         return json.dumps(self.flat)

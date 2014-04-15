@@ -23,67 +23,49 @@ def calculateProbability(name, dependencies, weights=0):
     return mc.Lambda(name, lambda dependencies=dependencies, weights=weights: (pK - pM) * sum(pl.multiply(dependencies,weights))/sum(weights) + pM)
         
 
-def performInference(responses):
+def performInference(graph, responses):
     #this is a really hacky solution for now until I can spend more time figuring out how to do this more programatically 
 
-    concepts = [];        
-    ###########hardcoding our graph in for some testing - fix this###############
-    variables = mc.Bernoulli('variables', .5, value=1)
-    concepts.append(variables);
+    pStr = "p%s"
 
-    pConditionals = calculateProbability('pConditionals', [variables])
-    conditionals = mc.Bernoulli('conditionals', pConditionals, value=1)
-    concepts.append(conditionals);
+    def _build_probabilities(cid):
+        #return memoized bernoulli variable
+        if "_bp" in graph[cid]: return graph[cid]["_bp"]
 
-    pVariableMutation = calculateProbability('pVariableMutation',[variables])
-    variable_mutation = mc.Bernoulli('variable_mutation', pVariableMutation, value=1)
-    concepts.append(variable_mutation);
+        #hack since pymc seems to require ascii (and not unicode)
+        cida = cid.encode('ascii')
 
-    pLoops = calculateProbability('pLoops', [variable_mutation, conditionals])
-    loops = mc.Bernoulli('loops', pLoops, value=1)
-    concepts.append(loops);
+        if graph[cid]["dependencies"]:
+            # process dependencies first
+            deps = map(_build_probabilities, graph[cid]["dependencies"])
+            cp = calculateProbability(pStr % cida, deps)
+            _bp = mc.Bernoulli(cida, cp, value=1)
+        else:
+            # roots get special treatment
+            _bp = mc.Bernoulli(cida, .5, value=1)
 
-    pFunctions = calculateProbability('pFunctions', [variables])
-    functions = mc.Bernoulli('functions', pFunctions, value=1)
-    concepts.append(functions);
+        #memoize bernoulli variable
+        graph[cid]["_bp"] = _bp
+        return _bp
 
-    pLists = calculateProbability('pLists', [loops])
-    lists = mc.Bernoulli('lists', pLists, value=1)
-    concepts.append(lists);
+    concepts = map(_build_probabilities, graph)
 
-    pTreeRecursion = calculateProbability('pTreeRecursion', [functions])
-    tree_recursion = mc.Bernoulli('tree_recursion', pTreeRecursion, value=1)
-    concepts.append(tree_recursion);
 
-    pTailRecursion = calculateProbability('pTailRecursion', [functions])
-    tail_recursion = mc.Bernoulli('tail_recursion', pTailRecursion, value=1)
-    concepts.append(tail_recursion);
+    #variables = mc.Bernoulli('variables', .5, value=1)
+    #concepts.append(variables);
 
-    pFractals = calculateProbability('pFractals', [tail_recursion, tree_recursion])
-    fractals = mc.Bernoulli('fractals', pFractals, value=1)
-    concepts.append(fractals);
-
-    pConcurrency = calculateProbability('pConcurrency', [functions])
-    concurrency = mc.Bernoulli('concurrency', pConcurrency, value=1)
-    concepts.append(concurrency);
-
-    pAComplexity = calculateProbability('pAComplexity', [lists, tail_recursion, tree_recursion])
-    algorithmic_complexity = mc.Bernoulli('algorithmic_complexity', pAComplexity, value=1)
-    concepts.append(algorithmic_complexity);
-
-    pMidterm = calculateProbability('pMidterm', [algorithmic_complexity, fractals, concurrency, tail_recursion, tree_recursion, lists, functions])
-    midterm = mc.Bernoulli('midterm', pMidterm, value=1)
-    concepts.append(midterm);
-    ########################################################################
-
-    #pQuestion7 = mc.Lambda('pQuestion7', lambda algorithmic_complexity=algorithmic_complexity: pl.where(algorithmic_complexity, 1-pS, pG))
-    #question7 = mc.Bernoulli('question7', pQuestion7, value=[0], observed=True)
+    #pConditionals = calculateProbability('pConditionals', [variables])
+    #conditionals = mc.Bernoulli('conditionals', pConditionals, value=1)
+    #concepts.append(conditionals);
 
     otherQuestions = [];
     for example in responses:
-        tmp = vars()[example[0]]
-        prob = mc.Lambda("p" + example[0], lambda tmp=tmp: pl.where(tmp, 1-pS, pG))
-        otherQuestions.append(mc.Bernoulli(example[0], prob, value=example[1], observed=True))
+        # more pymc ascii hacks
+        cida = example[0].encode('ascii')
+
+        tmp = graph[example[0]]["_bp"]
+        prob = mc.Lambda(pStr % cida, lambda tmp=tmp: pl.where(tmp, 1-pS, pG))
+        otherQuestions.append(mc.Bernoulli(cida, prob, value=example[1], observed=True))
     
     ##################some simple tests##########
     

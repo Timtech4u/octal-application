@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from apps.participant.models import Participants
-from apps.maps.models import Concepts
+from apps.maps.models import Graphs, Concepts
 
 class Exercises(models.Model):
     """
@@ -37,12 +37,13 @@ class Responses(models.Model):
         return u'%s' % (self.response)
 
 
-class ExerciseAttempts(models.Model):
+class Attempts(models.Model):
     """
     Store exercise attempts for every user
     """
     user = models.ForeignKey(User)
     participant = models.ForeignKey(Participants)
+    graph = models.ForeignKey(Graphs)
     concept = models.ForeignKey(Concepts)
     exercise = models.ForeignKey(Exercises)
     correct = models.NullBooleanField()
@@ -56,5 +57,5 @@ class ExerciseAttempts(models.Model):
 
     def get_correctness(self):
         if self.submitted is True:
-            return (self.concept.get_tag(), self.correct)
+            return (self.concept.conceptId, self.correct)
         return None
