@@ -23,22 +23,12 @@ define(["backbone", "jquery", "agfk/models/quiz-model", "agfk/views/quiz-view", 
 
         showQuiz: function(gid, concept) {
             this.gid = gid;
-            var thisRoute = this,
             qviewId = pvt.qViewId;
             console.log("you have selected the concept: " + concept);
 
-            var questionModel = this.getQuestionModel(concept);
-            try {
-                thisRoute.qview = new QuizView({model: questionModel, baseurl: "/maps/"+this.gid});
-                thisRoute.qview.render();
-            } catch(e) {
-                console.log(e);
-            }
-
-            $("#quiz-view-wrapper").html(thisRoute.qview.$el).show();
+            this.getQuestionModel(concept);
 
             thisRoute.renderGraph();
-
         },
         renderGraph: function() {
             var thisRoute = this;
@@ -64,9 +54,12 @@ define(["backbone", "jquery", "agfk/models/quiz-model", "agfk/views/quiz-view", 
         },
         getQuestionModel: function(concept) {
             $.ajax({url: "/maps/"+this.gid+"/exercises/fetch/" + concept + "/", async:false}).done(function(data) {
-            model = new QuestionModel(data);
-            model.set("concept",concept.toLowerCase());
-            });
+                model = new QuestionModel(data);
+                model.set("concept",concept.toLowerCase());
+                this.qview = new QuizView({model: model, baseurl: "/maps/"+this.gid});
+                this.qview.render();
+                $("#quiz-view-wrapper").html(this.qview.$el).show();
+             });
         }
 
     });
