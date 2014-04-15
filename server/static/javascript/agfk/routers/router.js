@@ -5,8 +5,8 @@ define(["backbone", "jquery", "agfk/models/quiz-model", "agfk/views/quiz-view", 
         initialize: function() {},
         gid: null,
         routes: {
-            "maps/map-:gid/concepts/:concept": "showQuiz",
-            "maps/map-:gid*path": "showIntro",
+            "maps/:gid/concepts/:concept": "showQuiz",
+            "maps/:gid*path": "showIntro",
             "*path": "showError"
         },
 
@@ -29,7 +29,7 @@ define(["backbone", "jquery", "agfk/models/quiz-model", "agfk/views/quiz-view", 
 
             var questionModel = this.getQuestionModel(concept);
             try {
-                thisRoute.qview = new QuizView({model: questionModel});
+                thisRoute.qview = new QuizView({model: questionModel, baseurl: "/maps/"+this.gid});
                 thisRoute.qview.render();
             } catch(e) {
                 console.log(e);
@@ -60,10 +60,10 @@ define(["backbone", "jquery", "agfk/models/quiz-model", "agfk/views/quiz-view", 
 
         },
         changeUrlParams: function(paramsObj) {
-            this.navigate("/maps/map-"+this.gid+"/concepts/" + paramsObj.focus, true);
+            this.navigate("/maps/"+this.gid+"/concepts/" + paramsObj.focus, true);
         },
         getQuestionModel: function(concept) {
-            $.ajax({url: "/octal/exercise/" + concept + "/", async:false}).done(function(data) {
+            $.ajax({url: "/maps/"+this.gid+"/exercises/fetch/" + concept + "/", async:false}).done(function(data) {
             model = new QuestionModel(data);
             model.set("concept",concept.toLowerCase());
             });

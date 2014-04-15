@@ -143,7 +143,7 @@ def build(request, gid=""):
     concepts = {}
     for c in graph_concepts:
         cid = c.conceptId
-        concepts[cid] = Concepts.objects.get(conceptId=cid)
+        concepts[cid] = Concepts.objects.get(graph=graph, conceptId=cid)
 
     gdoc = requests.get('https://docs.google.com/spreadsheet/pub?key=0ApfeFyIuuj_MdF9ZS3hXU0pUN0NnMDVIcHFkTlN6V0E&single=true&gid=0&output=csv')
 
@@ -163,10 +163,10 @@ def build(request, gid=""):
         ex.concepts = [concepts[x] for x in e['concepts'].split('|')]
 
         # TODO: fix special case
-        if int(e['qid']) is 0:
-            ex.qtype = ex.SHORT
-            ex.save()
-            continue
+        #if int(e['qid']) is 0:
+            #ex.qtype = ex.SHORT
+            #ex.save()
+            #continue
 
         ex.save()
 

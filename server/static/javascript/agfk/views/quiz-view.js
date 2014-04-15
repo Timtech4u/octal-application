@@ -26,232 +26,217 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
 
             return Backbone.View.extend({
 
-                    template: _.template(document.getElementById( pvt.viewConsts.templateId).innerHTML),
+                template: _.template(document.getElementById( pvt.viewConsts.templateId).innerHTML),
 
-                    tagName:  'div',
+                tagName:  'div',
 
+                isViewRendered: function(){
+                        return pvt.isRendered;
+                },
 
-                    isViewRendered: function(){
-                            return pvt.isRendered;
-                    },
+                events: {
+                        'click .submit-button': 'submit'
+                },
 
-                    events: {
-                            'click .submit-button': 'submit'
-
-                    },
-
-                    // Re-render the title of the todo item.
-                    render: function() {
-
-                            //Get local variables
-                            pvt.isRendered = false;
-                            var thisView = this;
-                            var thisModel = thisView.model;
-                            pvt.correct = false;
-                            //Get current concept, compare it to the concept last served by the view
-                            //If they don't match, we need a new question
-                            thisView.concept = thisModel.get('concept');
-                            if(pvt.conceptName != thisView.concept) {
-                                pvt.newQuestion = true; //just changed concepts;
-                            }
-
-                            //Remove the underscores for rendering the concept
-                            thisModel.set("title",thisModel.get("concept").replace(/_/g, " "));
-
-                            if(pvt.newQuestion) {
-                                ans = thisModel.get("a")[0];
-                                pvt.newQuestion = false;
-                            }
-                            thisModel.set("a", shuffle(thisModel.get("a")));
-                            var h = _.clone(thisModel.toJSON());
-                            h.pid = agfkGlobals.pid,
-                                h.linear = agfkGlobals.linear;
-
-                            thisView.$el.html(thisView.template(h));
-   /*
-                            if(!agfkGlobals.linear) {
-                                if( !pvt.graphRendered) {
-                                    //add graph view as subview to quiz view.  view.
-                                    var expView = thisView.options.appRouter.expView;
-                                    pvt.expView = expView;
-                                    var fnode = thisView.options.appRouter.graphModel.getNode(thisView.concept);
-                                    thisView.options.appRouter.expView.centerForNode(fnode);
-                                    thisView.options.appRouter.expView.setFocusNode(fnode);
-                                    thisView.$el.find('#graph-wrapper').append(expView.el);
-                                    var svg = expView.el.getElementsByTagName('svg')[0];
-                                    //svg.setAttribute('viewBox', '0, -800, 1200, 1000');
-                                    //set border thicker on current node
-                                    //thisView.$el.find("#"+ pvt.conceptName).find('ellipse').css('stroke-width',7)
-                                    pvt.graphRendered = true;
-                                } else {
-                                    thisView.$el.find('#graph-wrapper').append(pvt.expView.el);
-                                }
-                            }
-   */
-
-                            thisView.$el.find('#check-answer').click(function() {
-                               thisView.submit();
-                            });
-                            thisView.$el.find('#next-question-button').click(function() {
-                               thisView.getNextQuestion();
-                            });
-
-
-                            //If this is the last question, take away the next button
-                            if(thisModel.get('cr') == 1) {
-                                thisView.$el.find('#next-question-button').hide();
-                            }
-
-
-
-
-                            pvt.isRendered = true;
-
-                            //this.getKnowledgeState();
-                            return this;
-
-
-                    },
-                    reattachGraph: function() {
-                        this.$el.find('#graph-wrapper').append(pvt.expView.el);
-                    },
-
-                    //If no button selected, returns undefined
-                    submit: function() {
-                            var thisView = this;
-                            var attempt = $("input[type='radio'][name='answer']:checked").val();
-                            if(attempt && !pvt.correct) {
-                                //console.log(ans);
-                                pvt.correct = (ans==attempt) ? 1 : 0;
-                                correctness = pvt.correct;
-                                var aid = thisView.model.get('aid');
-                                //console.log(aid);
-
-                                if(correctness) {
-                                        $('#question-feedback').fadeOut(100,function(){$(this).html('Correct!  Great job!').css('color','#46a546').fadeIn()});
-                                        $('#check-answer').hide();
-                                        $cc = $('#correct-count');
-                                        if((parseInt($cc.html()) + 1) == thisView.model.get('ct')) {
-                                            $('#next-question-button').show()
-                                        }
-                                        $cc.fadeOut(100,function(){$(this).html(parseInt($cc.html()) + 1).fadeIn()});
-                                        //Make the next question button available again if a user has finished all the questions in a category
-
-                                }
-                                else
-                                        $('#question-feedback').fadeOut(100,function(){$(this).html('Try again!').css('color','black').fadeIn()});
-
-                                // csrf protection
-                                // https://docs.djangoproject.com/en/dev/ref/contrib/csrf/
-                                function csrfSafeMethod(method) {
-                                    // these HTTP methods do not require CSRF protection
-                                    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-                                }
-
-                                $.ajaxSetup({
-                                    crossDomain: false, // obviates need for sameOrigin test
-                                    beforeSend: function(xhr, settings) {
-                                        if (!csrfSafeMethod(settings.type)) {
-                                            xhr.setRequestHeader("X-CSRFToken", agfkGlobals.csrftoken);
-                                        }
-                                    }
-                                });
-
-                                //get new model from the server
-                                //request to submit an answer
-
-                                $.ajax({
-                                        url: "/octal/attempt/" + aid + "/" + correctness,
-                                        type: "PUT",
-                                        async: false,
-                                        dataType: "text",
-                                        success: function(data) {
-                                            //Don't allow resubmission if the question was correct
-                                            if(!correctness)
-                                                thisView.model.set('aid',data);
-                                        }
-
-                                })
-                                //request to get new question
-                                thisView.getKnowledgeState();
-                            } else if(!attempt) {
-                                $('#question-feedback').fadeOut(100,function(){$(this).html('Make sure to select a response!').css('color','black').fadeIn()});
-                            }
-
-                            //console.log(thisView.model.get("aid"));
-
-
-                            //SOME LOGIC GOES HERE FOR HIGHLIGHTING NODES
-                            //rerender the view TODO: seems kinda wasteful to totally rerender the view rather than the question
-
-                    },
-
-                    getNextQuestion: function() {
-                         pvt.conceptName = this.model.get("concept");
-                         var thisView = this;
-
-                         $.ajax({
-                                url: "/octal/exercise/" + pvt.conceptName + "/" + thisView.model.get('qid'),
-                                async:false
-                            }).done(function(data) {
-                                thisView.model = new QuestionModel(data);
-                                thisView.model.set("concept", pvt.conceptName);
-                            });
-                            pvt.newQuestion = true;
-                            pvt.correct = false;
-                            this.render();
-                    },
-
-
-                    getKnowledgeState: function() {
-                            thisView = this;
-                            var sid = agfkGlobals.auxModel.get('nodes').get(pvt.conceptName).get('sid');
-
-                            $.ajax({
-                                url: "/octal/knowledge/" + sid
-
-                            }).done(function(data) {
-                                    pvt.knownConcepts = data;
-                                    thisView.highlightNodes();
-                                    //thisView.getKnowledgeState(data);
-
-                            });
-
-                    },
-                    highlightNodes: function() {
-                        if(!agfkGlobals.linear) {
-                            //console.log(pvt.knownConcepts)
-                            //mega-ghetto
-                            thisView.$el.find('circle').css('fill',pvt.viewConsts.neutralColor);
-                            //for (var i = 0; i < unknownConcepts.length; i++) {
-                            //	this.$el.find("#"  + unknownConcepts[i]).find('ellipse').css('fill', pvt.viewConsts.unknownColor);
-                            //}
-                            for (var i = 0; i < pvt.knownConcepts.length; i++) {
-                                try {
-                                    $($('#circlgG-' + pvt.knownConcepts[i]).find('circle')[0]).css('fill', pvt.viewConsts.knownColor);
-                                } catch (TypeError) {
-                                    //do nothing, node not in graph
-                                }
-                            }
-                        } else {
-                            $('.learn-title-display').css('background-color', pvt.viewConsts.neutralColor);
-                            for (var i = 0; i < pvt.knownConcepts.length; i++) {
-                                try {
-                                    $('#node-title-view-' + pvt.knownConcepts[i]).css('background-color', pvt.viewConsts.knownColor);
-                                } catch (TypeError) {
-                                    //do nothing, node not in graph
-                                }
-                            }
-                        }
-                    },
-                    edit: function() {
-
-                    },
-
-                    close: function() {
-                            //$('#header').css('display', 'block');
+                // Re-render the title of the todo item.
+                render: function() {
+                    //Get local variables
+                    pvt.isRendered = false;
+                    var thisView = this;
+                    var thisModel = thisView.model;
+                    pvt.correct = false;
+                    //Get current concept, compare it to the concept last served by the view
+                    //If they don't match, we need a new question
+                    thisView.concept = thisModel.get('concept');
+                    if(pvt.conceptName != thisView.concept) {
+                        pvt.newQuestion = true; //just changed concepts;
                     }
 
+                    //Remove the underscores for rendering the concept
+                    thisModel.set("title",thisModel.get("concept").replace(/_/g, " "));
+
+                    if(pvt.newQuestion) {
+                        ans = thisModel.get("a")[0];
+                        pvt.newQuestion = false;
+                    }
+                    thisModel.set("a", shuffle(thisModel.get("a")));
+                    var h = _.clone(thisModel.toJSON());
+                    h.pid = agfkGlobals.pid,
+                        h.linear = agfkGlobals.linear;
+
+                    thisView.$el.html(thisView.template(h));
+/*
+                    if(!agfkGlobals.linear) {
+                        if( !pvt.graphRendered) {
+                            //add graph view as subview to quiz view.  view.
+                            var expView = thisView.options.appRouter.expView;
+                            pvt.expView = expView;
+                            var fnode = thisView.options.appRouter.graphModel.getNode(thisView.concept);
+                            thisView.options.appRouter.expView.centerForNode(fnode);
+                            thisView.options.appRouter.expView.setFocusNode(fnode);
+                            thisView.$el.find('#graph-wrapper').append(expView.el);
+                            var svg = expView.el.getElementsByTagName('svg')[0];
+                            //svg.setAttribute('viewBox', '0, -800, 1200, 1000');
+                            //set border thicker on current node
+                            //thisView.$el.find("#"+ pvt.conceptName).find('ellipse').css('stroke-width',7)
+                            pvt.graphRendered = true;
+                        } else {
+                            thisView.$el.find('#graph-wrapper').append(pvt.expView.el);
+                        }
+                    }
+*/
+
+                    thisView.$el.find('#check-answer').click(function() {
+                       thisView.submit();
+                    });
+                    thisView.$el.find('#next-question-button').click(function() {
+                       thisView.getNextQuestion();
+                    });
+
+
+                    //If this is the last question, take away the next button
+                    if(thisModel.get('cr') == 1) {
+                        thisView.$el.find('#next-question-button').hide();
+                    }
+
+                    pvt.isRendered = true;
+
+                    //this.getKnowledgeState();
+                    return this;
+                },
+
+                reattachGraph: function() {
+                    this.$el.find('#graph-wrapper').append(pvt.expView.el);
+                },
+
+                //If no button selected, returns undefined
+                submit: function() {
+                    var thisView = this;
+                    var attempt = $("input[type='radio'][name='answer']:checked").val();
+                    if(attempt && !pvt.correct) {
+                        //console.log(ans);
+                        pvt.correct = (ans==attempt) ? 1 : 0;
+                        correctness = pvt.correct;
+                        var aid = thisView.model.get('aid');
+                        //console.log(aid);
+
+                        if(correctness) {
+                            $('#question-feedback').fadeOut(100,function(){$(this).html('Correct!  Great job!').css('color','#46a546').fadeIn()});
+                            $('#check-answer').hide();
+                            $cc = $('#correct-count');
+                            if((parseInt($cc.html()) + 1) == thisView.model.get('ct')) {
+                                $('#next-question-button').show()
+                            }
+                            $cc.fadeOut(100,function(){$(this).html(parseInt($cc.html()) + 1).fadeIn()});
+                            //Make the next question button available again if a user has finished all the questions in a category
+                        }
+                        else
+                            $('#question-feedback').fadeOut(100,function(){$(this).html('Try again!').css('color','black').fadeIn()});
+
+                        // csrf protection
+                        // https://docs.djangoproject.com/en/dev/ref/contrib/csrf/
+                        function csrfSafeMethod(method) {
+                            // these HTTP methods do not require CSRF protection
+                            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                        }
+
+                        $.ajaxSetup({
+                            crossDomain: false, // obviates need for sameOrigin test
+                            beforeSend: function(xhr, settings) {
+                                if (!csrfSafeMethod(settings.type)) {
+                                    xhr.setRequestHeader("X-CSRFToken", agfkGlobals.csrftoken);
+                                }
+                            }
+                        });
+
+                        //get new model from the server
+                        //request to submit an answer
+
+                        $.ajax({
+                            url: this.options.baseurl + "/exercises/attempt/" + aid + "/" + correctness,
+                            type: "PUT",
+                            async: false,
+                            dataType: "text",
+                            success: function(data) {
+                                //Don't allow resubmission if the question was correct
+                                if(!correctness)
+                                    thisView.model.set('aid',data);
+                            }
+                        })
+                        //request to get new question
+                        thisView.getKnowledgeState();
+                    } else if(!attempt) {
+                        $('#question-feedback').fadeOut(100,function(){$(this).html('Make sure to select a response!').css('color','black').fadeIn()});
+                    }
+
+                    //console.log(thisView.model.get("aid"));
+
+                    //SOME LOGIC GOES HERE FOR HIGHLIGHTING NODES
+                    //rerender the view TODO: seems kinda wasteful to totally rerender the view rather than the question
+
+                },
+
+                getNextQuestion: function() {
+                    pvt.conceptName = this.model.get("concept");
+                    var thisView = this;
+
+                    $.ajax({
+                        url: this.options.baseurl + "/exercises/fetch/" + pvt.conceptName + "/" + thisView.model.get('qid'),
+                        async:false
+                    }).done(function(data) {
+                        thisView.model = new QuestionModel(data);
+                        thisView.model.set("concept", pvt.conceptName);
+                    });
+                    pvt.newQuestion = true;
+                    pvt.correct = false;
+                    this.render();
+                },
+
+
+                getKnowledgeState: function() {
+                    thisView = this;
+                    var sid = agfkGlobals.auxModel.get('nodes').get(pvt.conceptName).get('sid');
+
+                    $.ajax({
+                        url: this.options.baseurl+"/ki/" + sid
+                    }).done(function(data) {
+                        pvt.knownConcepts = data;
+                        thisView.highlightNodes();
+                        //thisView.getKnowledgeState(data);
+                    });
+
+                },
+                highlightNodes: function() {
+                    if(!agfkGlobals.linear) {
+                        //console.log(pvt.knownConcepts)
+                        //mega-ghetto
+                        thisView.$el.find('circle').css('fill',pvt.viewConsts.neutralColor);
+                        //for (var i = 0; i < unknownConcepts.length; i++) {
+                        //  this.$el.find("#"  + unknownConcepts[i]).find('ellipse').css('fill', pvt.viewConsts.unknownColor);
+                        //}
+                        for (var i = 0; i < pvt.knownConcepts.length; i++) {
+                            try {
+                                $($('#circlgG-' + pvt.knownConcepts[i]).find('circle')[0]).css('fill', pvt.viewConsts.knownColor);
+                            } catch (TypeError) {
+                                //do nothing, node not in graph
+                            }
+                        }
+                    } else {
+                        $('.learn-title-display').css('background-color', pvt.viewConsts.neutralColor);
+                        for (var i = 0; i < pvt.knownConcepts.length; i++) {
+                            try {
+                                $('#node-title-view-' + pvt.knownConcepts[i]).css('background-color', pvt.viewConsts.knownColor);
+                            } catch (TypeError) {
+                                //do nothing, node not in graph
+                            }
+                        }
+                    }
+                },
+                edit: function() { },
+
+                close: function() {
+                        //$('#header').css('display', 'block');
+                }
 
             });
     })();
