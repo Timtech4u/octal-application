@@ -101,7 +101,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
 
                     pvt.isRendered = true;
 
-                    //this.getKnowledgeState();
+                    this.getKnowledgeState();
                     return this;
                 },
 
@@ -153,7 +153,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                         //request to submit an answer
 
                         $.ajax({
-                            url: this.options.baseurl + "/exercises/attempt/" + aid + "/" + correctness,
+                            url: thisView.options.baseurl + "/exercises/attempt/" + aid + "/" + correctness,
                             type: "PUT",
                             async: false,
                             dataType: "text",
@@ -181,7 +181,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                     var thisView = this;
 
                     $.ajax({
-                        url: this.options.baseurl + "/exercises/fetch/" + pvt.conceptName + "/" + thisView.model.get('qid'),
+                        url: thisView.options.baseurl + "/exercises/fetch/" + pvt.conceptName + "/" + thisView.model.get('qid'),
                         async:false
                     }).done(function(data) {
                         thisView.model = new QuestionModel(data);
@@ -195,10 +195,9 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
 
                 getKnowledgeState: function() {
                     thisView = this;
-                    var sid = agfkGlobals.auxModel.get('nodes').get(pvt.conceptName).get('sid');
 
                     $.ajax({
-                        url: this.options.baseurl+"/ki/" + sid
+                        url: thisView.options.baseurl+"/ki/"
                     }).done(function(data) {
                         pvt.knownConcepts = data;
                         thisView.highlightNodes();
