@@ -5,6 +5,8 @@ from apps.maps import views
 from apps.ki.views import knowledge_inference
 
 urlpatterns = patterns('',
+                       url(r'^$', views.display_all, name='displayall'),
+                       url(r'^new/?', views.new_graph, name='newgraph'),
                        url(r'^(?P<gid>[0-9]+)', include(patterns('',
                            url(r'^/build/?$', views.build, name='build'),
                            url(r'^/exercises/', include('apps.exercises.urls', namespace="exs")),
