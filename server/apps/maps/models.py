@@ -1,4 +1,5 @@
 from django.db import models
+from apps.participant.models import Participant
 import json
 
 class Graphs(models.Model):

@@ -11,6 +11,7 @@ urlpatterns = patterns('',
                            url(r'^/build/?$', views.build, name='build'),
                            url(r'^/exercises/', include('apps.exercises.urls', namespace="exs")),
                            url(r'^/ki/?$', knowledge_inference, name="ki"),
+                           url(r'^participant/', include('apps.participant.urls', namespace='part')),
                            url(r'', views.display, name='display'),
                            ))),
 )

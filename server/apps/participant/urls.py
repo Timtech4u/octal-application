@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 from django.views.generic.base import RedirectView
 
-from apps.participant import views
+from . import views
 
 urlpatterns = patterns('',
                        url(r'^(?P<err>[0-9]*)$', views.landing, name='landing'),
