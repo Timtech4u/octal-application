@@ -23,8 +23,8 @@ def knowledge_inference(request, gid=""):
         # well, this shouldn't happen
         if p is None: return HttpResponse(status=401)
 
-        ex = Attempts.objects.filter(graph=g).filter(participant=p)
-        ex.filter(submitted=True)
+        ex = Attempts.objects.filter(graph=g).filter(submitted=True)
+        ex = ex.filter(participant=p)
         if not p.isParticipant(): ex = ex.filter(user=u)
 
         inferences = []
