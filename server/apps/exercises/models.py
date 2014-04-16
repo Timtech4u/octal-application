@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from apps.participant.models import Participants
+from apps.research.models import Participants
 from apps.maps.models import Graphs, Concepts
 
 class Exercises(models.Model):

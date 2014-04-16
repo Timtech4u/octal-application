@@ -7,22 +7,22 @@ class Studies(models.Model):
     """
     Stores information for a running study for a graph
     """
-    graph = models.ForeignKey(Graphs)
+    graph = models.OneToOneField(Graphs)
     complete = models.BooleanField(default=False)
-    spectator = models.ForeignKey(Participants)
+    spectator = models.ForeignKey('Participants')
     presurvey_url = models.TextField()
     postsurvey_url = models.TextField()
 
     def preSurveyURL(self, pid):
         try:
             return self.presurvey_url % pid
-        catch TypeError:
+        except TypeError:
             return self.presurvey_url
 
     def postSurveyURL(self, pid):
         try:
             return self.postsurvey_url % pid
-        catch TypeError:
+        except TypeError:
             return self.postsurvey_url
 
     def _spectatorID(self):
@@ -45,11 +45,12 @@ class Participants(models.Model):
     def isParticipant(self):
         return self.pid != self.study.spectatorID
 
-class ParticipantLogins(models.Model):
+class Logins(models.Model):
     """
     Stores information about participants
     A participant might use multiple browsers
     """
-    user = models.OneToOneField(User)
+    user = models.ForeignKey(User)
+    study = models.ForeignKey(Studies)
     participant = models.ForeignKey(Participants)
     timestamp = models.DateTimeField(auto_now_add=True)

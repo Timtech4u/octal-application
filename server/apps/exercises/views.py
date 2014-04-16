@@ -8,11 +8,10 @@ from django.contrib.auth.models import User
 from models import Exercises, Responses, Attempts
 from apps.maps.models import Graphs, Concepts
 
-from apps.participant.utils import getParticipantByUID
+from apps.research.utils import getParticipantByUID, studyFilter
 
 def fetch_attempt_id(u, p, g, con, ex):
-    attempt = Attempts.objects.filter(graph=g).filter(participant=p)
-    if not p.isParticipant(): attempt = attempt.filter(user=u)
+    attempt = studyFilter(g, p, u, Attempts.objects.filter(graph=g))
 
     try:
         # try to recycle an unused attempt id
@@ -36,21 +35,17 @@ def fetch_ex(request, gid="", conceptId="", qid=""):
     except Concepts.DoesNotExist:
         return HttpResponse(status=422)
 
+    if not request.user.is_authenticated(): return HttpResponse(status=403)
     user, ucreated = User.objects.get_or_create(pk=request.user.pk)
 
     completed = Attempts.objects.filter(concept=eCon).filter(correct=True)
 
     # we need to collect data by participant IDs for studies
-    p = getParticipantByUID(request.user.pk)
-    if g.study_active:
-        if p is None: return HttpResponse(status=401)
-        completed = completed.filter(participant=p)
-     
-    # we need to differentiate non-participants by their user profile id
-     if not g.study_active or not p.isParticipant():
-         completed = completed.filter(user=user)
-   
-    completed = completed.values('exercise').distinct()
+    p = getParticipantByUID(request.user.pk, gid)
+    if g.study_active and p is None:
+        return HttpResponse(status=401)
+
+    completed = studyFilter(g, p, user, completed).values('exercise').distinct()
 
     numComplete = completed.count()
 
@@ -99,17 +94,16 @@ def set_attempt(request, gid="", attempt="", correct=""):
     except Graphs.DoesNotExist:
         return HttpResponse(status=422)
 
+    if not request.user.is_authenticated(): return HttpResponse(status=403)
     u, pc = User.objects.get_or_create(pk=request.user.pk)
 
     exs = Attempts.objects.filter(submitted=False).filter(graph=g)
 
-    p = getParticipantByUID(request.user.pk)
-    if g.study_active:
-        if p is None: return HttpResponse(status=401)
-        exs = exs.filter(participant=p)
+    p = getParticipantByUID(request.user.pk, gid)
+    if g.study_active and p is None:
+        return HttpResponse(status=401)
 
-    if not g.study_active or not p.isParticipant():
-        exs = exs.filter(user=u)
+    exs = studyFilter(g, p, u, exs)
 
     try:
         # only inject attempts if we have not submitted for this attempt
