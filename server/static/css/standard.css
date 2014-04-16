@@ -125,8 +125,8 @@ a.home-nav{
 /** OCTAL **/
 
 .main-octal-wrap{
-    margin: 5em auto 1em auto;
-    display: inline-block;
+    width: 66%;
+    margin: 1em auto;
     padding-bottom: 5em;
     line-height: 1.2;
 }
@@ -142,7 +142,25 @@ h2{
 
 p {
     margin: 1em auto;
-    width: 50%;
+}
+
+#octal-logo {
+    float: right;
+}
+
+ul.logo {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul.logo li {
+    background-image: url('/static/images/octal-logo-32.png');
+    background-size: 16px 16px;
+    background-repeat: no-repeat;
+    background-position: 0px 2px;
+    padding-left: 20px;
+    margin-bottom: 0.5em;
 }
 
 .error {

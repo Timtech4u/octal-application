@@ -2,6 +2,14 @@
     text-align: center;
 }
 
+.main-octal-wrap {
+    margin: 5em auto 1em auto;
+}
+
+p {
+    width: 75%;
+}
+
 #pid {
     font-size: 70%;
     padding: 0.2ex 1ex;

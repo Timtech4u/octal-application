@@ -1,0 +1,28 @@
+{% extends "octal.html" %}
+{% load staticfiles %}
+
+{% block main %}
+
+<div class="main-octal-wrap">
+
+<div id="octal-logo">
+    <img width="128" height="128" src="{% static "images/octal-logo.png" %}" />
+</div>
+
+<h1>OCTAL</h1>
+
+<h2>All Maps</h2>
+
+<p>The following is a list of all maps currently in the OCTAL system.
+Please contribute by <a href="{% url 'maps:new' %}">adding 
+more</a>!</p>
+
+<ul class="logo">
+{% for map in maps %}
+    <li><a href="{% url 'maps:display' gid=map.pk %}">{{ map.name }}</a></li>
+{% endfor %}
+</ul>
+
+</div>
+
+{% endblock %}

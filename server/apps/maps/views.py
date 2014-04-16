@@ -10,7 +10,10 @@ from apps.research.utils import getParticipantByUID, handleSurveys, urlLanding
 import json
 
 def display_all(request):
-    return HttpResponse("listing all graphs")
+    graphs = Graphs.objects.all()
+
+    return render_to_response("maps-all.html",{"maps":graphs},
+                              context_instance=RequestContext(request))
 
 def display(request, gid):
     try:
@@ -38,7 +41,7 @@ def display(request, gid):
         linear = int(p.linear)
         pid = int(p.pid)
 
-    return render_to_response("app.html",{
+    return render_to_response("map.html",{
                               "full_graph_skeleton": graph, 
                               "graph_name": graph.name,
                               "user_display": linear,
