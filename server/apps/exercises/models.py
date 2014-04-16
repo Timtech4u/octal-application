@@ -15,6 +15,8 @@ class Problems(models.Model):
         ('Short answer',    SHORT),
     )
 
+    graph = models.ForeignKey(Graphs)
+    qid = models.IntegerField()
     question = models.TextField()
     concepts = models.ManyToManyField(Concepts)
     qtype = models.CharField(max_length=1, 

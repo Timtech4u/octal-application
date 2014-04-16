@@ -57,7 +57,7 @@ def fetch_ex(request, gid="", conceptId="", qid=""):
     numRemaining = pr.count()
 
     # filter out the current question, if provided and if possible
-    if qid and numRemaining > 1: pr = pr.exclude(pk=int(qid))
+    if qid and numRemaining > 1: pr = pr.exclude(qid=int(qid))
 
     # if student has completed all, pick one from the total set
     if numRemaining == 0: pr = Problems.objects.filter(concepts=eCon)
@@ -76,7 +76,7 @@ def fetch_ex(request, gid="", conceptId="", qid=""):
         return HttpResponse(status=404)
 
     data = {
-        'qid': pr.pk,
+        'qid': pr.qid,
         'h': pr.question,
         't': pr.qtype,
         'a': [x.response for x in r],
@@ -136,15 +136,16 @@ def set_attempt(request, gid="", attempt="", correct=""):
 def build(request, gid=""):
     #does the requested concept exist?
     try:
-        graph = Graphs.objects.get(pk=gid)
+        g = Graphs.objects.get(pk=gid)
     except Graphs.DoesNotExist:
         return HttpResponse(status=422)
 
-    graph_concepts = graph.concepts_set.all()
+    graph_concepts = g.concepts_set.all()
     concepts = {}
     for c in graph_concepts:
         cid = c.conceptId
-        concepts[cid] = Concepts.objects.get(graph=graph, conceptId=cid)
+        concepts[cid] = c
+        #concepts[cid] = Concepts.objects.get(graph=graph, conceptId=cid)
 
     gdoc = requests.get('https://docs.google.com/spreadsheet/pub?key=0ApfeFyIuuj_MdF9ZS3hXU0pUN0NnMDVIcHFkTlN6V0E&single=true&gid=0&output=csv')
 
@@ -155,7 +156,7 @@ def build(request, gid=""):
     exercises = csv.DictReader(gdoc.content.splitlines())
 
     for e in exercises:
-        pr,t = Problems.objects.get_or_create(pk=e['qid'])
+        pr,t = Problems.objects.get_or_create(graph=g, qid=e['qid'])
 
         # update question text
         pr.question = e['question']
@@ -175,10 +176,10 @@ def build(request, gid=""):
         Responses.objects.filter(problem=pr).delete()
 
         # add answer and distractors
-        Responses.objects.get_or_create(problem=pr, response=e['ans'])
+        Responses(problem=pr, response=e['ans']).save()
         for d in [e['d1'], e['d2'], e['d3']]:
             d = d.strip()
             if not d: continue
-            Responses.objects.get_or_create(problem=pr, response=d, distract=True)
+            Responses(problem=pr, response=d, distract=True).save()
 
     return HttpResponse("Done")
