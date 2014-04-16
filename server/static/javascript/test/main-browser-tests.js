@@ -8,7 +8,6 @@ require.config({
     backbone: "lib/backbone-min",
     d3: "lib/d3",
     "btouch": "lib/backbone.touch",
-    "sidr": "lib/jquery.sidr.min",
     "chai": "lib/chai",
     "mocha": "lib/mocha"
   },
@@ -32,8 +31,7 @@ require.config({
         this.mocha.setup('bdd');
         return this.mocha;
       }
-    },
-    "sidr": ["jquery"]
+    }
   },
   urlArgs: 'bust=' + (new Date()).getTime()
 });

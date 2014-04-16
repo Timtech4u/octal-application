@@ -5,12 +5,15 @@ from django.core.urlresolvers import reverse
 
 from models import Graphs, Concepts
 from utils import graphCheck, GraphIntegrityError
-from apps.research.utils import getParticipantByUID, handleSurveys
+from apps.research.utils import getParticipantByUID, handleSurveys, urlLanding
 
 import json
 
 def display_all(request):
-    return HttpResponse("listing all graphs")
+    graphs = Graphs.objects.filter(public=True).all()
+
+    return render_to_response("maps-all.html",{"maps":graphs},
+                              context_instance=RequestContext(request))
 
 def display(request, gid):
     try:
@@ -29,7 +32,7 @@ def display(request, gid):
 
         #user has no participant ID yet, ask them for it
         if p is None:
-            return HttpResponseRedirect(reverse('maps:research:landing', kwargs={'gid':gid, 'err':''}))
+            return HttpResponseRedirect(urlLanding(gid))
 
         # make sure participant completed the presurvey
         r = handleSurveys(p, gid)
@@ -38,7 +41,7 @@ def display(request, gid):
         linear = int(p.linear)
         pid = int(p.pid)
 
-    return render_to_response("app.html",{
+    return render_to_response("map.html",{
                               "full_graph_skeleton": graph, 
                               "graph_name": graph.name,
                               "user_display": linear,

@@ -77,12 +77,15 @@ def urlLanding(gid, err=""):
 def urlComplete(gid):
     return reverse('maps:research:complete', kwargs={'gid':gid})
 
+def urlSurveyComplete(gid, which):
+    return reverse("maps:research:%ssurvey" % which, kwargs={'gid':gid})
+
 def handleSurveys(p, gid):
     # has the user completed the presurvey yet?
     if not p.presurvey:
         # force users to presurvey while study is ongoing
         if not p.study.complete:
-            return p.study.preSurveyURL(p.pid)
+            return p.study.preSurveyURL(p.pid) or urlSurveyComplete(gid,"pre")
 
         # if the study has completed and no presurvey, they cannot participate
         p.presurvey = True
@@ -92,7 +95,7 @@ def handleSurveys(p, gid):
 
     # only force postsurvey when study is complete
     if p.study.complete and not p.postsurvey:
-        return p.study.postSurveyURL(p.pid)
+        return p.study.postSurveyURL(p.pid) or urlSurveyComplete(gid,"post")
 
     return None
 

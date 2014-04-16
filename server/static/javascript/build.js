@@ -9,7 +9,6 @@
     d3: "lib/d3",
     "btouch": "lib/backbone.touch",
     "colorbox": "lib/jquery.colorbox-min",
-    "sidr": "lib/jquery.sidr.min",
     "completely": "lib/complete.ly.1.0.1"
   },
   shim: {
@@ -31,7 +30,6 @@
     },
     "btouch": {
       deps: ["jquery", "underscore", "backbone"]
-    },
-    "sidr": ["jquery"]
+    }
   }
 })
