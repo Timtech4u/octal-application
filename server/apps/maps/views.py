@@ -10,7 +10,7 @@ from apps.research.utils import getParticipantByUID, handleSurveys, urlLanding
 import json
 
 def display_all(request):
-    graphs = Graphs.objects.all()
+    graphs = Graphs.objects.filter(public=True).all()
 
     return render_to_response("maps-all.html",{"maps":graphs},
                               context_instance=RequestContext(request))

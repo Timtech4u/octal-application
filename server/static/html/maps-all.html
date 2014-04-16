@@ -19,7 +19,12 @@ more</a>!</p>
 
 <ul class="logo">
 {% for map in maps %}
-    <li><a href="{% url 'maps:display' gid=map.pk %}">{{ map.name }}</a></li>
+    <li>
+        <a href="{% url 'maps:display' gid=map.pk %}">{{ map.name }}</a>
+        {% if map.description %}
+            &mdash; {{ map.description }}
+        {% endif %}    
+    </li>
 {% endfor %}
 </ul>
 
