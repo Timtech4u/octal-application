@@ -60,9 +60,7 @@ def getParticipantByPID(p, gid):
         return None
 
 def participantLogout(user, gid):
-    p = None
-    if user.is_authenticated():
-        p = getParticipantByUID(user.pk, gid)
+    p = getParticipantByUID(user.pk, gid)
 
     if p is None: return False
 
@@ -78,12 +76,6 @@ def urlLanding(gid, err=""):
 
 def urlComplete(gid):
     return reverse('maps:research:complete', kwargs={'gid':gid})
-
-def presurveyRedirect(p):
-    return HttpResponseRedirect("https://www.surveymonkey.com/s/BLDLBCW?c="+p.pid) 
-
-def postsurveyRedirect(p):
-    return HttpResponseRedirect("https://www.surveymonkey.com/s/DQTNRZ6?c="+p.pid)
 
 def handleSurveys(p, gid):
     # has the user completed the presurvey yet?
