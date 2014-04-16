@@ -47,7 +47,7 @@ def fetch_ex(request, gid="", conceptId="", qid=""):
         completed = completed.filter(participant=p)
      
     # we need to differentiate non-participants by their user profile id
-     if not g.study_active or not p.isParticipant():
+    if not g.study_active or not p.isParticipant():
          completed = completed.filter(user=user)
    
     completed = completed.values('exercise').distinct()

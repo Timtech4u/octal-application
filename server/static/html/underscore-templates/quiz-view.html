@@ -4,7 +4,7 @@
 	<div id="logout">
               <% if(pid != 99999) { %>
                 You are currently logged in as a participant, click <a href="/participant/logout/" target="_self">here</a> to log out
-              <% } else { %>
+              <% } else if(agfkGlobals.study_active == 1){ %>
                 If you are a participant in the CS10 study, click
                 <a href="/participant/logout/" target="_self">here</a> to log in
               <% } %>
