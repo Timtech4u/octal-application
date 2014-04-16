@@ -31,7 +31,7 @@ define(["backbone", "underscore"], function(Backbone) {
                     //});
                 },
                 getBaseUrl: function() {
-                    return "/maps/" + this.get("gid") + "/concepts/" + this.get("concept");
+                    return "/maps/" + this.get("gid");
                 }
 
 				
