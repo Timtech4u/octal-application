@@ -66,7 +66,8 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                     thisModel.set("a", shuffle(thisModel.get("a")));
                     var h = _.clone(thisModel.toJSON());
                     h.pid = agfkGlobals.pid,
-                        h.linear = agfkGlobals.linear;
+                        h.linear = agfkGlobals.linear,
+                        h.studyActive = agfkGlobals.studyActive;
 
                     thisView.$el.html(thisView.template(h));
 /*
