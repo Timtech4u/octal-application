@@ -25,30 +25,6 @@ input{
     font-family: "Lucida Grande" arial sans-serif;
 }
 
-/* ----------------------------------------------------*/
-/* ---------->>> Pure CSS Customizations <<<-----------*/
-/* ----------------------------------------------------*/
-.sidr ul li.sidr-class-join-line{
-    display: none;
-}
-
-.sidr-class-home-nav{
-    display: none;
-}
-
-#sidr-id-header-search-input{
-    display: none;
-}
-
-#sidr-id-mobile-header{
-    display: none;
-}
-
-#responsive-menu-button{
-    font-size: 100%;
-}
-
-
 /* ---------------------------------------------------*/
 /* ---------->>> General Functional Styles<<<---------*/
 /* ---------------------------------------------------*/

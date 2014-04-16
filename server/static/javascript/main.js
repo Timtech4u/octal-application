@@ -15,7 +15,6 @@ requirejs.config({
     "dagre": "lib/dagre",
     "btouch": "lib/backbone.touch",
     "colorbox": "lib/jquery.colorbox-min",
-    "sidr": "lib/jquery.sidr.min",
     "completely": "lib/complete.ly.1.0.1"
   },
   shim: {
@@ -40,8 +39,7 @@ requirejs.config({
     },
     "btouch": {
       deps: ["jquery", "underscore", "backbone"]
-    },
-    "sidr": ["jquery"]
+    }
   },
   waitSeconds: 15
 });
@@ -66,8 +64,8 @@ if (window.PRODUCTION){
   };
 }
 
-// agfk app & gen-utils
-requirejs(["backbone", "utils/utils", "agfk/routers/router", "gen-utils","agfk/models/aux-model", "jquery", "btouch", "sidr", "colorbox"], function(Backbone, Utils, AppRouter, GenPageUtils, AuxModel, $){
+// agfk app
+requirejs(["backbone", "utils/utils", "agfk/routers/router", "agfk/models/aux-model", "jquery", "btouch", "colorbox"], function(Backbone, Utils, AppRouter, AuxModel, $){
   "use strict";
 
   // handle noscript content
@@ -86,8 +84,6 @@ requirejs(["backbone", "utils/utils", "agfk/routers/router", "gen-utils","agfk/m
     };
     return oldSync(method, model, options);
   };
-
-  GenPageUtils.prep();
 
   // automatically resize window when viewport changes
   Utils.scaleWindowSize("header", "main");
