@@ -33,6 +33,7 @@ def studyFilter(g, p, u, query):
     return query
 
 def getParticipantByUID(uid, gid):
+    if uid is None: return None
     u, created = User.objects.get_or_create(pk=uid)
 
     try:

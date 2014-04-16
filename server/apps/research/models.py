@@ -33,7 +33,7 @@ class Participants(models.Model):
     """
     Stores valid participant IDs
     """
-    pid = models.CharField(max_length=5, unique=True)
+    pid = models.CharField(max_length=32)
     study = models.ForeignKey(Studies)
     linear = models.BooleanField(default=False)
     presurvey = models.BooleanField(default=False)

@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {% block extra-css %}
-    <link rel="stylesheet" href="{% static "css/octal-landing.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/research-landing.css" %}"/>
 {% endblock %}
 
 {% block header-search %}    
@@ -25,7 +25,7 @@
     as much as you would like!</p>
 
     <p>
-    <a href="/participant/pid/99999">Return to OCTAL</a>
+    <a href="{% url 'maps:research:handlepid' gid=gid pid=sid %}">Return to OCTAL</a>
     </p>
 </div>
 

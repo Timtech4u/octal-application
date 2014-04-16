@@ -10,19 +10,31 @@ from utils import getParticipantByPID, getParticipantByUID, handleSurveys, parti
 @require_study_active
 @allow_lazy_user
 def landing(request, gid="", err=0):
+    if getParticipantByUID(request.user.pk, gid) is not None:
+        return HttpResponseRedirect(urlHome(gid))
+
     try:
         s = Studies.objects.get(graph__pk=gid)
     except Studies.DoesNotExist:
         return HttpResponse(status=404)
     return render_to_response("research-landing.html", 
-                              {"gid":gid,"pid":s.spectatorID,"err":err},
+                              {"gid":gid,"sid":s.spectatorID,"err":err},
                               context_instance=RequestContext(request))
 
 @require_study_active
 @allow_lazy_user
 def complete(request, gid=""):
+    try:
+        s = Studies.objects.get(graph__pk=gid)
+    except Studies.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if not s.complete:
+        return HttpResponseRedirect(urlHome(gid))
+
     participantLogout(request.user, gid)
-    return render_to_response("research-complete.html",
+    return render_to_response("research-complete.html", 
+                              {"gid":gid, "sid":s.spectatorID},
                               context_instance=RequestContext(request))
 
 
@@ -30,7 +42,7 @@ def complete(request, gid=""):
 @allow_lazy_user
 def logout(request, gid=""):
     participantLogout(request.user, gid)
-    return HttpResponseRedirect(urlHome(gid))
+    return HttpResponseRedirect(urlLanding(gid))
 
 @require_study_active
 @allow_lazy_user
@@ -56,7 +68,7 @@ def handle_pid(request, gid="", pid=""):
     redirect = handleSurveys(p, gid)
 
     if redirect is None:
-        if p.study.complete and p.isParticipant():
+        if s.complete and p.isParticipant():
             redirect = urlComplete(gid)
         else:
             redirect = urlHome(gid)
@@ -65,9 +77,7 @@ def handle_pid(request, gid="", pid=""):
 
 @require_study_active
 def presurvey(request, gid=""):
-    p = None
-    if request.user.is_authenticated():
-        p = getParticipantByUID(request.user.pk, gid)
+    p = getParticipantByUID(request.user.pk, gid)
 
     if p is None:
         return HttpResponseRedirect(urlLanding(gid))
@@ -79,12 +89,15 @@ def presurvey(request, gid=""):
 
 @require_study_active
 def postsurvey(request, gid=""):
-    if not STUDY_COMPLETE:
-        return HttpResponseRedirect(redirectHome(gid))
+    try:
+        s = Studies.objects.get(graph__pk=gid)
+    except Studies.DoesNotExist:
+        return HttpResponse(status=404)
 
-    p = None
-    if request.user.is_authenticated():
-        p = getParticipantByUID(request.user.pk, gid)
+    if not s.complete:
+        return HttpResponseRedirect(urlHome(gid))
+
+    p = getParticipantByUID(request.user.pk, gid)
 
     if p is None:
         return HttpResponseRedirect(urlLanding(gid))
