@@ -128,7 +128,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'apps.maps',
     'apps.exercises',
-    'apps.participant',
+    'apps.research',
     'south',
     'compressor',
     'lazysignup',

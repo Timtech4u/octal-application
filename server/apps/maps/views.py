@@ -1,10 +1,11 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.core.urlresolvers import reverse
 
 from models import Graphs, Concepts
 from utils import graphCheck, GraphIntegrityError
-from apps.participant.utils import getParticipantByUID, handleSurveys
+from apps.research.utils import getParticipantByUID, handleSurveys
 
 import json
 
@@ -12,8 +13,6 @@ def display_all(request):
     return HttpResponse("listing all graphs")
 
 def display(request, gid):
-    concept_tag = request.path.split("/")[-1].split("#")[0]
-
     try:
         graph = Graphs.objects.get(pk=gid)
     except Graphs.DoesNotExist:
@@ -23,23 +22,25 @@ def display(request, gid):
     p = None
     linear = 1
     pid = -1
+
     if graph.study_active:
         if request.user.is_authenticated():
-            p = getParticipantByUID(request.user.pk)
+            p = getParticipantByUID(request.user.pk, gid)
 
         #user has no participant ID yet, ask them for it
         if p is None:
-            return HttpResponseRedirect('/participant/')
+            return HttpResponseRedirect(reverse('maps:research:landing', kwargs={'gid':gid, 'err':''}))
 
         # make sure participant completed the presurvey
-        r = handleSurveys(p)
-        if r is not None: return r
+        r = handleSurveys(p, gid)
+        if r is not None: return HttpResponseRedirect(r)
 
         linear = int(p.linear)
         pid = int(p.pid)
 
     return render_to_response("app.html",{
                               "full_graph_skeleton": graph, 
+                              "graph_name": graph.name,
                               "user_display": linear,
                               "pid": pid,
                               "study_active": int(graph.study_active),
@@ -73,7 +74,7 @@ def build(request, gid=""):
     # graph checks out, let's insert it
     try:
         graph, new = Graphs.objects.get_or_create(pk=gid)
-    except Graph.DoesNotExist():
+    except Graphs.DoesNotExist():
         return HttpResponse(status=404)
 
     if not new: graph.concepts_set.all().delete()

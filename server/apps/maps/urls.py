@@ -5,12 +5,13 @@ from apps.maps import views
 from apps.ki.views import knowledge_inference
 
 urlpatterns = patterns('',
-                       url(r'^$', views.display_all, name='displayall'),
-                       url(r'^new/?', views.new_graph, name='newgraph'),
+                       url(r'^$', views.display_all, name='display_all'),
+                       url(r'^new/?', views.new_graph, name='new'),
                        url(r'^(?P<gid>[0-9]+)', include(patterns('',
                            url(r'^/build/?$', views.build, name='build'),
-                           url(r'^/exercises/', include('apps.exercises.urls', namespace="exs")),
+                           url(r'^/exercises/', include('apps.exercises.urls', namespace="exercises")),
                            url(r'^/ki/?$', knowledge_inference, name="ki"),
+                           url(r'^/research/', include('apps.research.urls', namespace='research')),
                            url(r'', views.display, name='display'),
                            ))),
 )
