@@ -40,7 +40,7 @@ def fetch_ex(request, gid="", conceptId="", qid=""):
 
     completed = Attempts.objects.filter(concept=eCon).filter(correct=True)
 
-    # we need to collect data by participant IDs for studies
+    # we need to collect data by participant IDs for studies!
     p = getParticipantByUID(request.user.pk, gid)
     if g.study_active and p is None:
         return HttpResponse(status=401)
