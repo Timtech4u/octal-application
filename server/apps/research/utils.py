@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
@@ -73,10 +73,10 @@ def urlHome(gid):
     return reverse('maps:display', kwargs={'gid':gid})
 
 def urlLanding(gid, err=""):
-    return reverse('maps:study:landing', kwargs={'gid':gid, 'err':err})
+    return reverse('maps:research:landing', kwargs={'gid':gid, 'err':err})
 
 def urlComplete(gid):
-    return reverse('maps:study:complete', kwargs={'gid':gid})
+    return reverse('maps:research:complete', kwargs={'gid':gid})
 
 def presurveyRedirect(p):
     return HttpResponseRedirect("https://www.surveymonkey.com/s/BLDLBCW?c="+p.pid) 

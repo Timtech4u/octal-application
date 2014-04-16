@@ -29,10 +29,10 @@ def display(request, gid):
 
         #user has no participant ID yet, ask them for it
         if p is None:
-            return HttpResponseRedirect(reverse('maps:study:landing', kwargs={'gid':gid, 'err':''}))
+            return HttpResponseRedirect(reverse('maps:research:landing', kwargs={'gid':gid, 'err':''}))
 
         # make sure participant completed the presurvey
-        r = handleSurveys(p)
+        r = handleSurveys(p, gid)
         if r is not None: return HttpResponseRedirect(r)
 
         linear = int(p.linear)
@@ -40,6 +40,7 @@ def display(request, gid):
 
     return render_to_response("app.html",{
                               "full_graph_skeleton": graph, 
+                              "graph_name": graph.name,
                               "user_display": linear,
                               "pid": pid,
                               "study_active": int(graph.study_active),

@@ -1,23 +1,28 @@
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.models import User
 from lazysignup.decorators import allow_lazy_user
 
-from models import Participants, Logins
+from models import Participants, Logins, Studies
 from utils import getParticipantByPID, getParticipantByUID, handleSurveys, participantLogout, urlLanding, urlHome, urlComplete, require_study_active
 
 @require_study_active
 @allow_lazy_user
 def landing(request, gid="", err=0):
-    return render_to_response("study-landing.html", 
-                              {"err":err},
+    try:
+        s = Studies.objects.get(graph__pk=gid)
+    except Studies.DoesNotExist:
+        return HttpResponse(status=404)
+    return render_to_response("research-landing.html", 
+                              {"gid":gid,"pid":s.spectator,"err":err},
                               context_instance=RequestContext(request))
 
 @require_study_active
 @allow_lazy_user
 def complete(request, gid=""):
     participantLogout(request.user, gid)
-    return render_to_response("study-complete.html",
+    return render_to_response("research-complete.html",
                               context_instance=RequestContext(request))
 
 
@@ -30,8 +35,13 @@ def logout(request, gid=""):
 @require_study_active
 @allow_lazy_user
 def handle_pid(request, gid="", pid=""):
-    # check that the pid is valid
-    p = getParticipantByPID(pid)
+    try:
+        s = Studies.objects.get(graph__pk=gid)
+    except Studies.DoesNotExist:
+        return HttpResponse(status=404)
+
+     # check that the pid is valid
+    p = getParticipantByPID(pid, gid)
 
     if p is None:
         return HttpResponseRedirect(urlLanding(gid, '1'))
@@ -40,10 +50,10 @@ def handle_pid(request, gid="", pid=""):
     u, created = User.objects.get_or_create(pk=request.user.pk)
 
     # remember the participant's lazy signup id to rebuild progress
-    Logins.objects.get_or_create(participant=p, user=u)
+    Logins.objects.get_or_create(participant=p, user=u, study=s)
 
     # redirect to pre- or post-survey, as appropriate
-    redirect = handleSurveys(p)
+    redirect = handleSurveys(p, gid)
 
     if redirect is None:
         if p.study.complete and p.isParticipant():
@@ -57,7 +67,7 @@ def handle_pid(request, gid="", pid=""):
 def presurvey(request, gid=""):
     p = None
     if request.user.is_authenticated():
-        p = getParticipantByUID(request.user.pk)
+        p = getParticipantByUID(request.user.pk, gid)
 
     if p is None:
         return HttpResponseRedirect(urlLanding(gid))
@@ -74,7 +84,7 @@ def postsurvey(request, gid=""):
 
     p = None
     if request.user.is_authenticated():
-        p = getParticipantByUID(request.user.pk)
+        p = getParticipantByUID(request.user.pk, gid)
 
     if p is None:
         return HttpResponseRedirect(urlLanding(gid))

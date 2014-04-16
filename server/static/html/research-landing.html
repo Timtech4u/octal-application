@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {% block extra-css %}
-    <link rel="stylesheet" href="{% static "css/octal-landing.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/research-landing.css" %}"/>
 {% endblock %}
 
 {% block header-search %}    
@@ -19,7 +19,8 @@ window.onload = (function(){
         if (event.which === 13 || event.keyCode === 13){
           var cval = event.currentTarget.value;
           if (cval.length > 0){
-            window.location.href = "/participant/pid/" + window.encodeURI(event.currentTarget.value);
+            var pid = window.encodeURI(event.currentTarget.value);
+            window.location.href = "{% url 'maps:research:handlepid' gid=gid pid='' %}" + pid;
           }
         }
     });
@@ -57,7 +58,7 @@ window.onload = (function(){
     </div>
 
     <p>
-    <a href="/participant/pid/99999">I am not a participant in the CS10 
+    <a href="{% url 'maps:research:handlepid' gid=gid pid=pid %}">I am not a participant in the CS10 
     study.</a>
     </p>
 </div>
