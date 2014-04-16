@@ -14,7 +14,7 @@ Django urls handler
 urlpatterns = patterns('',
                        #url(r'^$', RedirectView.as_view(url="/concepts/midterm"), name='start'),
                        #url(r'^$', TemplateView.as_view(template_name="landing.html")),
-                       url(r'^(?i)maps/', include('apps.maps.urls', namespace="maps")),
+                       url(r'^(?i)maps', include('apps.maps.urls', namespace="maps")),
 )
 
 urlpatterns += staticfiles_urlpatterns()
