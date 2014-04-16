@@ -40,17 +40,13 @@ def fetch_ex(request, gid="", conceptId="", qid=""):
 
     completed = Attempts.objects.filter(concept=eCon).filter(correct=True)
 
-    # we need to collect data by participant IDs for studies
-    p = getParticipantByUID(request.user.pk)
-    if g.study_active:
-        if p is None: return HttpResponse(status=401)
-        completed = completed.filter(participant=p)
-     
-    # we need to differentiate non-participants by their user profile id
-    if not g.study_active or not p.isParticipant():
-         completed = completed.filter(user=user)
-   
-    completed = completed.values('exercise').distinct()
+    # we need to collect data by participant IDs for studies!
+    p = getParticipantByUID(request.user.pk, gid)
+    if g.study_active and p is None:
+        return HttpResponse(status=401)
+
+    completed = studyFilter(g, p, user, completed).values('problem').distinct()
+
     numComplete = completed.count()
 
     # filter out questions the user has answered
