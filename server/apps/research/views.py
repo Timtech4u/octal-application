@@ -15,7 +15,7 @@ def landing(request, gid="", err=0):
     except Studies.DoesNotExist:
         return HttpResponse(status=404)
     return render_to_response("research-landing.html", 
-                              {"gid":gid,"pid":s.spectator,"err":err},
+                              {"gid":gid,"pid":s.spectatorID,"err":err},
                               context_instance=RequestContext(request))
 
 @require_study_active

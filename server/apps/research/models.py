@@ -26,7 +26,7 @@ class Studies(models.Model):
             return self.postsurvey_url
 
     def _spectatorID(self):
-        return self.nonparticipant.pid
+        return self.spectator.pid
     spectatorID = property(_spectatorID)
 
 class Participants(models.Model):
