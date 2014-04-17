@@ -1,19 +1,17 @@
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from django.core.urlresolvers import reverse
 
-from models import Graphs, Concepts
+from models import Graphs, Concepts, GraphForm
 from utils import graphCheck, GraphIntegrityError
 from apps.research.utils import getParticipantByUID, handleSurveys, urlLanding
 
-import json
+import json, random
 
 def display_all(request):
     graphs = Graphs.objects.filter(public=True).all()
 
-    return render_to_response("maps-all.html",{"maps":graphs},
-                              context_instance=RequestContext(request))
+    return render(request, "maps-all.html", {"maps":graphs})
 
 def display(request, gid):
     try:
@@ -41,16 +39,23 @@ def display(request, gid):
         linear = int(p.linear)
         pid = int(p.pid)
 
-    return render_to_response("map.html",{
-                              "full_graph_skeleton": graph, 
-                              "graph_name": graph.name,
-                              "user_display": linear,
+    return render(request, "map.html",{"full_graph_skeleton":graph, 
+                              "graph_name":graph.name,
+                              "user_display":linear,
                               "pid": pid,
-                              "study_active": int(graph.study_active),
-                              }, context_instance=RequestContext(request))
+                              "study_active": int(graph.study_active),})
 
 def new_graph(request):
-    return HttpResponse("generate a new graph")
+    if request.method == 'POST':
+        # form submission
+        form = GraphForm(request.POST)
+        if form.is_valid():
+            return HttpResponse("woot accepted")
+    else:
+        s = ''.join(random.choice("abcdefghjkmnpqrtuvwxyz0123456789-_!@") for _ in range(16))
+        form = GraphForm(initial={'secret':s})
+
+    return render(request, "maps-new.html", {'form':form})
 
 def build(request, gid=""):
     graph_json = '[{"id":"algorithmic_complexity","title":"Algorithmic Complexity","dependencies":[{"source":"lists"},{"source":"tail_recursion"},{"source":"tree_recursion"}]},{"id":"concurrency","title":"Concurrency","dependencies":[{"source":"functions"}]},{"id":"conditionals","title":"Conditionals","dependencies":[{"source":"variables"}]},{"id":"fractals","title":"Fractals","dependencies":[{"source":"tree_recursion"},{"source":"tail_recursion"}]},{"id":"functions","title":"Functions","dependencies":[{"source":"variables"}]},{"id":"lists","title":"Lists","dependencies":[{"source":"loops"}]},{"id":"loops","title":"Loops","dependencies":[{"source":"variable_mutation"},{"source":"conditionals"}]},{"id":"midterm","title":"Midterm","dependencies":[{"source":"algorithmic_complexity"},{"source":"fractals"},{"source":"concurrency"}]},{"id":"tail_recursion","title":"Tail Recursion","dependencies":[{"source":"functions"}]},{"id":"tree_recursion","title":"Tree Recursion","dependencies":[{"source":"functions"}]},{"id":"variable_mutation","title":"Variable Mutation","dependencies":[{"source":"variables"}]},{"id":"variables","title":"Variables","dependencies":[]}]'

@@ -139,9 +139,47 @@ ul.logo li {
     margin-bottom: 0.5em;
 }
 
-.error {
+.error, .errorlist {
     font-weight: bold;
     color: #f00;
 }
 
+.secret {
+    display: block;
+    border: 1px solid black;
+    background-color: #ffa;
+    text-align: center;
+    margin: 1em auto;
+    padding: 1em;
+}
 
+.secret span{
+    font-size: 150%;
+    font-weight: bold;
+}
+
+form table {
+    width: 100%;
+    text-align: left;
+    border-collapse: separate;
+    border-spacing: 0 1.5em;
+}
+
+form table th {
+    vertical-align: top;
+}
+
+form input[type=submit] {
+    color: #0069D6;
+    background-color: #F6FBFF;
+    border: 1px solid #0069D6;
+    display: block;
+    margin: 0 auto;
+    font-size: 150%;
+    cursor: pointer;
+}
+
+.helptext {
+    color: #666;
+    font-size: 75%;
+}

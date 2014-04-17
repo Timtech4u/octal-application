@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import ModelForm, Textarea, HiddenInput
 import json
 
 class Graphs(models.Model):
@@ -43,6 +44,24 @@ class Graphs(models.Model):
 
     def __unicode__(self):
         return json.dumps(self.flat)
+
+class GraphForm(ModelForm):
+    class Meta:
+        model = Graphs
+        fields = ['name', 'description', 'public', 'secret', 'study_active']
+        labels = {
+            'name': ("Graph Name"),
+            'study_active': ("Active study?"),
+        }
+        help_texts = {
+            'public': ("Public maps are displayed on the map list. Private maps will still be publicly viewable by anyone with its URL."),
+            'secret': ("The secret is used to modify the graph in the future. Please remember the value of this field!"),
+            'study_active': ("Check this only if you plan to use this map as part of a research investigation."),
+        }
+        widgets = {
+            'description': Textarea(attrs={'cols': 40, 'rows': 2}),
+            'secret': HiddenInput(),
+        }
 
 
 class Concepts(models.Model):

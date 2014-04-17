@@ -1,0 +1,35 @@
+{% extends "octal.html" %}
+{% load staticfiles %}
+
+{% block main %}
+
+<div class="main-octal-wrap">
+
+<div id="octal-logo">
+    <img width="128" height="128" src="{% static "images/octal-logo.png" %}" />
+</div>
+
+<h1>OCTAL</h1>
+
+<h2>Create a new Concept Map</h2>
+
+<p>Please fill out the below information to create a new map.</p>
+
+<form action="{% url 'maps:new' %}" method="post">
+<table>
+    {% csrf_token %}
+    {{ form.as_table }}
+</table>
+
+<p class="secret">Please remember the following secret,
+it will allow you to edit your map in the future:
+<br />
+<span>{{ form.secret.value }}</span>
+</p>
+
+<input type="submit" class="submit" value="Create" />
+</form>
+
+</div>
+
+{% endblock %}
