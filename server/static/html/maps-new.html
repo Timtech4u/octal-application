@@ -1,6 +1,26 @@
 {% extends "octal.html" %}
 {% load staticfiles %}
 
+{% block jscript-extend %}
+<script type="text/javascript">
+// <![CDATA[
+window.onload = (function(){
+    warn = true;
+    $('form').submit(function(event) {
+        if (warn) {
+            $('form input[type=submit]').val("OK, got it!");
+            $('#warn').show();
+            warn = false;
+            return false;
+        }
+        return true;
+    });
+});
+// ]]>
+</script>
+
+{% endblock %}
+ 
 {% block main %}
 
 <div class="main-octal-wrap">
@@ -27,7 +47,11 @@ it will allow you to edit your map in the future:
 <span>{{ form.secret.value }}</span>
 </p>
 
-<input type="submit" class="submit" value="Create" />
+<p class="error" style="display:none;text-align:center" id="warn">Be sure
+you have recorded the above secret, or you will be
+unable to edit your map!</p>
+
+<input type="submit" value="Create" />
 </form>
 
 </div>
