@@ -6,7 +6,8 @@ from models import Graphs, Concepts, GraphForm
 from utils import graphCheck, GraphIntegrityError
 from apps.research.utils import getParticipantByUID, handleSurveys, urlLanding
 
-import json, random
+from random import choice
+import json
 
 def display_all(request):
     graphs = Graphs.objects.filter(public=True).all()
@@ -52,7 +53,8 @@ def new_graph(request):
         if form.is_valid():
             return HttpResponse("woot accepted")
     else:
-        s = ''.join(random.choice("abcdefghjkmnpqrtuvwxyz0123456789-_!@") for _ in range(16))
+        rstr = "abcdefghjkmnpqrtuvwxyzABCDEFGHKMNPQRTUVWXYZ23456789?<>:!@#$%^&*()-_=+"
+        s = ''.join(choice(rstr) for _ in range(16))
         form = GraphForm(initial={'secret':s})
 
     return render(request, "maps-new.html", {'form':form})
