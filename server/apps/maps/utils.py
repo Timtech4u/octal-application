@@ -1,3 +1,5 @@
+from random import choice
+
 class GraphIntegrityError(Exception):
     """
     An exception class for parsing a graph
@@ -59,3 +61,10 @@ def graphCheck(adjacency_list):
 
     return concepts
 
+def generateSecret():
+    """
+    Generate a secret by randomly picking characters from a string
+    """
+    chars = "abcdefghjkmnpqrtuvwxyzABCDEFGHKMNPQRTUVWXYZ23456789?<>:!@#$%^&*()-_=+"
+    return ''.join(choice(chars) for _ in range(16))
+ 

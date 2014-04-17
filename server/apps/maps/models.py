@@ -1,5 +1,6 @@
 from django.db import models
-from django.forms import ModelForm, Textarea, HiddenInput
+from django.forms import ModelForm, Textarea, HiddenInput, CharField, ValidationError
+from utils import graphCheck, GraphIntegrityError
 import json
 
 class Graphs(models.Model):
@@ -42,10 +43,45 @@ class Graphs(models.Model):
         return concepts
     concept_dict = property(_concept_dict)
 
+    def build(self, concepts):
+        generated = {}
+        # recurse through all dependencies, memoizing generated concepts
+        def _build(cid):
+            if cid in generated: return generated[cid]
+            db = Concepts(graph=self, conceptId=cid, name=concepts[cid]["name"])
+            db.save()
+            for depid in concepts[cid]["deps"]:
+                db.dependencies.add(_build(depid))
+            generated[cid] = db
+            return db
+        map(_build, concepts)
+
+
     def __unicode__(self):
         return json.dumps(self.flat)
 
 class GraphForm(ModelForm):
+    graph_json = CharField(label=("Graph JSON"),
+            help_text=("Copy-paste or type the JSON representation of your graph here."),
+            widget=Textarea(attrs={'cols':80, 'rows':10}))
+
+    def clean_graph_json(self):
+        """
+        Validate the JSON as being a kmap structure
+        """
+        json_data = self.cleaned_data['graph_json']
+        try:
+            graph_list = json.loads(json_data)
+        except ValueError:
+            raise ValidationError("Error: malformed JSON")
+
+        try:
+            parsed_concepts = graphCheck(graph_list)
+        except GraphIntegrityError as e:
+            raise ValidationError("Error: %s" % e.value)
+
+        return parsed_concepts
+
     class Meta:
         model = Graphs
         fields = ['name', 'description', 'public', 'secret', 'study_active']
@@ -59,7 +95,7 @@ class GraphForm(ModelForm):
             'study_active': ("Check this only if you plan to use this map as part of a research investigation."),
         }
         widgets = {
-            'description': Textarea(attrs={'cols': 40, 'rows': 2}),
+            'description': Textarea(attrs={'cols':40, 'rows':2}),
             'secret': HiddenInput(),
         }
 

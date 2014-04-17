@@ -3,10 +3,9 @@ from django.shortcuts import render
 from django.core.urlresolvers import reverse
 
 from models import Graphs, Concepts, GraphForm
-from utils import graphCheck, GraphIntegrityError
+from utils import graphCheck, GraphIntegrityError, generateSecret
 from apps.research.utils import getParticipantByUID, handleSurveys, urlLanding
 
-from random import choice
 import json
 
 def display_all(request):
@@ -51,11 +50,15 @@ def new_graph(request):
         # form submission
         form = GraphForm(request.POST)
         if form.is_valid():
-            return HttpResponse("woot accepted")
+            # form is valid, save the graph
+            graph = form.save()
+
+            # build the concepts from the json
+            graph.build(form.cleaned_data["graph_json"])
+
+            return HttpResponseRedirect(reverse("maps:display", kwargs={"gid":graph.pk}))
     else:
-        rstr = "abcdefghjkmnpqrtuvwxyzABCDEFGHKMNPQRTUVWXYZ23456789?<>:!@#$%^&*()-_=+"
-        s = ''.join(choice(rstr) for _ in range(16))
-        form = GraphForm(initial={'secret':s})
+        form = GraphForm(initial={'secret':generateSecret()})
 
     return render(request, "maps-new.html", {'form':form})
 
