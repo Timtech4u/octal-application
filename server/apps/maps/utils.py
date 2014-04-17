@@ -27,13 +27,13 @@ def graphCheck(adjacency_list):
     for index, c in enumerate(adjacency_list):
         # check that this concept contains all expected keys
         if any(key not in c for key in expected):
-            raise GraphIntegrityError("missing key (title, id, or dependencies) from concept %d" % index)
+            raise GraphIntegrityError("missing key (title, id, or dependencies) from concept %d." % index)
         
         # attempt to pull dependencies
         try:
             d = [x['source'] for x in c['dependencies']]
         except KeyError:
-            raise GraphIntegrityError("one or more dependencies in concept %d missing 'source' key" % index)
+            raise GraphIntegrityError("one or more dependencies in concept %d missing 'source' key." % index)
 
         cid = c['id']
         concepts[cid] = { "deps": d, "name": c['title'] }
@@ -43,11 +43,11 @@ def graphCheck(adjacency_list):
     # recurse through dependencies, if any back-edges exist, we have a cycle
     def _dfs_fwd_edge(cid):
         if cid not in concepts:
-            raise GraphIntegrityError("Unknown concept '%s'." % cid)
+            raise GraphIntegrityError("unknown concept '%s'." % cid)
         count[cid] += 1
         if check[cid] is 2: return
         if check[cid] is 1: 
-            raise GraphIntegrityError("Graph is cyclic. Some prerequisite of '%s' depends on it as a prerequisite." % cid)
+            raise GraphIntegrityError("cyclical graph structure. Some prerequisite of '%s' depends on it as a prerequisite." % cid)
         check[cid] = 1
         map(_dfs_fwd_edge, concepts[cid]['deps'])
         check[cid] = 2
@@ -57,7 +57,7 @@ def graphCheck(adjacency_list):
 
     roots = [c for c in count if count[c]+len(concepts[c]["deps"]) is 0]
     if roots:
-        raise GraphIntegrityError("Graph has orphaned concepts: %s" % ', '.join(roots))
+        raise GraphIntegrityError("one or more orphaned concepts (%s) with no pre- or post-requisites." % ', '.join(roots))
 
     return concepts
 
