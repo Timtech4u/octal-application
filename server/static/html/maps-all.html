@@ -1,6 +1,8 @@
 {% extends "octal.html" %}
 {% load staticfiles %}
 
+{% block title %}: all maps{% endblock %}
+
 {% block main %}
 
 <div class="main-octal-wrap">
@@ -21,6 +23,7 @@ more</a>!</p>
 {% for map in maps %}
     <li>
         <a href="{% url 'maps:display' gid=map.pk %}">{{ map.name }}</a>
+        [ <a href="{% url 'maps:edit' gid=map.pk %}">Edit</a> ]
         {% if map.description %}
             &mdash; {{ map.description }}
         {% endif %}    
