@@ -3,7 +3,8 @@ from django.forms import HiddenInput
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
-from models import Graphs, Concepts, GraphForm, KeyForm
+from forms import GraphForm, KeyForm
+from models import Graphs, Concepts
 from utils import graphCheck, GraphIntegrityError, generateSecret
 
 from apps.research.models import Participants, Spectators, Studies, StudyForm
