@@ -58,6 +58,7 @@ window.onload = (function(){
 {% else %}
     {% if gid %}
         <form action="{% url 'maps:edit' gid=gid %}" method="post">
+        {{ forms.key.as_p }}
     {% else %}
         <form action="{% url 'maps:new' %}" method="post">
     {% endif %}        

@@ -1,5 +1,5 @@
 from django.core.urlresolvers import reverse
-from django.forms import TextInput
+from django.forms import HiddenInput
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
@@ -102,12 +102,17 @@ def edit(request, gid=""):
                 f['graph'] = GraphForm(request.POST, instance=g, prefix="graph")
                 f['study'] = StudyForm(request.POST, instance=s, prefix="study")
 
-                if f['graph'].is_valid() and form['study'].is_valid():
+                if f['graph'].is_valid() and f['study'].is_valid():
                     return HttpResponse("yay")
             else:
                 # prepare content; most data is provided by models
+                f['key'] = KeyForm(graph=g, prefix="key",
+                                   initial={'secret':g.secret,'edited':True})
+                f['key'].fields["secret"].widget = HiddenInput()
+
                 f['graph'] = GraphForm(instance=g, prefix="graph",
                                        initial={'graph_json':str(g)})
+                
                 pids = [p.pid for p in s.participants_set.all()]
                 f['study'] = StudyForm(instance=s, prefix="study",
                                        initial={'pids':', '.join(pids)})
