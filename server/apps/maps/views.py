@@ -1,11 +1,12 @@
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
 from django.core.urlresolvers import reverse
+from django.forms import TextInput
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
 
-from models import Graphs, Concepts, GraphForm
+from models import Graphs, Concepts, GraphForm, KeyForm
 from utils import graphCheck, GraphIntegrityError, generateSecret
 
-from apps.research.models import Participants, Spectators, StudyForm
+from apps.research.models import Participants, Spectators, Studies, StudyForm
 from apps.research.utils import getParticipantByUID, handleSurveys, urlLanding
 
 import json
@@ -15,54 +16,26 @@ def display_all(request):
 
     return render(request, "maps-all.html", {"maps":graphs})
 
-def display(request, gid):
-    try:
-        graph = Graphs.objects.get(pk=gid)
-    except Graphs.DoesNotExist:
-        return HttpResponse(status=404)
-
-    #OCTAL experiment: graph linearity based on user id
-    p = None
-    linear = 1
-    pid = -1
-
-    if graph.study_active:
-        if request.user.is_authenticated():
-            p = getParticipantByUID(request.user.pk, gid)
-
-        #user has no participant ID yet, ask them for it
-        if p is None:
-            return HttpResponseRedirect(urlLanding(gid))
-
-        # make sure participant completed the presurvey
-        r = handleSurveys(p, gid)
-        if r is not None: return HttpResponseRedirect(r)
-
-    return render(request, "map.html",{"full_graph_skeleton":graph, 
-                              "graph_name":graph.name,
-                              "linear":int(p.linear),
-                              "participant":int(p.isParticipant()),
-                              "study_active": int(graph.study_active),})
-
 def new_graph(request):
+    f = {}
     if request.method == 'POST':
         # form submission
-        gform = GraphForm(request.POST, prefix="graph")
-        sform = StudyForm(request.POST, prefix="study")
-        if gform.is_valid() and (not gform.cleaned_data["study_active"] or sform.is_valid()):
+        f['graph'] = GraphForm(request.POST, prefix="graph")
+        f['study'] = StudyForm(request.POST, prefix="study")
+        if f['graph'].is_valid() and (not f['graph'].cleaned_data["study_active"] or f['study'].is_valid()):
             # woo all good, save the graph and build its concepts
-            g = gform.save()
-            g.build(gform.cleaned_data["graph_json"])
+            g = f['graph'].save()
+            g.build(f['graph'].cleaned_data["graph_json"])
 
             # insert study data if applicable
-            if gform.cleaned_data["study_active"]:
-                s = sform.save(commit=False)
+            if f['graph'].cleaned_data["study_active"]:
+                s = f['study'].save(commit=False)
                 s.graph = g
                 s.save()
 
                 # build participant list; final one is the spectator
                 p = None
-                for n, pid in enumerate(sform.cleaned_data["pids"]):
+                for n, pid in enumerate(f['study'].cleaned_data["pids"]):
                     p = Participants(pid=pid, study=s, linear=(n%2==1))
                     p.save()
 
@@ -81,11 +54,61 @@ def new_graph(request):
             # all saved, forward to map
             return HttpResponseRedirect(reverse("maps:display", kwargs={"gid":g.pk}))
     else:
-        gform = GraphForm(initial={'secret':generateSecret()}, prefix="graph")
-        sform = StudyForm(prefix="study")
+        f['graph'] = GraphForm(initial={'secret':generateSecret()}, prefix="graph")
+        f['study'] = StudyForm(prefix="study")
 
-    return render(request, "maps-new.html", {'gform':gform,'sform':sform})
+    return render(request, "maps-form.html", {'forms':f})
+
+def display(request, gid):
+    graph = get_object_or_404(Graphs, pk=gid)
+
+    #OCTAL experiment: graph linearity based on user id
+    p = None
+    linear = 1
+    participant = 0
+
+    if graph.study_active:
+        if request.user.is_authenticated():
+            p = getParticipantByUID(request.user.pk, gid)
+
+        #user has no participant ID yet, ask them for it
+        if p is None:
+            return HttpResponseRedirect(urlLanding(gid))
+
+        # make sure participant completed the presurvey
+        r = handleSurveys(p, gid)
+        if r is not None: return HttpResponseRedirect(r)
+
+        linear = int(p.linear)
+        participant = int(p.isParticipant())
+
+    return render(request, "map.html",{"full_graph_skeleton":graph, 
+                              "graph_name":graph.name,
+                              "linear":linear,
+                              "participant":participant,
+                              "study_active": int(graph.study_active),})
 
 def edit(request, gid=""):
-    return HttpResponse("editing a graph")
+    g = get_object_or_404(Graphs, pk=gid)
+    s = get_object_or_404(Studies, pk=gid)
+
+    f = {}
+
+    if request.method == 'POST':
+        f['key'] = KeyForm(request.POST, graph=g, prefix="key")
+        if f['key'].is_valid():
+            # user has entered a valid secret, save edited content or show form
+            if f['key'].cleaned_data['edited']:
+                f['graph'] = GraphForm(request.POST, instance=g, prefix="graph")
+                f['study'] = StudyForm(request.POST, instance=s, prefix="study")
+
+                if f['graph'].is_valid() and form['study'].is_valid():
+                    return HttpResponse("yay")
+            else:
+                f['graph'] = GraphForm(instance=g, prefix="graph")
+                f['study'] = StudyForm(instance=s, prefix="study")
+    else:
+        f['key'] = KeyForm(graph=g, prefix="key")
+
+    return render(request, "maps-form.html", {'forms':f, 'gid':gid})
 

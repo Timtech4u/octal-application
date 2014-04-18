@@ -8,11 +8,12 @@
 // <![CDATA[
 window.onload = (function(){
     // show or hide study table based on study active checkbox
-    active = $('#id_{{ gform.prefix }}-study_active');
+    active = $('#id_{{ forms.graph.prefix }}-study_active');
     toggle = function(e) { $('#tbl_study').toggle(active.prop("checked")); };
     active.click(toggle);
     toggle();
     
+{% if not gid %}
     // warn user to record secret before continuing
     warn = true;
     $('form').submit(function(event) {
@@ -24,6 +25,7 @@ window.onload = (function(){
         }
         return true;
     });
+{% endif %}
 });
 // ]]>
 </script>
@@ -40,36 +42,54 @@ window.onload = (function(){
 
 <h1>OCTAL</h1>
 
-<h2>Create a new Concept Map</h2>
+<h2>{% if not gid %}Create a new{% else %}Edit a{% endif %} concept map</h2>
 
-<p>Please fill out the below information to create a new map.</p>
+<p>Please fill out the below information to 
+{% if not gid %}create a new{% else %}edit a {% endif %}map.</p>
 
-<form action="{% url 'maps:new' %}" method="post">
-{% csrf_token %}
-<table>
-    {{ gform.as_table }}
-</table>
+{% if not forms.graph %}
 
-<div id="tbl_study">
-    <h3>Research study options</h3>
+    <form action="{% url 'maps:edit' gid=gid %}" method="post">
+    {% csrf_token %}
+    <div class="secret">
+        <p>Please enter this map's secret to continue.</p>
+        {{ forms.key.as_p }}
+    </div>
+    {{ forms.key.edited }}
+
+    <input type="submit" value="Go" />
+    </form>
+
+{% else %}
+
+    <form action="{% url 'maps:new' %}" method="post">
+    {% csrf_token %}
     <table>
-        {{ sform.as_table }}
+        {{ forms.graph.as_table }}
     </table>
-</div>
 
-<p class="secret">Please remember the following secret,
-it will allow you to edit your map in the future:
-<br />
-<span>{{ gform.secret.value }}</span>
-</p>
+    <div id="tbl_study">
+        <h3>Research study options</h3>
+        <table>
+            {{ forms.study.as_table }}
+        </table>
+    </div>
 
-<p class="error" style="display:none;text-align:center" id="warn">Be sure
-you have recorded the above secret, or you will be
-unable to edit your map!</p>
+    {% if not gid %}
+    <p class="secret">Please remember the following secret,
+    it will allow you to edit your map in the future:
+    <br />
+    <span>{{ forms.graph.secret.value }}</span>
+    </p>
+    {% endif %}
 
-<input type="submit" value="Create" />
-</form>
+    <p class="error" style="display:none;text-align:center" id="warn">Be sure
+    you have recorded the above secret, or you will be
+    unable to edit your map!</p>
 
-</div>
+    <input type="submit" value="{% if gid %}Save{% else %}Create{% endif %}" />
+    </form>
+    </div>
 
+{% endif %}
 {% endblock %}
