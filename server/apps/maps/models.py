@@ -116,10 +116,16 @@ class GraphForm(forms.ModelForm):
         }
 
 class KeyForm(forms.Form):
+    """
+    This form passes along data to ensure the user has authority to edit a map
+    """
     secret = forms.CharField(max_length=16, label=("Secret Key"))
     edited = forms.BooleanField(required=False, initial=False, widget=forms.HiddenInput())
 
     def clean(self):
+        """
+        When validating the form, compare the key against the graph's secret
+        """
         cleaned_data = super(KeyForm, self).clean()
         if self._graph.secret != cleaned_data.get("secret"):
             raise forms.ValidationError("Incorrect secret")
