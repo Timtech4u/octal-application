@@ -44,7 +44,7 @@ def display(request, gid):
     return render(request, "map.html",{"full_graph_skeleton":graph, 
                               "graph_name":graph.name,
                               "user_display":linear,
-                              "pid": pid,
+                              "participant":int(p.isParticipant()),
                               "study_active": int(graph.study_active),})
 
 def new_graph(request):

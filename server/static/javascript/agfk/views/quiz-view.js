@@ -65,10 +65,10 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                     //Shuffle the order of the answer choices and render the view
                     thisModel.set("a", shuffle(thisModel.get("a")));
                     var h = _.clone(thisModel.toJSON());
-                    h.pid = agfkGlobals.pid,
-                        h.linear = agfkGlobals.linear,
-                        h.studyActive = agfkGlobals.studyActive,
-                        h.gid = thisView.model.get("gid");
+                    h.participant = agfkGlobals.participant,
+                    h.linear = agfkGlobals.linear,
+                    h.studyActive = agfkGlobals.studyActive,
+                    h.gid = thisView.model.get("gid");
 
                     thisView.$el.html(thisView.template(h));
 /*
