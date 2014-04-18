@@ -51,7 +51,7 @@ define(["backbone", "jquery", "agfk/models/quiz-model", "agfk/views/quiz-view", 
 
             if(!thisRoute.graphView) {
                 thisRoute.graphView = new GraphView({model: thisRoute.graphModel, appRouter: thisRoute, includeShortestOutlink: true });
-                thisRoute.graphModel.addJsonNodesToGraph(agfkGlobals.auxData);
+                thisRoute.graphModel.addJsonNodesToGraph(oGlobals.auxData);
 
                 thisRoute.graphView.optimizeGraphPlacement(false, false);
                 thisRoute.graphView.render();

@@ -65,14 +65,14 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                     //Shuffle the order of the answer choices and render the view
                     thisModel.set("a", shuffle(thisModel.get("a")));
                     var h = _.clone(thisModel.toJSON());
-                    h.participant = agfkGlobals.participant,
-                    h.linear = agfkGlobals.linear,
-                    h.studyActive = agfkGlobals.studyActive,
+                    h.participant = oGlobals.participant,
+                    h.linear = oGlobals.linear,
+                    h.studyActive = oGlobals.studyActive,
                     h.gid = thisView.model.get("gid");
 
                     thisView.$el.html(thisView.template(h));
 /*
-                    if(!agfkGlobals.linear) {
+                    if(!oGlobals.linear) {
                         if( !pvt.graphRendered) {
                             //add graph view as subview to quiz view.  view.
                             var expView = thisView.options.appRouter.expView;
@@ -150,7 +150,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
                             crossDomain: false, // obviates need for sameOrigin test
                             beforeSend: function(xhr, settings) {
                                 if (!csrfSafeMethod(settings.type)) {
-                                    xhr.setRequestHeader("X-CSRFToken", agfkGlobals.csrftoken);
+                                    xhr.setRequestHeader("X-CSRFToken", oGlobals.csrftoken);
                                 }
                             }
                         });
@@ -221,7 +221,7 @@ define(["backbone", "underscore", "jquery", "agfk/models/quiz-model"], function(
 
                 },
                 highlightNodes: function() {
-                    if(!agfkGlobals.linear) {
+                    if(!oGlobals.linear) {
                         //console.log(pvt.knownConcepts)
                         //mega-ghetto
                         thisView.$el.find('circle').css('fill',pvt.viewConsts.neutralColor);
