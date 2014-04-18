@@ -45,7 +45,8 @@ window.onload = (function(){
 {% if not gid %}create a new{% else %}edit a {% endif %}map.</p>
 
 {% if not forms.graph %}
-    <form action="{% url 'maps:edit' gid=gid %}" method="post">
+    <form action="{% url 'maps:edit' gid=gid %}" method="post" 
+    autocomplete="off" autocapitalize="off" autocorrect="off">
     {% csrf_token %}
     <div class="secret">
         <p>Please enter this map's secret to continue.</p>

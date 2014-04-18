@@ -119,8 +119,15 @@ class KeyForm(forms.Form):
     """
     This form passes along data to ensure the user has authority to edit a map
     """
-    secret = forms.CharField(max_length=16, label=("Secret Key"))
-    edited = forms.BooleanField(required=False, initial=False, widget=forms.HiddenInput())
+    secret = forms.CharField(max_length=16, label=("Secret Key"), 
+                             widget=forms.TextInput(attrs={
+                                 'autocomplete':'off',
+                                 'autocorrect':'off',
+                                 'autocapitalize':'off',
+                                 'autofocus':'autofocus',
+                                 }))
+    edited = forms.BooleanField(required=False, initial=False, 
+                                widget=forms.HiddenInput())
 
     def clean(self):
         """
