@@ -43,11 +43,12 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
                     if(!this.model) {
                         this.template = _.template(document.getElementById(pvt.viewConsts.altTemplateId).innerHTML);
                         h = {
-                            gid: this.gid, 
+                            gid: this.options.gid, 
                             studyActive:oGlobals.studyActive,
                             participant:oGlobals.participant
                         };
                         this.$el.html(this.template(h));
+                        this.getKnowledgeState("/maps/"+this.options.gid);
                         return;
                     }
 
@@ -99,7 +100,7 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
 
                     pvt.isRendered = true;
 
-                    this.getKnowledgeState();
+                    this.getKnowledgeState(thisModel.getBaseUrl());
                     return this;
                 },
 
@@ -163,7 +164,7 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
                             }
                         })
                         //request to get new question
-                        thisView.getKnowledgeState();
+                        thisView.getKnowledgeState(thisView.model.getBaseUrl());
                     } else if(!attempt) {
                         $('#question-feedback').fadeOut(100,function(){$(this).html('Make sure to select a response!').css('color','black').fadeIn()});
                     }
@@ -201,11 +202,11 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
                 },
 
 
-                getKnowledgeState: function() {
+                getKnowledgeState: function(baseURL) {
                     thisView = this;
 
                     $.ajax({
-                        url: thisView.model.getBaseUrl()+"/ki/"
+                        url: baseURL+"/ki/"
                     }).done(function(data) {
                         pvt.knownConcepts = data;
                         thisView.highlightNodes();
