@@ -1,7 +1,7 @@
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.contrib.auth.models import User
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render_to_response
+from django.template import RequestContext
 from lazysignup.decorators import allow_lazy_user
 
 from models import Logins, Studies, Spectators
@@ -24,10 +24,7 @@ def landing(request, gid="", err=0):
 @require_study_active
 @allow_lazy_user
 def complete(request, gid=""):
-    try:
-        s = Spectators.objects.get(study=gid)
-    except Spectators.DoesNotExist:
-        return HttpResponse(status=404)
+    s = get_object_or_404(Spectators, study=gid)
 
     if not s.complete:
         return HttpResponseRedirect(urlHome(gid))
@@ -47,10 +44,7 @@ def logout(request, gid=""):
 @require_study_active
 @allow_lazy_user
 def handle_pid(request, gid="", pid=""):
-    try:
-        s = Studies.objects.get(graph__pk=gid)
-    except Studies.DoesNotExist:
-        return HttpResponse(status=404)
+    s = get_object_or_404(Studies, graph=gid)
 
      # check that the pid is valid
     p = getParticipantByPID(pid, gid)
@@ -89,10 +83,7 @@ def presurvey(request, gid=""):
 
 @require_study_active
 def postsurvey(request, gid=""):
-    try:
-        s = Studies.objects.get(graph__pk=gid)
-    except Studies.DoesNotExist:
-        return HttpResponse(status=404)
+    s = get_object_or_404(Studies, graph=gid)
 
     if not s.complete:
         return HttpResponseRedirect(urlHome(gid))

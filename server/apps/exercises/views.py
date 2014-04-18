@@ -1,14 +1,14 @@
-import json
-import requests, csv
-
-from django.http import HttpResponse
-from lazysignup.decorators import allow_lazy_user
 from django.contrib.auth.models import User
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from lazysignup.decorators import allow_lazy_user
 
 from models import Problems, Responses, Attempts
-from apps.maps.models import Graphs, Concepts
 
+from apps.maps.models import Graphs, Concepts
 from apps.research.utils import getParticipantByUID, studyFilter
+
+import json, requests, csv
 
 def fetch_attempt_id(u, p, g, con, pr):
     attempt = studyFilter(g, p, u, Attempts.objects.filter(graph=g))
@@ -25,15 +25,8 @@ def fetch_attempt_id(u, p, g, con, pr):
 @allow_lazy_user
 def fetch_ex(request, gid="", conceptId="", qid=""):
     #does the requested concept exist in the graph?
-    try:
-        g = Graphs.objects.get(pk=gid)
-    except Graphs.DoesNotExist:
-        return HttpResponse(status=422)
-
-    try:
-        eCon = Concepts.objects.get(graph=g, conceptId=conceptId)
-    except Concepts.DoesNotExist:
-        return HttpResponse(status=422)
+    g = get_object_or_404(Graphs, pk=gid)
+    eCon = get_object_or_404(Concepts, graph=g, conceptId=conceptId)
 
     if not request.user.is_authenticated(): return HttpResponse(status=403)
     user, ucreated = User.objects.get_or_create(pk=request.user.pk)
@@ -89,10 +82,7 @@ def fetch_ex(request, gid="", conceptId="", qid=""):
 
 @allow_lazy_user
 def set_attempt(request, gid="", attempt="", correct=""):
-    try:
-        g = Graphs.objects.get(pk=gid)
-    except Graphs.DoesNotExist:
-        return HttpResponse(status=422)
+    g = get_object_or_404(Graphs, pk=gid)
 
     if not request.user.is_authenticated(): return HttpResponse(status=403)
     u, pc = User.objects.get_or_create(pk=request.user.pk)
@@ -134,11 +124,7 @@ def set_attempt(request, gid="", attempt="", correct=""):
         return HttpResponse(status=405)
 
 def build(request, gid=""):
-    #does the requested concept exist?
-    try:
-        g = Graphs.objects.get(pk=gid)
-    except Graphs.DoesNotExist:
-        return HttpResponse(status=422)
+    g = get_object_or_404(Graphs, pk=gid)
 
     graph_concepts = g.concepts_set.all()
     concepts = {}
