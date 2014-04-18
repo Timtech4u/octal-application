@@ -40,7 +40,7 @@ class Participants(models.Model):
         return u'%d' % (int(self.pid))
 
     def isParticipant(self):
-        return self.pid != self.study.spectatorID
+        return hasattr(self, 'spectators')
 
 class Spectators(models.Model):
     study = models.OneToOneField(Studies, primary_key=True)
