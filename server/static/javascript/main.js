@@ -64,8 +64,8 @@ if (window.PRODUCTION){
   };
 }
 
-// agfk app
-requirejs(["backbone", "utils/utils", "agfk/routers/router", "agfk/models/aux-model", "jquery", "btouch", "colorbox"], function(Backbone, Utils, AppRouter, AuxModel, $){
+// octal app
+requirejs(["backbone", "utils/utils", "octal/routers/router", "octal/models/aux-model", "jquery", "btouch", "colorbox"], function(Backbone, Utils, AppRouter, AuxModel, $){
   "use strict";
 
   // handle noscript content
