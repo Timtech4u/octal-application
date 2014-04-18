@@ -38,12 +38,9 @@ def display(request, gid):
         r = handleSurveys(p, gid)
         if r is not None: return HttpResponseRedirect(r)
 
-        linear = int(p.linear)
-        pid = int(p.pid)
-
     return render(request, "map.html",{"full_graph_skeleton":graph, 
                               "graph_name":graph.name,
-                              "user_display":linear,
+                              "linear":int(p.linear),
                               "participant":int(p.isParticipant()),
                               "study_active": int(graph.study_active),})
 
@@ -77,6 +74,9 @@ def new_graph(request):
 
                 # save the spectator
                 Spectators(participant=p, study=s).save()
+            else:
+                # insert blank study
+                Studies(graph=g).save()
 
             # all saved, forward to map
             return HttpResponseRedirect(reverse("maps:display", kwargs={"gid":g.pk}))

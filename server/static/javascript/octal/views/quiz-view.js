@@ -65,9 +65,9 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
                     //Shuffle the order of the answer choices and render the view
                     thisModel.set("a", shuffle(thisModel.get("a")));
                     var h = _.clone(thisModel.toJSON());
-                    h.participant = oGlobals.participant,
-                    h.linear = oGlobals.linear,
-                    h.studyActive = oGlobals.studyActive,
+                    h.participant = oGlobals.participant;
+                    h.linear = oGlobals.linear;
+                    h.studyActive = oGlobals.studyActive;
                     h.gid = thisView.model.get("gid");
 
                     thisView.$el.html(thisView.template(h));
