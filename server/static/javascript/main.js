@@ -14,7 +14,6 @@ requirejs.config({
     d3: "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.5/d3.min",
     "dagre": "lib/dagre",
     "btouch": "lib/backbone.touch",
-    "colorbox": "//cdnjs.cloudflare.com/ajax/libs/jquery.colorbox/1.4.33/jquery.colorbox-min",
     "completely": "lib/complete.ly.1.0.1"
   },
   shim: {
@@ -26,9 +25,6 @@ requirejs.config({
     },
     dagre: {
       exports: "dagre"
-    },
-    colorbox: {
-      deps: ["jquery"]
     },
     underscore: {
       exports: "_"
@@ -65,7 +61,7 @@ if (window.PRODUCTION){
 }
 
 // octal app
-requirejs(["backbone", "utils/utils", "octal/routers/router", "jquery", "btouch", "colorbox"], function(Backbone, Utils, AppRouter, $){
+requirejs(["backbone", "utils/utils", "octal/routers/router", "jquery", "btouch"], function(Backbone, Utils, AppRouter, $){
   "use strict";
 
   // handle noscript content

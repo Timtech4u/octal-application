@@ -8,7 +8,6 @@
     backbone: "lib/backbone-min",
     d3: "lib/d3",
     "btouch": "lib/backbone.touch",
-    "colorbox": "lib/jquery.colorbox-min",
     "completely": "lib/complete.ly.1.0.1"
   },
   shim: {
@@ -18,10 +17,7 @@
     d3: {
       exports: "d3"
     },
-    colorbox: {
-      deps: ["jquery"]
-    },
-   underscore: {
+    underscore: {
       exports: "_"
     },
     backbone: {
