@@ -65,14 +65,13 @@ if (window.PRODUCTION){
 }
 
 // octal app
-requirejs(["backbone", "utils/utils", "octal/routers/router", "octal/models/aux-model", "jquery", "btouch", "colorbox"], function(Backbone, Utils, AppRouter, AuxModel, $){
+requirejs(["backbone", "utils/utils", "octal/routers/router", "jquery", "btouch", "colorbox"], function(Backbone, Utils, AppRouter, $){
   "use strict";
 
   // handle noscript content
   $("body").css("overflow", "hidden");
 
   // initialize global auxData
-  window.oGlobals.auxModel = new AuxModel(window.oGlobals.auxData, {parse: true});
 
   // shim for CSRF token integration with backbone and django
   var oldSync = Backbone.sync;
