@@ -14,10 +14,11 @@ define(["backbone", "jquery", "octal/models/quiz-model", "octal/views/quiz-view"
             $('#quiz-view-wrapper').html("<p>Sorry!  We don't recognize the URL you have entered!</p>");
         },
 
-
-        showIntro: function(gid) {
+         showIntro: function(gid) {
             this.gid = gid;
-            $("#quiz-view-wrapper").html("<p>Welcome to <strong>OCTAL</strong>, the Online Course Tool for Adaptive Learning.</p> <p>You will see a number of concepts and you can click on one to see an exercise associated with that concept. As you answer problems, this tool will try to predict your learning and it will highlight concepts with a <strong>green color</strong> that it estimates you understand well. This estimation of your understanding is a new feature so you should continue answering problems in any concept, green or not, if you like.</p> <p>Enjoy the tool, we hope you find it useful.</p>");
+            this.qview = new QuizView({gid: gid});
+            this.qview.render();
+            $("#quiz-view-wrapper").html(this.qview.$el).show();
             this.renderGraph();
         },
 
@@ -35,13 +36,15 @@ define(["backbone", "jquery", "octal/models/quiz-model", "octal/views/quiz-view"
                     $("#quiz-view-wrapper").html(that.qview.$el).show();
                 },
                 error: function(model, response, options) {
-                    console.log(response);
+                    that.qview = new QuizView({gid: this.gid});
+                    that.qview.render();
+                    $("#quiz-view-wrapper").html(that.qview.$el).show();
                 }
             });
 
             this.renderGraph();
         },
-        renderGraph: function() {
+       renderGraph: function() {
             var thisRoute = this;
 
             //Initialize the graph model and view if they have not been initialized yet

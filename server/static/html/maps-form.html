@@ -42,7 +42,7 @@ window.onload = (function(){
 
 <h2>{% if not gid %}Create a new{% else %}Edit a{% endif %} concept map</h2>
 <p>Please fill out the below information to 
-{% if not gid %}create a new{% else %}edit a {% endif %}map.</p>
+{% if not gid %}create a new{% else %}edit a{% endif %} map.</p>
 
 {% if not forms.graph %}
     <form action="{% url 'maps:edit' gid=gid %}" method="post" 

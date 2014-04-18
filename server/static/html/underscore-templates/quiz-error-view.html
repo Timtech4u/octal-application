@@ -1,57 +1,24 @@
-<script type="text/template" id="quiz-view-template">
+<script type="text/template" id="quiz-error-view-template">
 
-	<div class="quiz" <% if (linear == 1)  { %> id="linear-quiz" <% } %> >
-	<div id="logout">
-              <% if(studyActive == 1) {
-                    if(pid != 99999) { %>
-                    You are currently logged in as a participant, click <a href="/maps/<%= gid %>/research/logout/" target="_self">here</a> to log out
-                  <% } else { %>
-                    If you are a participant in the CS10 study, click
-                    <a href="/maps/<%= gid %>/research/logout/" target="_self">here</a> to log in
-                  <% }
-                 }%>
+       <div id="logout">
+             <% if(studyActive == 1) {
+                   if(!participant) { %>
+                   You are currently logged in as a participant, click <a href="/maps/<%= gid %>/research/logout/" target="_self">here</a> to log out
+                 <% } else { %>
+                   If you are a participant in the CS10 study, click
+                   <a href="/maps/<%= gid %>/research/logout/" target="_self">here</a> to log in
+                 <% }
+                }%>
 
-    </div>
-    <br />
-    <h1 class="title"><strong><% if (title) { %>
-				<%= title %>
-    <%} else {%>
-        Placeholder
-    <% } %>
-		</strong>
-    </h1>
-    <% if(t != 1) { %>
-    <div id="questions-remaining"> <span id="correct-count"><%= ct-cr %></span> out of <%= ct %> questions completed </div>
-	<% } %>
-	   <hr />
-		<br />
-	  <div class="question-content">
+   </div>
+   <br />
+   <div>
+       <p>Welcome to <strong>OCTAL</strong>, the Online Course Tool for Adaptive Learning.</p>
+       <p>You will see a number of concepts and you can click on one to see an exercise associated with that concept.
+           As you answer problems, this tool will try to predict your learning and it will highlight concepts with a
+           <strong>green color</strong> that it estimates you understand well. This estimation of your understanding
+           is a new feature so you should continue answering problems in any concept, green or not, if you like.</p>
+       <p>Enjoy the tool, we hope you find it useful.</p>
 
-	    <%= h %>
-	  </div>
-		<br />
-	  <div>
-    	<form class="answer">
-				<% if(t == 0) { %>
-				  <% for (var answer in a) { %>
-
-				  <label class ='answer-choice'><input type='radio' name='answer'  value='<%= a[answer] %>'><%= a[answer] %></label>
-
-				  <% } %>
-				<% } %>
-    	</form>
-    	<br />
-			<br />
-        <% if (t != 1) { %>
-        <div id="question-feedback"></div>
-        <div id="check-answer"><span class="lil-icons">✓</span>Check My Answer</div>
-    	<div id="next-question-button">Go To Next Question<span class="lil-icons">↦</span></div>
-        <% } %>
-        <br />
-        <br />
-	  </div>
-	</div>
-	<div id='graph-wrapper'>
-	</div>
+       </div>
 </script>
-

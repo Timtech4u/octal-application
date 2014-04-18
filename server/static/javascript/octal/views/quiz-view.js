@@ -10,6 +10,7 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
             var pvt = {};
             pvt.viewConsts = {
                 templateId: "quiz-view-template",
+                altTemplateId: "quiz-error-view-template",
                 viewId: "quiz",
                 knownColor: '#EDFFED',
                 neutralColor: "#F6FBFF",
@@ -39,6 +40,17 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
 
                 // Re-render the title of the todo item.
                 render: function() {
+                    if(!this.model) {
+                        this.template = _.template(document.getElementById(pvt.viewConsts.altTemplateId).innerHTML);
+                        h = {
+                            gid: this.gid, 
+                            studyActive:oGlobals.studyActive,
+                            participant:oGlobals.participant
+                        };
+                        this.$el.html(this.template(h));
+                        return;
+                    }
+
                     //Get local variables
                     pvt.isRendered = false;
                     var thisView = this;
@@ -71,26 +83,7 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
                     h.gid = thisView.model.get("gid");
 
                     thisView.$el.html(thisView.template(h));
-/*
-                    if(!oGlobals.linear) {
-                        if( !pvt.graphRendered) {
-                            //add graph view as subview to quiz view.  view.
-                            var expView = thisView.options.appRouter.expView;
-                            pvt.expView = expView;
-                            var fnode = thisView.options.appRouter.graphModel.getNode(thisView.concept);
-                            thisView.options.appRouter.expView.centerForNode(fnode);
-                            thisView.options.appRouter.expView.setFocusNode(fnode);
-                            thisView.$el.find('#graph-wrapper').append(expView.el);
-                            var svg = expView.el.getElementsByTagName('svg')[0];
-                            //svg.setAttribute('viewBox', '0, -800, 1200, 1000');
-                            //set border thicker on current node
-                            //thisView.$el.find("#"+ pvt.conceptName).find('ellipse').css('stroke-width',7)
-                            pvt.graphRendered = true;
-                        } else {
-                            thisView.$el.find('#graph-wrapper').append(pvt.expView.el);
-                        }
-                    }
-*/
+
                     //Add some behavior to the check-answer and next question buttons
                     //TODO: I wonder if there isn't a better way/place to do this
                     thisView.$el.find('#check-answer').click(function() {
