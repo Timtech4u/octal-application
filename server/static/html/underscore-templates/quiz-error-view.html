@@ -1,16 +1,14 @@
 <script type="text/template" id="quiz-error-view-template">
-
-       <div id="logout">
-             <% if(studyActive == 1) {
-                   if(!participant) { %>
-                   You are currently logged in as a participant, click <a href="/maps/<%= gid %>/research/logout/" target="_self">here</a> to log out
-                 <% } else { %>
-                   If you are a participant in the CS10 study, click
-                   <a href="/maps/<%= gid %>/research/logout/" target="_self">here</a> to log in
-                 <% }
-                }%>
-
-   </div>
+    <div id="logout">
+        <% if(studyActive == 1) {
+            if(participant) { %>
+                You are currently logged in as a participant, click 
+                <a href="/maps/<%= gid %>/research/logout/" target="_self">here</a> to log out
+            <% } else { %>
+                If you are a participant in the study, click
+                <a href="/maps/<%= gid %>/research/logout/" target="_self">here</a> to log in
+            <% }
+        } %>
    <br />
    <div>
        <p>Welcome to <strong>OCTAL</strong>, the Online Course Tool for Adaptive Learning.</p>

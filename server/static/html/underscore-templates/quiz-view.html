@@ -1,7 +1,7 @@
 <script type="text/template" id="quiz-view-template">
 
 	<div class="quiz" <% if (linear == 1)  { %> id="linear-quiz" <% } %> >
-	<div id="logout">
+    <div id="logout">
         <% if(studyActive == 1) {
             if(participant) { %>
                 You are currently logged in as a participant, click 
@@ -11,7 +11,6 @@
                 <a href="/maps/<%= gid %>/research/logout/" target="_self">here</a> to log in
             <% }
         } %>
-
     </div>
     <br />
     <h1 class="title"><strong><% if (title) { %>
