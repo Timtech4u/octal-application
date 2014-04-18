@@ -78,19 +78,19 @@ class GraphForm(ModelForm):
         try:
             parsed_concepts = graphCheck(graph_list)
         except GraphIntegrityError as e:
-            raise ValidationError("Error: %s" % e.value)
+            raise ValidationError("Error: %(val)s", params={'val':e.value})
 
         return parsed_concepts
 
     class Meta:
         model = Graphs
-        fields = ['name', 'description', 'public', 'secret', 'study_active']
+        fields = ['name', 'description', 'public', 'graph_json', 'study_active', 'secret']
         labels = {
             'name': ("Graph Name"),
-            'study_active': ("Active study?"),
+            'study_active': ("Research study"),
         }
         help_texts = {
-            'public': ("Public maps are displayed on the map list. Private maps will still be publicly viewable by anyone with its URL."),
+            'public': ("Public maps are displayed on the map list. Private maps will still be publicly viewable by anyone with the URL."),
             'secret': ("The secret is used to modify the graph in the future. Please remember the value of this field!"),
             'study_active': ("Check this only if you plan to use this map as part of a research investigation."),
         }

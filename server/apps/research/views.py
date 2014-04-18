@@ -4,7 +4,7 @@ from django.template import RequestContext
 from django.contrib.auth.models import User
 from lazysignup.decorators import allow_lazy_user
 
-from models import Participants, Logins, Studies
+from models import Participants, Logins, Studies, Spectators
 from utils import getParticipantByPID, getParticipantByUID, handleSurveys, participantLogout, urlLanding, urlHome, urlComplete, require_study_active
 
 @require_study_active
@@ -14,19 +14,19 @@ def landing(request, gid="", err=0):
         return HttpResponseRedirect(urlHome(gid))
 
     try:
-        s = Studies.objects.get(graph__pk=gid)
-    except Studies.DoesNotExist:
+        s = Spectators.objects.get(study=gid)
+    except Spectators.DoesNotExist:
         return HttpResponse(status=404)
     return render_to_response("research-landing.html", 
-                              {"gid":gid,"sid":s.spectatorID,"err":err},
+                              {"gid":gid,"sid":s.pid,"err":err},
                               context_instance=RequestContext(request))
 
 @require_study_active
 @allow_lazy_user
 def complete(request, gid=""):
     try:
-        s = Studies.objects.get(graph__pk=gid)
-    except Studies.DoesNotExist:
+        s = Spectators.objects.get(study=gid)
+    except Spectators.DoesNotExist:
         return HttpResponse(status=404)
 
     if not s.complete:
@@ -34,7 +34,7 @@ def complete(request, gid=""):
 
     participantLogout(request.user, gid)
     return render_to_response("research-complete.html", 
-                              {"gid":gid, "sid":s.spectatorID},
+                              {"gid":gid, "sid":s.pid},
                               context_instance=RequestContext(request))
 
 

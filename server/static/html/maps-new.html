@@ -7,6 +7,13 @@
 <script type="text/javascript">
 // <![CDATA[
 window.onload = (function(){
+    // show or hide study table based on study active checkbox
+    active = $('#id_{{ gform.prefix }}-study_active');
+    toggle = function(e) { $('#tbl_study').toggle(active.prop("checked")); };
+    active.click(toggle);
+    toggle();
+    
+    // warn user to record secret before continuing
     warn = true;
     $('form').submit(function(event) {
         if (warn) {
@@ -38,15 +45,22 @@ window.onload = (function(){
 <p>Please fill out the below information to create a new map.</p>
 
 <form action="{% url 'maps:new' %}" method="post">
+{% csrf_token %}
 <table>
-    {% csrf_token %}
-    {{ form.as_table }}
+    {{ gform.as_table }}
 </table>
+
+<div id="tbl_study">
+    <h3>Research study options</h3>
+    <table>
+        {{ sform.as_table }}
+    </table>
+</div>
 
 <p class="secret">Please remember the following secret,
 it will allow you to edit your map in the future:
 <br />
-<span>{{ form.secret.value }}</span>
+<span>{{ gform.secret.value }}</span>
 </p>
 
 <p class="error" style="display:none;text-align:center" id="warn">Be sure
