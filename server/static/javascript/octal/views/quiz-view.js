@@ -224,10 +224,7 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
                     if(!oGlobals.linear) {
                         //console.log(pvt.knownConcepts)
                         //mega-ghetto
-                        thisView.$el.find('circle').css('fill',pvt.viewConsts.neutralColor);
-                        //for (var i = 0; i < unknownConcepts.length; i++) {
-                        //  this.$el.find("#"  + unknownConcepts[i]).find('ellipse').css('fill', pvt.viewConsts.unknownColor);
-                        //}
+                        $('circle').css('fill',pvt.viewConsts.neutralColor);
                         for (var i = 0; i < pvt.knownConcepts.length; i++) {
                             try {
                                 $($('#circlgG-' + pvt.knownConcepts[i]).find('circle')[0]).css('fill', pvt.viewConsts.knownColor);

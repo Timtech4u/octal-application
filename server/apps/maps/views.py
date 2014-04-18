@@ -64,7 +64,7 @@ def display(request, gid):
 
     #OCTAL experiment: graph linearity based on user id
     p = None
-    linear = 1
+    linear = 0
     participant = 0
 
     if graph.study_active:
