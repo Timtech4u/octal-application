@@ -64,13 +64,19 @@ def new_graph(request):
                 s.save()
 
                 # build participant list; final one is the spectator
-                sid = None
+                p = None
                 for n, pid in enumerate(sform.cleaned_data["pids"]):
-                    sid = Participants(pid=pid, graph=g, linear=(n%2==1))
-                    sid.save()
+                    p = Participants(pid=pid, study=s, linear=(n%2==1))
+                    p.save()
+
+                # spectators don't need to do pre- and post-surveys
+                p.presurvey = True
+                p.postsurvey = True
+                p.linear = False
+                p.save()
 
                 # save the spectator
-                Spectators(participant=sid, study=s).save()
+                Spectators(participant=p, study=s).save()
 
             # all saved, forward to map
             return HttpResponseRedirect(reverse("maps:display", kwargs={"gid":g.pk}))

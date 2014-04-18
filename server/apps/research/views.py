@@ -4,7 +4,7 @@ from django.template import RequestContext
 from django.contrib.auth.models import User
 from lazysignup.decorators import allow_lazy_user
 
-from models import Participants, Logins, Studies, Spectators
+from models import Logins, Studies, Spectators
 from utils import getParticipantByPID, getParticipantByUID, handleSurveys, participantLogout, urlLanding, urlHome, urlComplete, require_study_active
 
 @require_study_active
