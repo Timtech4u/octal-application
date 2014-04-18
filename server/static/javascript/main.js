@@ -8,13 +8,13 @@
 requirejs.config({
   baseUrl: window.STATIC_PATH + "javascript",
   paths: {
-    jquery:"lib/jquery-1.10.2",
-    underscore: "lib/underscore",
-    backbone: "lib/backbone-min",
-    d3: "lib/d3",
+    jquery:"//code.jquery.com/jquery-2.1.0.min",
+    underscore: "//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min",
+    backbone: "//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min",
+    d3: "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.5/d3.min",
     "dagre": "lib/dagre",
     "btouch": "lib/backbone.touch",
-    "colorbox": "lib/jquery.colorbox-min",
+    "colorbox": "//cdnjs.cloudflare.com/ajax/libs/jquery.colorbox/1.4.33/jquery.colorbox-min",
     "completely": "lib/complete.ly.1.0.1"
   },
   shim: {
@@ -71,8 +71,6 @@ requirejs(["backbone", "utils/utils", "octal/routers/router", "jquery", "btouch"
   // handle noscript content
   $("body").css("overflow", "hidden");
 
-  // initialize global auxData
-
   // shim for CSRF token integration with backbone and django
   var oldSync = Backbone.sync;
   Backbone.sync = function(method, model, options){
@@ -86,23 +84,6 @@ requirejs(["backbone", "utils/utils", "octal/routers/router", "jquery", "btouch"
 
   // automatically resize window when viewport changes
   Utils.scaleWindowSize("header", "main");
-
-  $("body").on("mousedown", ".external-link", function(evt){
-    if(window._paq){
-      window._paq.push(['trackLink', evt.currentTarget.href, "link"]);
-    }
-  });
-  $(window).on("hashchange", function() {
-    if(window._paq){
-      window._paq.push(['trackPageView', window.location.hash]);
-    }
-  });
-  // track clicking between learning and explore view
-  $("body").on("click", ".toggle-lc-button", function(evt){
-    if(window._paq){
-      window._paq.push(['trackPageView', evt.currentTarget.id]);
-    }
-  });
 
   var appRouter = new AppRouter();
   Backbone.history.start({ pushState:true} );

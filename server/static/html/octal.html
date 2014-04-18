@@ -98,21 +98,6 @@
 
     {% compress js %}
     {% block jscript %}
-    {% include "load-jquery-snippet.html" %}
-    <script>
-      if (window.PRODUCTION){
-      $("body").on("mousedown", ".external-link", function(evt){
-      if(window._paq){
-      window._paq.push(['trackLink', evt.currentTarget.href, "link"]);
-      }
-      });
-      $(window).on("hashchange", function() {
-      if(window._paq){
-      window._paq.push(['trackPageView', window.location.hash]);
-      }
-      });
-      }
-    </script>
     {% endblock %}
 
     {% block jscript-extend %}
@@ -123,20 +108,5 @@
 
     {% endblock %}
 
-    <script>
-      // piwik server-side tracking
-      if (window.PRODUCTION){
-      var _paq = _paq || [];
-      _paq.push(['trackPageView', window.location.href.split('/').pop()]);
-      (function() {
-      var u=(("https:" == document.location.protocol) ? "https" : "http") + "://metacademy.org/analytics/piwik//";
-      _paq.push(['setTrackerUrl', u+'piwik.php']);
-      _paq.push(['setSiteId', 1]);
-      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript';
-      g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-      })();
-      // log internal and external views (piwik won't track if the client has donottrack set)
-      }
-    </script>
   </body>
 </html>

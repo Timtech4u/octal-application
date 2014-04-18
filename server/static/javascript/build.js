@@ -3,7 +3,7 @@
   name: "main.js",
   out: "main-built.js",
     paths: {
-    jquery:"lib/jquery-1.10.2",
+    jquery:"//code.jquery.com/jquery-2.1.0.min",
     underscore: "lib/underscore",
     backbone: "lib/backbone-min",
     d3: "lib/d3",
