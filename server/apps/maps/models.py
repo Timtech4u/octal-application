@@ -56,7 +56,6 @@ class Graphs(models.Model):
             return db
         map(_build, concepts)
 
-
     def __unicode__(self):
         return json.dumps(self.flat)
 

@@ -105,8 +105,12 @@ def edit(request, gid=""):
                 if f['graph'].is_valid() and form['study'].is_valid():
                     return HttpResponse("yay")
             else:
-                f['graph'] = GraphForm(instance=g, prefix="graph")
-                f['study'] = StudyForm(instance=s, prefix="study")
+                # prepare content; most data is provided by models
+                f['graph'] = GraphForm(instance=g, prefix="graph",
+                                       initial={'graph_json':str(g)})
+                pids = [p.pid for p in s.participants_set.all()]
+                f['study'] = StudyForm(instance=s, prefix="study",
+                                       initial={'pids':', '.join(pids)})
     else:
         f['key'] = KeyForm(graph=g, prefix="key")
 

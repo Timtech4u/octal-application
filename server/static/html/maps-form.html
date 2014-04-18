@@ -7,29 +7,27 @@
 <script type="text/javascript">
 // <![CDATA[
 window.onload = (function(){
-    // show or hide study table based on study active checkbox
-    active = $('#id_{{ forms.graph.prefix }}-study_active');
-    toggle = function(e) { $('#tbl_study').toggle(active.prop("checked")); };
-    active.click(toggle);
-    toggle();
-    
+  // show or hide study table based on study active checkbox
+  active = $('#id_{{ forms.graph.prefix }}-study_active');
+  toggle = function(e) { $('#tbl_study').toggle(active.prop("checked")); };
+  active.click(toggle);
+  toggle();
 {% if not gid %}
-    // warn user to record secret before continuing
-    warn = true;
-    $('form').submit(function(event) {
-        if (warn) {
-            $('form input[type=submit]').val("OK, got it!");
-            $('#warn').show();
-            warn = false;
-            return false;
-        }
-        return true;
-    });
+  // warn user to record secret before continuing
+  warn = true;
+  $('form').submit(function(event) {
+    if (warn) {
+      $('form input[type=submit]').val("OK, got it!");
+      $('#warn').show();
+      warn = false;
+      return false;
+    }
+    return true;
+  });
 {% endif %}
 });
 // ]]>
 </script>
-
 {% endblock %}
  
 {% block main %}
@@ -37,7 +35,7 @@ window.onload = (function(){
 <div class="main-octal-wrap">
 
 <div id="octal-logo">
-    <img width="128" height="128" src="{% static "images/octal-logo.png" %}" />
+    <img width="128" height="128" alt="OCTAL logo" src="{% static "images/octal-logo.png" %}" />
 </div>
 
 <h1>OCTAL</h1>
