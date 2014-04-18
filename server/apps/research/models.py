@@ -1,6 +1,6 @@
+from django import forms
 from django.db import models
 from django.contrib.auth.models import User
-from django.forms import ModelForm, CharField, Textarea, TextInput, ValidationError
 import re
 
 from apps.maps.models import Graphs
@@ -61,10 +61,10 @@ class Logins(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
 
-class StudyForm(ModelForm):
-    pids = CharField(label=("Participant List"),
+class StudyForm(forms.ModelForm):
+    pids = forms.CharField(label=("Participant List"),
             help_text=("List all participant IDs for the study, separated by a comma. The last participant ID is reserved as a spectator and will be used for non-participants. Whitespace (spaces, tabs, etc) is removed. Valid IDs are up to 32 alphanumeric characters."),
-            widget=Textarea(attrs={'cols':80, 'rows':10}))
+            widget=forms.Textarea(attrs={'cols':80, 'rows':10}))
 
     def clean_pids(self):
         """
@@ -75,13 +75,13 @@ class StudyForm(ModelForm):
 
         # validate string
         if re.search('[^0-9a-zA-Z,]', plist_str):
-            raise ValidationError("Please enter only letters, numbers, and commas.")
+            raise forms.ValidationError("Please enter only letters, numbers, and commas.")
 
         # remove leading or trailing commas, split into list
         plist = re.sub('^,|,$', '', plist_str).split(',')
 
         if len(plist) < 2:
-            raise ValidationError("You must enter at least two participants.")
+            raise forms.ValidationError("You must enter at least two participants.")
 
         return plist
 
@@ -99,6 +99,6 @@ class StudyForm(ModelForm):
             'postsurvey_url': ("Participants will be automatically forwarded to this URL once the study has completed. Enter the URL of the post-survey. If the URL contains '%s', the participant ID will replace it in the URL. Leave blank for no post-survey."),
         }
         widgets = {
-            'presurvey_url': TextInput(attrs={'size':80}),
-            'postsurvey_url': TextInput(attrs={'size':80}),
+            'presurvey_url': forms.TextInput(attrs={'size':80}),
+            'postsurvey_url': forms.TextInput(attrs={'size':80}),
         }
