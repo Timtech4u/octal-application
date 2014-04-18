@@ -8,12 +8,8 @@
     backbone: "lib/backbone-min",
     d3: "lib/d3",
     "btouch": "lib/backbone.touch",
-    "completely": "lib/complete.ly.1.0.1"
   },
   shim: {
-    completely: {
-      exports: "completely"
-    },
     d3: {
       exports: "d3"
     },

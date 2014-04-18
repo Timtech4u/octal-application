@@ -26,6 +26,8 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
 
             return Backbone.View.extend({
 
+                initialize: function(options) { this.options = options; },
+
                 template: _.template(document.getElementById( pvt.viewConsts.templateId).innerHTML),
 
                 tagName:  'div',

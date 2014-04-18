@@ -14,12 +14,8 @@ requirejs.config({
     d3: "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.5/d3.min",
     "dagre": "lib/dagre",
     "btouch": "lib/backbone.touch",
-    "completely": "lib/complete.ly.1.0.1"
   },
   shim: {
-    completely: {
-      exports: "completely"
-    },
     d3: {
       exports: "d3"
     },
