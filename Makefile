@@ -53,12 +53,6 @@ $(LOCAL_DBS): |$(LOCAL_DBS_DIR)
 $(LOCAL_DBS_DIR):
 	mkdir $(LOCAL_DBS_DIR)
 
-node_modules/mocha-phantomjs: node_modules/phantomjs
-	npm install mocha-phantomjs
-
-node_modules/phantomjs:
-	npm install phantomjs
-
 # TODO get confirmation from user
 cleandist:
 	-rm -r $(VENV)
@@ -68,7 +62,7 @@ cleandist:
 clean:
 	find . -name "*.pyc" -print0 | xargs -0 rm -rf
 
-test: $(VENV_ACTIVATE) | node_modules/mocha-phantomjs
+test: $(VENV_ACTIVATE)
 	./Tests.sh
 
 build_production:
