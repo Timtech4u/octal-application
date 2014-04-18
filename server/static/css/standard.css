@@ -149,7 +149,7 @@ ul.logo li {
     border: 1px solid black;
     background-color: #ffa;
     text-align: center;
-    margin: 1em auto;
+    margin: 1em auto 0 auto;
     padding: 1em;
 }
 
@@ -186,6 +186,7 @@ form input[type=submit] {
     font-size: 150%;
     cursor: pointer;
     font-weight: bold;
+    margin: 1em auto;
 }
 
 .helptext {
