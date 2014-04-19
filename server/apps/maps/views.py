@@ -3,7 +3,7 @@ from django.forms import HiddenInput
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
-from forms import GraphForm, KeyForm
+from forms import GraphForm, NodesFormSetFactory, KeyForm
 from models import Graphs, Concepts
 from utils import graphCheck, GraphIntegrityError, generateSecret
 
@@ -102,23 +102,26 @@ def edit(request, gid=""):
             if f['key'].cleaned_data['edited']:
                 f['graph'] = GraphForm(request.POST, instance=g, prefix="graph")
                 f['study'] = StudyForm(request.POST, instance=s, prefix="study")
+                f['nodes'] = NodesFormSetFactory(g, post=request.POST)
 
-                if f['graph'].is_valid() and f['study'].is_valid():
+                if f['graph'].is_valid() and f['study'].is_valid() and f['nodes'].is_valid():
                     return HttpResponse("yay")
             else:
                 # prepare content; most data is provided by models
-                f['key'] = KeyForm(graph=g, prefix="key",
-                                   initial={'secret':g.secret,'edited':True})
+                ki = {'secret':g.secret, 'edited': True}
+                f['key'] = KeyForm(graph=g, prefix="key", initial=ki)
                 f['key'].fields["secret"].widget = HiddenInput()
 
-                f['graph'] = GraphForm(instance=g, prefix="graph",
-                                       initial={'graph_json':str(g)})
+                #gi = {'graph_json':str(g)}
+                f['graph'] = GraphForm(instance=g, prefix="graph")
+                f['graph'].fields["graph_json"].widget = HiddenInput()
                 
                 pids = [p.pid for p in s.participants_set.all()]
-                f['study'] = StudyForm(instance=s, prefix="study",
-                                       initial={'pids':', '.join(pids)})
+                si = {'pids':', '.join(pids)}
+                f['study'] = StudyForm(instance=s, prefix="study", initial=si)
+
+                f['nodes'] = NodesFormSetFactory(g)
     else:
         f['key'] = KeyForm(graph=g, prefix="key")
 
     return render(request, "maps-form.html", {'forms':f, 'gid':gid})
-

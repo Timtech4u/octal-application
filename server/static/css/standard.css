@@ -189,6 +189,10 @@ form input[type=submit] {
     margin: 1em auto;
 }
 
+#formset input, #formset select {
+    width: 97%;
+}
+
 .helptext {
     color: #666;
     font-size: 75%;

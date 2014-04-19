@@ -1,5 +1,5 @@
 from django import forms
-from models import Graphs
+from models import Graphs, Concepts
 
 class GraphForm(forms.ModelForm):
     graph_json = forms.CharField(label=("Graph JSON"),
@@ -40,6 +40,35 @@ class GraphForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'cols':40, 'rows':2}),
             'secret': forms.HiddenInput(),
         }
+
+
+def NodesFormSetFactory(g, post=None):
+    def _form_factory(g):
+        """
+        A closure to restrict the dependencies to those in the supplied graph
+        """
+        class NodesForm(forms.ModelForm):
+            def __init__(self, *args, **kwargs):
+                super(NodesForm, self).__init__(*args, **kwargs)
+                self.fields['dependencies'].queryset = Concepts.objects.filter(graph=g)
+            class Meta:
+                model = Concepts
+                #fields = ['name', 'conceptId', 'dependencies']
+                exclude = ['conceptId']
+                labels = {
+                    #'conceptId': ("Concept ID"),
+                    'name': ("Concept Title"),
+                }
+                help_texts = {
+                    #'conceptId': ("A unique identifier for a concept. Numbers, lowercase letters, and underscore are allowed."),
+                    'dependencies': ("A list of other concept IDs that are a prerequisite for this concept."),
+                }
+        return NodesForm
+
+    NodesFormSet = forms.models.inlineformset_factory(Graphs, Concepts)
+    NodesForm = NodesFormSet(post, instance=g)
+    NodesForm.form = _form_factory(g)
+    return NodesForm
 
 class KeyForm(forms.Form):
     """
