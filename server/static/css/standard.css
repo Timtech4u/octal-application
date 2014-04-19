@@ -101,7 +101,7 @@ a.home-nav{
 /** OCTAL **/
 
 .main-octal-wrap{
-    width: 66%;
+    width: 80%;
     margin: 1em auto;
     padding-bottom: 5em;
     line-height: 1.2;
@@ -162,7 +162,7 @@ form table {
     width: 100%;
     text-align: left;
     border-collapse: separate;
-    border-spacing: 0 1.5em;
+    border-spacing: 0 1em;
 }
 
 #tbl_study {
@@ -174,12 +174,12 @@ form table {
 
 form table th {
     vertical-align: top;
-    padding-right: 1em;
     width: 20%;
+    table-layout: fixed;
 }
 
 form input[type=submit] {
-    background-color: #EDFFED;
+    background-color: #F6FBFF;
     border: 1px solid black;
     display: block;
     margin: 0 auto;
@@ -187,10 +187,23 @@ form input[type=submit] {
     cursor: pointer;
     font-weight: bold;
     margin: 1em auto;
+    width: 6em;
+    height: 6em;
+    -webkit-border-radius: 3em;
+    -moz-border-radius: 3em;
+    border-radius: 3em;
 }
 
-#formset input, #formset select {
-    width: 97%;
+form input[type=submit]:hover {
+    background-color: #EDFFED;
+}
+
+form input, textarea {
+    font-size: 0.75em;
+    width: 95%;
+    padding: .2em;
+    margin: 0;
+    border: 1px solid #aaa;
 }
 
 .helptext {
