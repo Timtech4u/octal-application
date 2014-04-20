@@ -3,12 +3,18 @@
 
 {% block title %}: create new map{% endblock %}
 
+{% block extra-css %}
+<link rel="stylesheet" href="{% static "css/lib/kmapcss/graph.css" %}"/>
+<link rel="stylesheet" href="{% static "css/form.css" %}" />
+{% endblock %}
+
+
 {% block jscript-extend %}
 <script type="text/javascript">
 // <![CDATA[
 window.onload = (function(){
   // show or hide study table based on study active checkbox
-  active = $('#id_{{ forms.graph.prefix }}-study_active');
+/*  active = $('#id_{{ forms.graph.prefix }}-study_active');
   toggle = function(e) { $('#tbl_study').toggle(active.prop("checked")); };
   active.click(toggle);
   toggle();
@@ -25,6 +31,7 @@ window.onload = (function(){
     return true;
   });
 {% endif %}
+*/
 });
 // ]]>
 </script>
@@ -68,6 +75,8 @@ window.onload = (function(){
         {{ forms.graph.as_table }}
     </table>
 
+    <div id="edit-view-wrapper" ></div>
+
     <div id="tbl_study">
         <h3>Research study options</h3>
         <table>
@@ -75,40 +84,39 @@ window.onload = (function(){
         </table>
     </div>
 
-    {% if gid %}
-
-{{ forms.nodes.non_form_errors.as_ul }}
-<table id="formset" class="form">
-{% for form in forms.nodes %}
-  {% if forloop.first %}
-  <thead><tr>
-    {% for field in form.visible_fields %}
-    <th>
-        {{ field.label|capfirst }}<br />
-        <span class="helptext">{{ field.help_text }}</span>
-    </th>
-    {% endfor %}
-  </tr></thead>
-  {% endif %}
-  <tr class="{% cycle row1,row2 %}">
-  {% for field in form.visible_fields %}
-    <td>
-    {# Include the hidden fields in the form #}
-    {% if forloop.first %}
-      {% for hidden in form.hidden_fields %}
-      {{ hidden }}
+{% if gid %}
+    {{ forms.nodes.non_form_errors.as_ul }}
+    <table id="formset" class="form">
+    {% for form in forms.nodes %}
+      {% if forloop.first %}
+      <thead><tr>
+        {% for field in form.visible_fields %}
+        <th>
+            {{ field.label|capfirst }}<br />
+            <span class="helptext">{{ field.help_text }}</span>
+        </th>
+        {% endfor %}
+      </tr></thead>
+      {% endif %}
+      <tr class="{% cycle row1,row2 %}">
+      {% for field in form.visible_fields %}
+        <td>
+        {# Include the hidden fields in the form #}
+        {% if forloop.first %}
+          {% for hidden in form.hidden_fields %}
+          {{ hidden }}
+          {% endfor %}
+        {% endif %}
+          {{ field.errors.as_ul }}
+          {{ field }}
+        </td>
       {% endfor %}
-    {% endif %}
-      {{ field.errors.as_ul }}
-      {{ field }}
-    </td>
-  {% endfor %}
-  </tr>
-{% endfor %}
-</table>
+      </tr>
+    {% endfor %}
+    </table>
+{% endif %}
 
-    {% endif %}
-    {% if not gid %}
+{% if not gid %}
     <p class="secret">Please remember the following secret,
     it will allow you to edit your map in the future:
     <br />
@@ -116,13 +124,33 @@ window.onload = (function(){
     </p>
 
     <p class="error" style="display:none;text-align:center" id="warn">Be sure
-    you have recorded the above secret, or you will be
-    unable to edit your map!</p>
-    {% endif %}
+you have recorded the above secret, or you will be unable to edit your map!</p>
+{% endif %}
 
     <input type="submit" value="{% if gid %}Save{% else %}Create{% endif %}" />
     </form>
-    </div>
+</div>
 
 {% endif %}
+
+{% include "quiz-view.html" %}
+{% include "quiz-error-view.html" %}
 {% endblock %}
+
+{% if forms.graph %}
+
+{% block jscript %}
+<script>
+window.oGlobals = {};
+//oGlobals.auxData = {{ full_graph_skeleton|safe }};
+oGlobals.auxData = null;
+oGlobals.auxModel = null; // init in main js app
+</script>
+{% if 1 %}
+<script data-main="{% static "javascript/main.js" %}" type="text/javascript" src="{% static "javascript/lib/require-min.js" %}"></script>
+{% else %}
+<script  src="{% static "javascript/lib/require-min.js" %}"></script>
+<script src="{% static "javascript/main-built.js" %}"></script>
+{% endif %}
+{% endblock %}
+{% endif %}

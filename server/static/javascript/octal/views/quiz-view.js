@@ -1,4 +1,3 @@
-
 define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function(Backbone, _, $, QuestionModel){
 
     var shuffle = function(array) {
@@ -42,6 +41,9 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
 
                 // Re-render the title of the todo item.
                 render: function() {
+                    //prevent scrolling
+                    $("body").css("overflow", "hidden");
+
                     if(!this.model) {
                         this.template = _.template(document.getElementById(pvt.viewConsts.altTemplateId).innerHTML);
                         h = {
