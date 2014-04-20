@@ -1,7 +1,7 @@
 #edit-view-wrapper {
     border:1px solid black;
     width: 100%; 
-    height: 200px;
+    height: 30em;
 }
 
 .error, .errorlist {
@@ -44,7 +44,7 @@ form table th {
 }
 
 form input[type=submit] {
-    background-color: #F6FBFF;
+    background-color: #EDFFED;
     border: 1px solid black;
     display: block;
     margin: 0 auto;
@@ -60,15 +60,28 @@ form input[type=submit] {
 }
 
 form input[type=submit]:hover {
-    background-color: #EDFFED;
+    background-color: #F6FBFF;
 }
 
-form input, textarea {
+form input[type=text], textarea {
     font-size: 0.75em;
     width: 95%;
     padding: .2em;
     margin: 0;
     border: 1px solid #aaa;
+}
+
+form input[type=checkbox] {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+#gform tr:last-of-type {
+    display: none;
+}
+
+#tbl_study tr:last-of-type {
+    display: table-row;
 }
 
 .helptext {

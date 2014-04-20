@@ -97,14 +97,11 @@
     </div>
 
     {% compress js %}
-    {% block jscript %}
-    <script src="https://code.jquery.com/jquery-2.1.0.min.js"></script>
-    {% endblock %}
+        {% block jscript %}
+        <script src="https://code.jquery.com/jquery-2.1.0.min.js"></script>
+        {% endblock %}
 
-    {% block jscript-extend %}
-
-    {% endblock %}
-
+        {% block jscript-extend %}{% endblock %}
     {% endcompress %}
 
     {% endblock %}

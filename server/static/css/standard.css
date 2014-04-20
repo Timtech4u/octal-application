@@ -142,3 +142,7 @@ ul.logo li {
 #graph-summary-el {
     top: 110%;
 }
+
+strong {
+    font-weight: bold;
+}

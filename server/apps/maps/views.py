@@ -23,7 +23,6 @@ def new_graph(request):
         # form submission
         f['graph'] = GraphForm(request.POST, prefix="graph")
         f['study'] = StudyForm(request.POST, prefix="study")
-        f['nodes'] = NodesFormSetFactory(post=request.POST)
 
         if f['graph'].is_valid() and (not f['graph'].cleaned_data["study_active"] or f['study'].is_valid()):
             return HttpResponse("yay")
@@ -60,7 +59,6 @@ def new_graph(request):
     else:
         f['graph'] = GraphForm(initial={'secret':generateSecret()}, prefix="graph")
         f['study'] = StudyForm(prefix="study")
-        f['nodes'] = NodesFormSetFactory()
 
     return render(request, "maps-form.html", {'forms':f})
 
@@ -106,25 +104,25 @@ def edit(request, gid=""):
             if f['key'].cleaned_data['edited']:
                 f['graph'] = GraphForm(request.POST, instance=g, prefix="graph")
                 f['study'] = StudyForm(request.POST, instance=s, prefix="study")
-                f['nodes'] = NodesFormSetFactory(g, post=request.POST)
+                f['graph'].fields["json_input"].widget = HiddenInput()
+                f['key'].fields["secret"].widget = HiddenInput()
 
-                if f['graph'].is_valid() and f['study'].is_valid() and f['nodes'].is_valid():
+                if f['graph'].is_valid() and f['study'].is_valid():
                     return HttpResponse("yay")
-                    return HttpResponse(request.POST)
             else:
                 # prepare content; most data is provided by models
                 ki = {'secret':g.secret, 'edited': True}
                 f['key'] = KeyForm(graph=g, prefix="key", initial=ki)
                 f['key'].fields["secret"].widget = HiddenInput()
 
-                #gi = {'json_data':str(g)}
-                f['graph'] = GraphForm(instance=g, prefix="graph")
-                
+                gi = {'json_data':str(g)}
+                f['graph'] = GraphForm(instance=g, prefix="graph", initial=gi)
+                f['graph'].fields["json_input"].widget = HiddenInput()
+
                 pids = [p.pid for p in s.participants_set.all()]
                 si = {'pids':', '.join(pids)}
                 f['study'] = StudyForm(instance=s, prefix="study", initial=si)
 
-                f['nodes'] = NodesFormSetFactory(g)
     else:
         f['key'] = KeyForm(graph=g, prefix="key")
 

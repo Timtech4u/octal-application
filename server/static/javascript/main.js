@@ -74,6 +74,9 @@ requirejs(["backbone", "utils/utils", "octal/routers/router", "jquery", "btouch"
   // automatically resize window when viewport changes
   Utils.scaleWindowSize("header", "main");
 
+  // load any JS defined on the page
+  if (typeof pageUtils === 'function') pageUtils();
+
   var appRouter = new AppRouter();
   Backbone.history.start({ pushState:true} );
 

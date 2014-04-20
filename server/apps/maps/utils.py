@@ -57,7 +57,7 @@ def graphCheck(adjacency_list):
     # check for cyclic dependencies and report an error if one exists
     for c in concepts: _dfs_fwd_edge(c)
 
-    roots = [c for c in count if count[c]+len(concepts[c]["deps"]) is 0]
+    roots = ['"%s"' % concepts[c]['name'] for c in count if count[c]+len(concepts[c]["deps"]) is 0]
     if roots:
         raise GraphIntegrityError("one or more orphaned concepts (%s) with no pre- or post-requisites." % ', '.join(roots))
 

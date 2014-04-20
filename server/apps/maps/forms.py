@@ -6,33 +6,23 @@ import json
 
 class GraphForm(forms.ModelForm):
     json_input = forms.BooleanField(label=("JSON Input"), required=False,
-            help_text=("Check this box to enter the graph structure using JSON."))
+            help_text=("Check this box to define the graph with raw JSON instead of the graph editor."))
     json_data = forms.CharField(label=("Graph JSON"), required=False,
             help_text=("Copy-paste or type the JSON representation of your graph here."),
             widget=forms.Textarea(attrs={'cols':80, 'rows':10}))
 
-    def clean(self):
+    def clean_json_data(self):
         """
-        Validate JSON as being kmap structure if JSON input expected
+        Validate JSON as being kmap structure
         """
-        data = super(GraphForm, self).clean()
-        json_data = data.get('json_data')
-        if not data.get('json_input'):
-            data['json_data'] = None
-        elif not json_data:
-            self._errors['json_data'] = "Graph specification is required"
-        else:
-            try: 
-                graph_list = json.loads(json_data) 
-                data['json_data'] = graphCkeck(graph_list)
-            except ValueError:
-                self._errors['json_data'] = "Error: malformed JSON"
-            except GraphIntegrityError as e:
-                self._errors['json_data'] = "Error: %s" % e
-
-        if 'json_data' in self._errors:
-            del data['json_data']
-        return data
+        json_data = self.cleaned_data['json_data']
+        try: 
+            graph_list = json.loads(json_data) 
+            return graphCheck(graph_list)
+        except ValueError:
+            raise forms.ValidationError("Error: malformed JSON")
+        except GraphIntegrityError as e:
+            raise forms.ValidationError("Error: %(val)s", params={'val':e})
 
     class Meta:
         model = Graphs

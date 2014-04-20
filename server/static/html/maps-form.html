@@ -7,36 +7,47 @@
 <link rel="stylesheet" type="text/css" href="{% static "css/lib/select2.css" %}" />
 <link rel="stylesheet" href="{% static "css/lib/kmapcss/graph.css" %}"/>
 <link rel="stylesheet" href="{% static "css/form.css" %}" />
+{% endblock %}
 {% block jscript-extend %}
-<script type="text/javascript" src="{% static "javascript/lib/select2.min.js" %}"></script>
 <script type="text/javascript">
 // <![CDATA[
-window.onload = (function(){
-/*
+function pageUtils() {
+
+  var gfid = '#id_{{ forms.graph.prefix }}-';
+
+  warn = {% if gid %}false{% else %}true{% endif %}; 
+
+  $('form').submit(function(e) {
+    // warn user to record secret before continuing
+    if (warn) {
+      $('form input[type=submit]').val("OK, got it!");
+      $('#warn').show();
+      warn = false;
+      e.preventDefault();
+    }
+
+    // inject graph editor structure into form
+    if ( !$(gfid+'json_input').prop("checked") )
+        $(gfid+'json_data').val(editor_json());
+  });
+
   // move study table
   $('<tr id="row_study"><td colspan="2"></td></tr>').insertBefore( $('table#gform tr:eq(4)') );
   $('#tbl_study').appendTo( $('#row_study td') );
 
-  $('#add_node').click(function() {
-    var total_nodes = $('#id_{{ forms.nodes.prefix }}-TOTAL_FORMS');
-    var form_idx = total_nodes.val();
-    $('#tbl_nodeset tbody').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
-    total_nodes.val(parseInt(form_idx) + 1);
-  });
-
   // show or hide tables based on checkbox
   set = [{
-    chk:$('#id_{{ forms.graph.prefix }}-study_active'),
+    chk:$(gfid + 'study_active'),
     toggle: function(box) {
       return function() { $('#tbl_study').toggle(box.prop("checked")); };
     }
   },{
-    chk:$('#id_{{ forms.graph.prefix }}-json_input'),
+    chk:$(gfid + 'json_input'),
     toggle: function(box) {
       return function() {
         var c = box.prop("checked");
-        $('#tbl_nodeset').toggle(!c);
-        $('table#gform tr:last').toggle(c);
+        $('#edit-wrap').toggle(!c);
+        $('#gform tr:last').toggle(c);
       };
     }
   }];
@@ -46,25 +57,7 @@ window.onload = (function(){
     t();
   }
 
-  // make multiple select boxes appear in tag style
-  $("select[multiple]").select2({ width:"resolve" });
-
-{% if not gid %}
-  // warn user to record secret before continuing
-  warn = true;
-  $('form').submit(function(event) {
-    if (warn) {
-      $('form input[type=submit]').val("OK, got it!");
-      $('#warn').show();
-      warn = false;
-      return false;
-    }
-    return true;
-  });
-{% endif %}
-*/
-});
-
+}
 // ]]>
 </script>
 {% endblock %}
@@ -107,7 +100,18 @@ window.onload = (function(){
         {{ forms.graph.as_table }}
     </table>
 
-    <div id="edit-view-wrapper" ></div>
+    <div id="edit-wrap">
+        <h2>Graph editor</h2>
+        <p class="helptext">In the box below is the OCTAL graph editor.<br />
+        <strong>Create</strong> a concept with shift + click then type its name.<br />
+        <strong>Edit</strong> a concept's title by shift + click on it.<br />
+        <strong>Link</strong> concepts into prerequisite relationships by shift + click
+        and drag from the prerequisite to the postrequisite.
+        A prerequisite should point to a postrequisite.<br />
+        <strong>Delete</strong> concepts or links by clicking on the concept or link
+        and then press delete or backspace.</p>
+        <div id="edit-view-wrapper" ></div>
+    </div>
 
     <div id="tbl_study">
         <h3>Research study options</h3>
@@ -172,17 +176,11 @@ you have recorded the above secret, or you will be unable to edit your map!</p>
 {% if forms.graph %}
 
 {% block jscript %}
-<script>
-window.oGlobals = {};
-//oGlobals.auxData = {{ full_graph_skeleton|safe }};
-oGlobals.auxData = null;
-oGlobals.auxModel = null; // init in main js app
-</script>
-{% if 1 %}
-<script data-main="{% static "javascript/main.js" %}" type="text/javascript" src="{% static "javascript/lib/require-min.js" %}"></script>
-{% else %}
-<script  src="{% static "javascript/lib/require-min.js" %}"></script>
-<script src="{% static "javascript/main-built.js" %}"></script>
-{% endif %}
+    {% if 1 %}
+    <script data-main="{% static "javascript/main.js" %}" type="text/javascript" src="{% static "javascript/lib/require-min.js" %}"></script>
+    {% else %}
+    <script  src="{% static "javascript/lib/require-min.js" %}"></script>
+    <script src="{% static "javascript/main-built.js" %}"></script>
+    {% endif %}
 {% endblock %}
 {% endif %}

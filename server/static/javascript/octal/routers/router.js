@@ -7,23 +7,52 @@ define(["backbone", "jquery", "octal/models/quiz-model", "octal/views/quiz-view"
         routes: {
             "maps/:gid/concepts/:concept": "showQuiz",
             "maps/:gid/edit": "showEdit",
-            "maps/:gid*path": "showIntro",
             "maps/new": "showEdit",
+            "maps/:gid*path": "showIntro",
             "*path": "showError"
         },
 
         showEdit: function(gid) {
             var thisRoute = this;
+
+            // pull json from form
+            var jstr = $('#id_graph-json_data').val();
+            var json = (jstr) ? $.parseJSON(jstr) : null;
+
+            // instantiate graph model with available json data
             thisRoute.graphModel = new GraphModel();
+            if (json) thisRoute.graphModel.addJsonNodesToGraph(json);
+
             thisRoute.editView = new EditView({model: thisRoute.graphModel, appRouter: thisRoute});
+            thisRoute.editView.optimizeGraphPlacement(false, false);
             thisRoute.editView.render();
             $("#edit-view-wrapper").html(thisRoute.editView.$el).show();
+
+            // prevent zoom buttons from submitting form
+            $('#edit-wrap button').click(function(e){ e.preventDefault(); });
+window.eV = thisRoute.editView;
             // oh god the hack
-            window.editor_json = function() { return thisRoute.graphModel.toJSON(); };
+            window.editor_json = function() { 
+                // build json out of the nodes in the model
+                var concepts = [];
+                thisRoute.graphModel.getNodes().forEach(function(con) {
+                    window.tmpCon = con;
+                    var tmpCon = { 
+                        'id':con.id,
+                        'title':con.attributes.title,
+                        'dependencies':[]
+                    };
+                    con.get("dependencies").forEach(function(dep) {
+                        tmpCon.dependencies.push({'source':dep.get("source").get("id")});
+                    });
+                    concepts.push(tmpCon);
+                });
+                return JSON.stringify(concepts);
+            };
         },
 
         showError: function() {
-            $('#quiz-view-wrapper').html("<p>Sorry!  We don't recognize the URL you have entered!</p>");
+            $('#quiz-view-wrapper').html("<p>Sorry! We don't recognize the URL you have entered!</p>");
         },
 
         showIntro: function(gid) {
