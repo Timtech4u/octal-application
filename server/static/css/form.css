@@ -101,3 +101,7 @@ form input[type=checkbox] {
     -moz-user-select: none;
     -ms-user-select: none;
 }
+
+.form_hover {
+    background: #ffa !important;
+}

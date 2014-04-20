@@ -94,6 +94,7 @@ def display(request, gid):
 def edit(request, gid=""):
     g = get_object_or_404(Graphs, pk=gid)
     s = get_object_or_404(Studies, pk=gid)
+    pids = ', '.join([p.pid for p in s.participants_set.all()])
 
     f = {}
 
@@ -103,7 +104,7 @@ def edit(request, gid=""):
             # user has entered a valid secret, save edited content or show form
             if f['key'].cleaned_data['edited']:
                 f['graph'] = GraphForm(request.POST, instance=g, prefix="graph")
-                f['study'] = StudyForm(request.POST, instance=s, prefix="study")
+                f['study'] = StudyForm(request.POST, instance=s, prefix="study", initial={'pids':pids})
                 f['graph'].fields["json_input"].widget = HiddenInput()
                 f['key'].fields["secret"].widget = HiddenInput()
 
@@ -116,24 +117,25 @@ def edit(request, gid=""):
                     if f['graph'].cleaned_data["study_active"]:
                         s = f['study'].save()
 
-                        # you asked for it! delete all participants
-                        Participants.objects.filter(study=s).delete()
-                        Spectators.objects.filter(study=s).delete()
+                        if 'pids' in f['study'].changed_data:
+                            # you asked for it! delete all participants
+                            Participants.objects.filter(study=s).delete()
+                            Spectators.objects.filter(study=s).delete()
 
-                        # build participant list; final one is the spectator
-                        p = None
-                        for n, pid in enumerate(f['study'].cleaned_data["pids"]):
-                            p = Participants(pid=pid, study=s, linear=(n%2==1))
+                            # build participant list; final one is the spectator
+                            p = None
+                            for n, pid in enumerate(f['study'].cleaned_data["pids"]):
+                                p = Participants(pid=pid, study=s, linear=(n%2==1))
+                                p.save()
+
+                            # spectators don't need to do pre- and post-surveys
+                            p.presurvey = True
+                            p.postsurvey = True
+                            p.linear = False
                             p.save()
 
-                        # spectators don't need to do pre- and post-surveys
-                        p.presurvey = True
-                        p.postsurvey = True
-                        p.linear = False
-                        p.save()
-
-                        # save the spectator
-                        Spectators(participant=p, study=s).save()
+                            # save the spectator
+                            Spectators(participant=p, study=s).save()
                     else:
                         # delete all participants
                         Participants.objects.filter(study=s).delete()
@@ -151,9 +153,9 @@ def edit(request, gid=""):
                 f['graph'] = GraphForm(instance=g, prefix="graph", initial=gi)
                 f['graph'].fields["json_input"].widget = HiddenInput()
 
-                pids = [p.pid for p in s.participants_set.all()]
-                si = {'pids':', '.join(pids)}
+                si = {'pids':pids}
                 f['study'] = StudyForm(instance=s, prefix="study", initial=si)
+                f['study'].fields['pids'].help_text = "<strong>Click above to edit. Note that editing the participant list will cause all participants to be deleted and re-created on the server.</strong><br />%s" % f['study'].fields['pids'].help_text;
 
     else:
         f['key'] = KeyForm(graph=g, prefix="key")

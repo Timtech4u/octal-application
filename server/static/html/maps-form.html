@@ -14,6 +14,7 @@
 function pageUtils() {
 
   var gfid = '#id_{{ forms.graph.prefix }}-';
+  var sfid = '#id_{{ forms.study.prefix }}-';
 
   warn = {% if gid %}false{% else %}true{% endif %}; 
 
@@ -63,6 +64,19 @@ function pageUtils() {
     t();
   }
 
+  {% if gid and forms.graph.study_active.value %}
+  // provide warning when editing participant list
+  var pidl = $(sfid + 'pids');
+  pidl.attr("readonly", "true");
+  pidl.attr("style", "border:0;background:none");
+  pidl.hover(function() { pidl.toggleClass("form_hover") });
+  pidl.click(function() {
+    if(confirm("Do you want to edit the participant list? It will cause all participants to be deleted and re-created on the server.")) {
+      pidl.removeAttr("readonly").removeAttr("style").removeClass("form_hover");
+      pidl.unbind("mouseenter mouseleave");
+    }
+  });
+  {% endif %}
 }
 // ]]>
 </script>
