@@ -22,6 +22,9 @@ def graphCheck(adjacency_list):
     # keep track of forward and reverse edge direction at each concept
     check = {}
 
+    # keep track of any duplicate concept names
+    dupes = {}
+
     # keys we expect in the input dictionary for every concept
     expected = ["title", "id", "dependencies"]
 
@@ -41,6 +44,9 @@ def graphCheck(adjacency_list):
         concepts[cid] = { "deps": d, "name": c['title'] }
         check[cid] = 0
         count[cid] = -1
+        if c['title'] in dupes:
+            raise GraphIntegrityError("there are two concepts named '%s'; each title must be unique." % c['title'])
+        dupes[c['title']] = True
 
     # recurse through dependencies, if any back-edges exist, we have a cycle
     def _dfs_fwd_edge(cid):
