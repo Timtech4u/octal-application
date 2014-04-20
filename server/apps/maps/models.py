@@ -42,14 +42,17 @@ class Graphs(models.Model):
     concept_dict = property(_concept_dict)
 
     def build(self, concepts):
+        # mark old concepts
+        Concepts.objects.filter(graph=self).update(tag="")
+
         generated = {}
         # recurse through all dependencies, memoizing generated concepts
         def _build(cid):
             if cid in generated: return generated[cid]
             # replace concept data if it already exists
             try:
-                db = Concepts.objects.get(id=cid, graph=self)
-            except Concepts.DoesNotExist:
+                db = Concepts.objects.get(id=int(cid), graph=self)
+            except ValueError, Concepts.DoesNotExist:
                 db = Concepts(graph=self)
             db.tag = concepts[cid]["tag"]
             db.name = concepts[cid]["name"]
@@ -59,6 +62,9 @@ class Graphs(models.Model):
             generated[cid] = db
             return db
         map(_build, concepts)
+
+        # flush old concepts
+        Concepts.objects.filter(graph=self, tag="").delete()
 
     def __unicode__(self):
         return json.dumps(self.flat)

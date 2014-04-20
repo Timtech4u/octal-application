@@ -25,7 +25,6 @@ def new_graph(request):
         f['study'] = StudyForm(request.POST, prefix="study")
 
         if f['graph'].is_valid() and (not f['graph'].cleaned_data["study_active"] or f['study'].is_valid()):
-            return HttpResponse("yay")
             # woo all good, save the graph and build its concepts
             g = f['graph'].save()
             g.build(f['graph'].cleaned_data["json_data"])
@@ -108,8 +107,39 @@ def edit(request, gid=""):
                 f['graph'].fields["json_input"].widget = HiddenInput()
                 f['key'].fields["secret"].widget = HiddenInput()
 
-                if f['graph'].is_valid() and f['study'].is_valid():
-                    return HttpResponse("yay")
+                if f['graph'].is_valid() and (not f['graph'].cleaned_data["study_active"] or f['study'].is_valid()):
+                    # woo all good, save the graph and build its concepts
+                    g = f['graph'].save()
+                    g.build(f['graph'].cleaned_data["json_data"])
+
+                    # insert study data if applicable
+                    if f['graph'].cleaned_data["study_active"]:
+                        s = f['study'].save()
+
+                        # you asked for it! delete all participants
+                        Participants.objects.filter(study=s).delete()
+                        Spectators.objects.filter(study=s).delete()
+
+                        # build participant list; final one is the spectator
+                        p = None
+                        for n, pid in enumerate(f['study'].cleaned_data["pids"]):
+                            p = Participants(pid=pid, study=s, linear=(n%2==1))
+                            p.save()
+
+                        # spectators don't need to do pre- and post-surveys
+                        p.presurvey = True
+                        p.postsurvey = True
+                        p.linear = False
+                        p.save()
+
+                        # save the spectator
+                        Spectators(participant=p, study=s).save()
+                    else:
+                        # delete all participants
+                        Participants.objects.filter(study=s).delete()
+                        Spectators.objects.filter(study=s).delete()
+
+                    return HttpResponseRedirect(reverse("maps:display", kwargs={"gid":g.pk}))
                 f['error'] = f['graph'].errors.get('json_data')
             else:
                 # prepare content; most data is provided by models

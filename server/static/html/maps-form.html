@@ -39,7 +39,13 @@ function pageUtils() {
   set = [{
     chk:$(gfid + 'study_active'),
     toggle: function(box) {
-      return function() { $('#tbl_study').toggle(box.prop("checked")); };
+      return function() { 
+        {% if gid and forms.graph.study_active.value %}
+        // warn of deletion
+        if(!box.prop("checked") && !confirm("This will delete all participants from the database. Are you sure you want to do this? You may instead just want to mark the study as Complete.")) return false;
+        {% endif %}
+        $('#tbl_study').toggle(box.prop("checked")); 
+      };
     }
   },{
     chk:$(gfid + 'json_input'),
@@ -107,7 +113,7 @@ function pageUtils() {
         <strong>Edit</strong> a concept's title by shift + click on it.<br />
         <strong>Link</strong> concepts into prerequisite relationships by shift + click
         and drag from the prerequisite to the postrequisite.
-        A prerequisite should point to a postrequisite.<br />
+        A prerequisite should point to a postrequisite and avoid circular references.<br />
         <strong>Delete</strong> concepts or links by clicking on the concept or link
         and then press the X key.<br />
         <strong>OPTIMIZE</strong> the placement of the concepts and links with the Z key.</p>

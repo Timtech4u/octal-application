@@ -404,7 +404,7 @@ define(["backbone", "d3",  "underscore", "lib/kmapjs/views/graph-view", "utils/u
               }
             })
             .on("blur", function(d){
-              if(this.textContent != d.get("title") && this.textContent != pvt.consts.initialTitle && confirm("Change node title to '" + this.textContent + "'? Doing so will dissociate any connected exercises, but you can reconnect them later.")) {
+              if(d.get("title") == pvt.consts.initialTitle || d.get("title") != this.textContent && confirm("Change node title to '" + this.textContent + "'?")) {
                 d.set("title", this.textContent);
               }
               d3node.selectAll("text").style("display", "block");
@@ -473,7 +473,7 @@ define(["backbone", "d3",  "underscore", "lib/kmapjs/views/graph-view", "utils/u
       case consts.DELETE_KEY:
         d3.event.preventDefault();
         if (selectedNode){
-          if (confirm("Delete node '" + selectedNode.get("title") + "'?")){
+          if (confirm("Delete node '" + selectedNode.get("title") + "'? Doing so will dissociate any connected exercises.")){
             thisView.model.removeNode(selectedNode);
             state.selectedNode = null;
             thisView.render();
