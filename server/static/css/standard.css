@@ -139,74 +139,7 @@ ul.logo li {
     margin-bottom: 0.5em;
 }
 
-.error, .errorlist {
-    font-weight: bold;
-    color: #f00;
+#graph-summary-el {
+    top: 110%;
 }
 
-.secret {
-    display: block;
-    border: 1px solid black;
-    background-color: #ffa;
-    text-align: center;
-    margin: 1em auto 0 auto;
-    padding: 1em;
-}
-
-.secret span{
-    font-size: 150%;
-    font-weight: bold;
-}
-
-form table {
-    width: 100%;
-    text-align: left;
-    border-collapse: separate;
-    border-spacing: 0 1em;
-}
-
-#tbl_study {
-    border: 1px solid black;
-    padding: 1em;
-    background-color: #F6FBFF;
-    display: none;
-}
-
-form table th {
-    vertical-align: top;
-    width: 20%;
-    table-layout: fixed;
-}
-
-form input[type=submit] {
-    background-color: #F6FBFF;
-    border: 1px solid black;
-    display: block;
-    margin: 0 auto;
-    font-size: 150%;
-    cursor: pointer;
-    font-weight: bold;
-    margin: 1em auto;
-    width: 6em;
-    height: 6em;
-    -webkit-border-radius: 3em;
-    -moz-border-radius: 3em;
-    border-radius: 3em;
-}
-
-form input[type=submit]:hover {
-    background-color: #EDFFED;
-}
-
-form input, textarea {
-    font-size: 0.75em;
-    width: 95%;
-    padding: .2em;
-    margin: 0;
-    border: 1px solid #aaa;
-}
-
-.helptext {
-    color: #666;
-    font-size: 75%;
-}
