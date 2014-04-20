@@ -88,3 +88,18 @@ form input[type=checkbox] {
     color: #666;
     font-size: 75%;
 }
+
+#active-editing {
+    text-align: center;
+    font-family: "Lato", Arial, sans-serif;
+    font-weight: bold;
+    stroke-width: 0;
+    fill: #333
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+}

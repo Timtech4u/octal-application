@@ -13,6 +13,7 @@ define(["backbone", "d3",  "underscore", "lib/kmapjs/views/graph-view", "utils/u
     toEditCircleClass: "to-edit-circle",
     activeEditId: "active-editing",
     toEditCircleRadius: 10,
+    initialTitle: "Concept",
     BACKSPACE_KEY: 120, // now 'x' was: 8
     DELETE_KEY: 88, // now 'X' was: 46
     ENTER_KEY: 13,
@@ -377,15 +378,16 @@ define(["backbone", "d3",  "underscore", "lib/kmapjs/views/graph-view", "utils/u
       d3node.selectAll("text").style("display", "none");
       var curTrans = thisView.dzoom.translate(),
           curScale = thisView.dzoom.scale(),//nodeBCR.width/consts.nodeRadius,
-          placePad  =  10*curScale,
-          useHW = curScale > 1 ? curScale*nodeRadius*0.71 : nodeRadius*1.42;
+          placePad = curScale * nodeRadius * .1,
+          useHW = curScale*nodeRadius*2*.9;
       // replace with editableconent text
       var d3txt = thisView.d3Svg.selectAll("foreignObject")
             .data([d])
             .enter()
             .append("foreignObject")
             .attr("x", curTrans[0] + (d.get("x") - nodeRadius) *curScale + placePad )
-            .attr("y", curTrans[1] + (d.get("y") - nodeRadius) *curScale + placePad )// nodeBCR.top + placePad)
+            .attr("y", curTrans[1] + (d.get("y") - nodeRadius/2) *curScale + placePad*2 )// nodeBCR.top + placePad)
+            .attr("style", "font-size:"+0.8*curScale+"em")
             .attr("height", 2*useHW)
             .attr("width", useHW)
             .append("xhtml:p")
@@ -402,8 +404,10 @@ define(["backbone", "d3",  "underscore", "lib/kmapjs/views/graph-view", "utils/u
               }
             })
             .on("blur", function(d){
+              if(this.textContent != d.get("title") && this.textContent != pvt.consts.initialTitle && confirm("Change node title to '" + this.textContent + "'? Doing so will dissociate any connected exercises, but you can reconnect them later.")) {
+                d.set("title", this.textContent);
+              }
               d3node.selectAll("text").style("display", "block");
-              d.set("title", this.textContent);
               d3.select(this.parentElement).remove();
             });
       return d3txt;
@@ -424,7 +428,7 @@ define(["backbone", "d3",  "underscore", "lib/kmapjs/views/graph-view", "utils/u
       } else if (state.graphMouseDown && d3.event.shiftKey){
         // clicked not dragged from svg
         var xycoords = d3.mouse(thisView.d3SvgG.node()),
-            d = {id: "c" + thisView.idct++, title: "concept title", x: xycoords[0], y: xycoords[1]},
+            d = {id: "c" + thisView.idct++, title: pvt.consts.initialTitle, x: xycoords[0], y: xycoords[1]},
             model = thisView.model;
 
         // add new node and make title immediently editable
