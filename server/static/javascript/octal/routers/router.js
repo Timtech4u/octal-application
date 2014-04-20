@@ -47,6 +47,7 @@ define(["backbone", "jquery", "octal/models/quiz-model", "octal/views/quiz-view"
                     });
                     concepts.push(tmpCon);
                 });
+                if (concepts.length == 0) return "";
                 return JSON.stringify(concepts);
             };
         },

@@ -15,7 +15,9 @@ class GraphForm(forms.ModelForm):
         """
         Validate JSON as being kmap structure
         """
-        json_data = self.cleaned_data['json_data']
+        json_data = self.cleaned_data['json_data'].strip()
+        if not json_data:
+            raise forms.ValidationError("Error: graph cannot be blank")
         try: 
             graph_list = json.loads(json_data) 
             return graphCheck(graph_list)

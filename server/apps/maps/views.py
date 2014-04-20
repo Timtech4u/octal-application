@@ -56,7 +56,7 @@ def new_graph(request):
 
             # all saved, forward to map
             return HttpResponseRedirect(reverse("maps:display", kwargs={"gid":g.pk}))
-            f['error'] = f['graph'].errors.get('json_data')
+        f['error'] = f['graph'].errors.get('json_data')
     else:
         f['graph'] = GraphForm(initial={'secret':generateSecret()}, prefix="graph")
         f['study'] = StudyForm(prefix="study")
