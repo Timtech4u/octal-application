@@ -1,3 +1,4 @@
+{% spaceless %}
 {% load staticfiles %}
 {% load compress %}
 {% load i18n lazysignup_tags %}
@@ -63,11 +64,10 @@
     {% block iedetect %}
 
     <script type="text/javascript">
-      if(!document.createElement('canvas').getContext){
+      if(!document.createElement('canvas').getContext)
       alert("Sorry, OCTAL does not work for your browser" +
       " (IE < 10 or early mobile browsers). Have you considered Firefox/Chrome/Opera instead?");
-                                                                                              }
-                                                                                              </script>
+     </script>
     {% endblock %}
 
     <title>OCTAL{% block title %}{% endblock %}</title>
@@ -111,3 +111,4 @@
 
   </body>
 </html>
+{% endspaceless %}

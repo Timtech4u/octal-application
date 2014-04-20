@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404
 
 from forms import GraphForm, NodesFormSetFactory, KeyForm
 from models import Graphs, Concepts
-from utils import graphCheck, GraphIntegrityError, generateSecret
+from utils import graphCheck, generateSecret
 
 from apps.research.models import Participants, Spectators, Studies, StudyForm
 from apps.research.utils import getParticipantByUID, handleSurveys, urlLanding
@@ -23,10 +23,13 @@ def new_graph(request):
         # form submission
         f['graph'] = GraphForm(request.POST, prefix="graph")
         f['study'] = StudyForm(request.POST, prefix="study")
+        f['nodes'] = NodesFormSetFactory(post=request.POST)
+
         if f['graph'].is_valid() and (not f['graph'].cleaned_data["study_active"] or f['study'].is_valid()):
+            return HttpResponse("yay")
             # woo all good, save the graph and build its concepts
             g = f['graph'].save()
-            g.build(f['graph'].cleaned_data["graph_json"])
+            g.build(f['graph'].cleaned_data["json_data"])
 
             # insert study data if applicable
             if f['graph'].cleaned_data["study_active"]:
@@ -57,6 +60,7 @@ def new_graph(request):
     else:
         f['graph'] = GraphForm(initial={'secret':generateSecret()}, prefix="graph")
         f['study'] = StudyForm(prefix="study")
+        f['nodes'] = NodesFormSetFactory()
 
     return render(request, "maps-form.html", {'forms':f})
 
@@ -106,15 +110,15 @@ def edit(request, gid=""):
 
                 if f['graph'].is_valid() and f['study'].is_valid() and f['nodes'].is_valid():
                     return HttpResponse("yay")
+                    return HttpResponse(request.POST)
             else:
                 # prepare content; most data is provided by models
                 ki = {'secret':g.secret, 'edited': True}
                 f['key'] = KeyForm(graph=g, prefix="key", initial=ki)
                 f['key'].fields["secret"].widget = HiddenInput()
 
-                #gi = {'graph_json':str(g)}
+                #gi = {'json_data':str(g)}
                 f['graph'] = GraphForm(instance=g, prefix="graph")
-                f['graph'].fields["graph_json"].widget = HiddenInput()
                 
                 pids = [p.pid for p in s.participants_set.all()]
                 si = {'pids':', '.join(pids)}

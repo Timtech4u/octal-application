@@ -1,5 +1,4 @@
 from django.db import models
-from utils import graphCheck, GraphIntegrityError
 import json
 
 class Graphs(models.Model):

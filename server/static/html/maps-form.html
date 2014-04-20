@@ -3,15 +3,51 @@
 
 {% block title %}: create new map{% endblock %}
 
+{% block extra-css %}
+<link rel="stylesheet" type="text/css" href="{% static "css/lib/select2.css" %}" />
+{% endblock %}
+
 {% block jscript-extend %}
+<script type="text/javascript" src="{% static "javascript/lib/select2.min.js" %}"></script>
 <script type="text/javascript">
 // <![CDATA[
 window.onload = (function(){
-  // show or hide study table based on study active checkbox
-  active = $('#id_{{ forms.graph.prefix }}-study_active');
-  toggle = function(e) { $('#tbl_study').toggle(active.prop("checked")); };
-  active.click(toggle);
-  toggle();
+  // move study table
+  $('<tr id="row_study"><td colspan="2"></td></tr>').insertBefore( $('table#gform tr:eq(4)') );
+  $('#tbl_study').appendTo( $('#row_study td') );
+
+  $('#add_node').click(function() {
+    var total_nodes = $('#id_{{ forms.nodes.prefix }}-TOTAL_FORMS');
+    var form_idx = total_nodes.val();
+    $('#tbl_nodeset tbody').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+    total_nodes.val(parseInt(form_idx) + 1);
+  });
+
+  // show or hide tables based on checkbox
+  set = [{
+    chk:$('#id_{{ forms.graph.prefix }}-study_active'),
+    toggle: function(box) {
+      return function() { $('#tbl_study').toggle(box.prop("checked")); };
+    }
+  },{
+    chk:$('#id_{{ forms.graph.prefix }}-json_input'),
+    toggle: function(box) {
+      return function() {
+        var c = box.prop("checked");
+        $('#tbl_nodeset').toggle(!c);
+        $('table#gform tr:last').toggle(c);
+      };
+    }
+  }];
+  for (var i=0, j=set.length; i<j; i++) {
+    t = set[i].toggle(set[i].chk);
+    set[i].chk.click(t); 
+    t();
+  }
+
+  // make multiple select boxes appear in tag style
+  $("select[multiple]").select2({ width:"resolve" });
+
 {% if not gid %}
   // warn user to record secret before continuing
   warn = true;
@@ -26,6 +62,7 @@ window.onload = (function(){
   });
 {% endif %}
 });
+
 // ]]>
 </script>
 {% endblock %}
@@ -64,7 +101,7 @@ window.onload = (function(){
         <form action="{% url 'maps:new' %}" method="post">
     {% endif %}        
     {% csrf_token %}
-    <table>
+    <table id="gform">
         {{ forms.graph.as_table }}
     </table>
 
@@ -75,52 +112,56 @@ window.onload = (function(){
         </table>
     </div>
 
-    {% if gid %}
+    <div id="tbl_nodeset">
+        <h3>Graph structure definition</h3>
+        {{ forms.nodes.non_form_errors.as_ul }}
+        {{ forms.nodes.management_form }}
+        <table>
+        {% for form in forms.nodes %}
+            {% if forloop.first %}
+                <thead><tr>
+                {% for field in form.visible_fields %}
+                    <th>{{ field.label|capfirst }}</th>
+                {% endfor %}
+                </tr></thead>
+              {% endif %}
+              <tr>
+              {% for field in form.visible_fields %}
+                <td>
+                {# Include the hidden fields in the form #}
+                {% if forloop.first %}
+                  {% for hidden in form.hidden_fields %}
+                  {{ hidden }}
+                  {% endfor %}
+                {% endif %}
+                  {{ field.errors.as_ul }}
+                  {{ field }}
+                </td>
+              {% endfor %}
+              </tr>
+        {% endfor %}
+        </table>
+        <input type="button" value="Add Another Concept" id="add_node">
+        <div id="empty_form" style="display:none">
+                {{ forms.nodes.empty_form.as_table }}
+        </div>    
+    </div>
 
-{{ forms.nodes.non_form_errors.as_ul }}
-<table id="formset" class="form">
-{% for form in forms.nodes %}
-  {% if forloop.first %}
-  <thead><tr>
-    {% for field in form.visible_fields %}
-    <th>
-        {{ field.label|capfirst }}<br />
-        <span class="helptext">{{ field.help_text }}</span>
-    </th>
-    {% endfor %}
-  </tr></thead>
-  {% endif %}
-  <tr class="{% cycle row1,row2 %}">
-  {% for field in form.visible_fields %}
-    <td>
-    {# Include the hidden fields in the form #}
-    {% if forloop.first %}
-      {% for hidden in form.hidden_fields %}
-      {{ hidden }}
-      {% endfor %}
-    {% endif %}
-      {{ field.errors.as_ul }}
-      {{ field }}
-    </td>
-  {% endfor %}
-  </tr>
-{% endfor %}
-</table>
 
-    {% endif %}
+    
     {% if not gid %}
-    <p class="secret">Please remember the following secret,
-    it will allow you to edit your map in the future:
-    <br />
-    <span>{{ forms.graph.secret.value }}</span>
-    </p>
+    <div class="secret">
+    <p>Please remember the following secret,
+    it will allow you to edit your map in the future:</p>
+    <p><span>{{ forms.graph.secret.value }}</span></p>
+    </div>
 
     <p class="error" style="display:none;text-align:center" id="warn">Be sure
     you have recorded the above secret, or you will be
     unable to edit your map!</p>
     {% endif %}
 
-    <input type="submit" value="{% if gid %}Save{% else %}Create{% endif %}" />
+    <input type="submit" class="submit-button" value="{% if gid %}Save{% else %}Create{% endif %}" />
     </form>
     </div>
 
