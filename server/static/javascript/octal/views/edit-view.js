@@ -13,8 +13,8 @@ define(["backbone", "d3",  "underscore", "lib/kmapjs/views/graph-view", "utils/u
     toEditCircleClass: "to-edit-circle",
     activeEditId: "active-editing",
     toEditCircleRadius: 10,
-    BACKSPACE_KEY: 8,
-    DELETE_KEY: 46,
+    BACKSPACE_KEY: 120, // now 'x' was: 8
+    DELETE_KEY: 88, // now 'X' was: 46
     ENTER_KEY: 13,
     SPACE_KEY: 32,
     Z_UC_KEY: 90,
@@ -469,13 +469,13 @@ define(["backbone", "d3",  "underscore", "lib/kmapjs/views/graph-view", "utils/u
       case consts.DELETE_KEY:
         d3.event.preventDefault();
         if (selectedNode){
-          if (confirm("delete node: " + selectedNode.get("title") + "?\nNote: all associated data will be removed")){
+          if (confirm("Delete node '" + selectedNode.get("title") + "'?")){
             thisView.model.removeNode(selectedNode);
             state.selectedNode = null;
             thisView.render();
           }
         } else if (selectedEdge){
-          if (confirm("delete edge: " + selectedEdge.get("source").get("title") + " -> " + selectedEdge.get("target").get("title") + "?\nNote: all associated data will be removed")){
+          if (confirm("Delete link between '" + selectedEdge.get("source").get("title") + "' and '" + selectedEdge.get("target").get("title") + "'?")){
             thisView.model.removeEdge(selectedEdge);
             state.selectedEdge = null;
             thisView.render();
