@@ -23,6 +23,10 @@
     font-weight: bold;
 }
 
+.secret label {
+    margin-right: 1em;
+}
+
 form table {
     width: 100%;
     text-align: left;
@@ -65,10 +69,13 @@ form input[type=submit]:hover {
 
 form input[type=text], textarea {
     font-size: 0.75em;
-    width: 95%;
     padding: .2em;
     margin: 0;
     border: 1px solid #aaa;
+}
+
+#gform input[type=text], textarea {
+    width: 95%;
 }
 
 form input[type=checkbox] {

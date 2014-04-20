@@ -8,7 +8,7 @@ from models import Graphs, Concepts
 from utils import graphCheck, generateSecret
 
 from apps.research.models import Participants, Spectators, Studies, StudyForm
-from apps.research.utils import getParticipantByUID, handleSurveys, urlLanding
+from apps.research.utils import getParticipantByUID, handleSurveys, urlLanding, buildPIDs
 
 import json
 
@@ -34,21 +34,7 @@ def new_graph(request):
                 s = f['study'].save(commit=False)
                 s.graph = g
                 s.save()
-
-                # build participant list; final one is the spectator
-                p = None
-                for n, pid in enumerate(f['study'].cleaned_data["pids"]):
-                    p = Participants(pid=pid, study=s, linear=(n%2==1))
-                    p.save()
-
-                # spectators don't need to do pre- and post-surveys
-                p.presurvey = True
-                p.postsurvey = True
-                p.linear = False
-                p.save()
-
-                # save the spectator
-                Spectators(participant=p, study=s).save()
+                buildPIDs(s, f['study'].cleaned_data["pids"])
             else:
                 # insert blank study
                 Studies(graph=g).save()
@@ -121,21 +107,7 @@ def edit(request, gid=""):
                             # you asked for it! delete all participants
                             Participants.objects.filter(study=s).delete()
                             Spectators.objects.filter(study=s).delete()
-
-                            # build participant list; final one is the spectator
-                            p = None
-                            for n, pid in enumerate(f['study'].cleaned_data["pids"]):
-                                p = Participants(pid=pid, study=s, linear=(n%2==1))
-                                p.save()
-
-                            # spectators don't need to do pre- and post-surveys
-                            p.presurvey = True
-                            p.postsurvey = True
-                            p.linear = False
-                            p.save()
-
-                            # save the spectator
-                            Spectators(participant=p, study=s).save()
+                            buildPIDs(s, f['study'].cleaned_data["pids"])
                     else:
                         # delete all participants
                         Participants.objects.filter(study=s).delete()

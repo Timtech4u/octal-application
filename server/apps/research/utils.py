@@ -2,7 +2,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
-from models import Studies, Participants, Logins
+from models import Studies, Participants, Spectators, Logins
 
 from apps.maps.models import Graphs
 
@@ -31,6 +31,22 @@ def studyFilter(g, p, u, query):
     if not g.study_active or not p.isParticipant():
         query = query.filter(user=u)
     return query
+
+def buildPIDs(study, pids):
+    p = None
+    for n, pid in enumerate(pids):
+        p = Participants(pid=pid, study=study, linear=(n%2==1))
+        p.save()
+
+    # spectators don't need to do pre- and post-surveys
+    p.presurvey = True
+    p.postsurvey = True
+    p.linear = False
+    p.save()
+
+    # save the spectator
+    Spectators(participant=p, study=study).save()
+
 
 def getParticipantByUID(uid, gid):
     if uid is None: return None

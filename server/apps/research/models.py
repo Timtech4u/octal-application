@@ -80,6 +80,18 @@ class StudyForm(forms.ModelForm):
         # remove leading or trailing commas, split into list
         plist = re.sub('^,|,$', '', plist_str).split(',')
 
+        # any duplicates?
+        def _list_duplicates(seq):
+            seen = set()
+            seen_add = seen.add
+            # adds all elements it doesn't know yet to seen and all other to seen_twice
+            seen_twice = set( x for x in seq if x in seen or seen_add(x) )
+            # turn the set into a list (as requested)
+            return list( seen_twice )
+        dupes = _list_duplicates(plist)
+        if dupes: 
+            raise forms.ValidationError("Please remove the duplicate participant IDs: %s" % ', '.join(dupes))
+
         if len(plist) < 2:
             raise forms.ValidationError("You must enter at least two participants.")
 

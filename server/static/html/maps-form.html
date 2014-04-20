@@ -73,7 +73,7 @@ function pageUtils() {
   pidl.click(function() {
     if(confirm("Do you want to edit the participant list? It will cause all participants to be deleted and re-created on the server.")) {
       pidl.removeAttr("readonly").removeAttr("style").removeClass("form_hover");
-      pidl.unbind("mouseenter mouseleave");
+      pidl.unbind("mouseenter mouseleave click");
     }
   });
   {% endif %}
