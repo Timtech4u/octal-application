@@ -1,4 +1,5 @@
 from random import choice
+import re
 
 class GraphIntegrityError(Exception):
     """

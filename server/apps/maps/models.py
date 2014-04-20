@@ -20,12 +20,12 @@ class Graphs(models.Model):
         """
         Builds an adjacency list in the hierarchy mimicking Metacademy
         This is well-suited to be dumped as a JSON and used by kmapjs
-        [ { id: conceptID, title: conceptName, dependencies: [conceptIDs]} ]
+        [ { id:pk, tag:tag, title:name, dependencies:[tags] }, .. ]
         """
         adj = []
         for c in self.concepts_set.all():
-            deps = [{"source": d.conceptId} for d in c.dependencies.all()]
-            adj.append({ "id": c.conceptId, "title": c.name, "dependencies": deps })
+            deps = [{"source": str(d.id)} for d in c.dependencies.all()]
+            adj.append({ "id": str(c.id), "tag": c.tag, "title": c.name, "dependencies": deps })
         return adj
     flat = property(_adjacency_list)
 
@@ -36,8 +36,8 @@ class Graphs(models.Model):
         """
         concepts = {}
         for c in self.concepts_set.all():
-            deps = [d.conceptId for d in c.dependencies.all()]
-            concepts[c.conceptId] = { "title": c.name, "dependencies": deps }
+            deps = [d.tag for d in c.dependencies.all()]
+            concepts[c.tag] = { "title": c.name, "dependencies": deps }
         return concepts
     concept_dict = property(_concept_dict)
 
@@ -46,7 +46,13 @@ class Graphs(models.Model):
         # recurse through all dependencies, memoizing generated concepts
         def _build(cid):
             if cid in generated: return generated[cid]
-            db = Concepts(graph=self, conceptId=cid, name=concepts[cid]["name"])
+            # replace concept data if it already exists
+            try:
+                db = Concepts.objects.get(id=cid, graph=self)
+            except Concepts.DoesNotExist:
+                db = Concepts(graph=self)
+            db.tag = concepts[cid]["tag"]
+            db.name = concepts[cid]["name"]
             db.save()
             for depid in concepts[cid]["deps"]:
                 db.dependencies.add(_build(depid))
@@ -61,8 +67,8 @@ class Concepts(models.Model):
     """
     Skeleton to factor out concepts from exercise attempts
     """
-    conceptId = models.CharField(max_length=32)
-    name = models.CharField(max_length=100)
+    tag = models.CharField(max_length=32)
+    name = models.CharField(max_length=32)
     dependencies = models.ManyToManyField('self', symmetrical=False)
     graph = models.ForeignKey(Graphs)
 

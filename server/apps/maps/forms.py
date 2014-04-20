@@ -56,15 +56,12 @@ def NodesFormSetFactory(g=None, post=None):
                 self.fields['dependencies'].required = False
             class Meta:
                 model = Concepts
-                #fields = ['name', 'conceptId', 'dependencies']
-                exclude = ['conceptId']
+                exclude = ['tag']
                 labels = {
-                    #'conceptId': ("Concept ID"),
                     'name': ("Concept Title"),
                     'dependencies': ("Prerequisites"),
                 }
                 help_texts = {
-                    #'conceptId': ("A unique identifier for a concept. Numbers, lowercase letters, and underscore are allowed."),
                     'dependencies': ("A list of other concept IDs that are a prerequisite for this concept."),
                 }
         return NodesForm

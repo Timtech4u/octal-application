@@ -173,8 +173,6 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
                         $('#question-feedback').fadeOut(100,function(){$(this).html('Make sure to select a response!').css('color','black').fadeIn()});
                     }
 
-                    //console.log(thisView.model.get("aid"));
-
                     //SOME LOGIC GOES HERE FOR HIGHLIGHTING NODES
                     //rerender the view TODO: seems kinda wasteful to totally rerender the view rather than the question
 

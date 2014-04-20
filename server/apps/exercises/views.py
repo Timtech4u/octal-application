@@ -23,10 +23,10 @@ def fetch_attempt_id(u, p, g, con, pr):
 
 
 @allow_lazy_user
-def fetch_ex(request, gid="", conceptId="", qid=""):
+def fetch_ex(request, gid="", tag="", qid=""):
     #does the requested concept exist in the graph?
     g = get_object_or_404(Graphs, pk=gid)
-    eCon = get_object_or_404(Concepts, graph=g, conceptId=conceptId)
+    eCon = get_object_or_404(Concepts, graph=g, tag=tag)
 
     if not request.user.is_authenticated(): return HttpResponse(status=403)
     user, ucreated = User.objects.get_or_create(pk=request.user.pk)
@@ -129,9 +129,8 @@ def build(request, gid=""):
     graph_concepts = g.concepts_set.all()
     concepts = {}
     for c in graph_concepts:
-        cid = c.conceptId
+        cid = c.tag
         concepts[cid] = c
-        #concepts[cid] = Concepts.objects.get(graph=graph, conceptId=cid)
 
     gdoc = requests.get('https://docs.google.com/spreadsheet/pub?key=0ApfeFyIuuj_MdF9ZS3hXU0pUN0NnMDVIcHFkTlN6V0E&single=true&gid=0&output=csv')
 
