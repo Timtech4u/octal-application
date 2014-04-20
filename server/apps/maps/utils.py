@@ -42,13 +42,21 @@ def graphCheck(adjacency_list):
 
         cid = c['id']
         if cid in concepts:
-            raise GraphIntegrityError("there are two concepts with ID '%s'; every ID must be unique." % cid)
-        concepts[cid] = { "deps": d, "name": c['title'] }
+            raise GraphIntegrityError("two concepts with ID '%s'; every ID must be unique." % cid)
+
+        title = c['title'].strip()
+        if len(title) > 32:
+            raise GraphIntegrityError("concept name '%s' is longer than the limit of 32 characters." % title)
+
+        # convert the title to tag name
+        tag = re.sub('\W', '', '_'.join(title.lower().split()))
+
+        concepts[cid] = { "deps":d, "name":c['title'], "tag":tag  }
         check[cid] = 0
         count[cid] = -1
-        if c['title'] in dupes:
-            raise GraphIntegrityError("there are two concepts named '%s'; each title must be unique." % c['title'])
-        dupes[c['title']] = True
+        if tag in dupes:
+            raise GraphIntegrityError("the concept names '%s' and '%s' are too similar." % (c['title'], dupes[tag]))
+        dupes[tag] = c['title']
 
     # recurse through dependencies, if any back-edges exist, we have a cycle
     def _dfs_fwd_edge(cid):
