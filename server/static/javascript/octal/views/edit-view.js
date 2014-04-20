@@ -15,7 +15,10 @@ define(["backbone", "d3",  "underscore", "lib/kmapjs/views/graph-view", "utils/u
     toEditCircleRadius: 10,
     BACKSPACE_KEY: 8,
     DELETE_KEY: 46,
-    ENTER_KEY: 13
+    ENTER_KEY: 13,
+    SPACE_KEY: 32,
+    Z_UC_KEY: 90,
+    Z_LC_KEY: 122
   });
 
 
@@ -263,18 +266,6 @@ define(["backbone", "d3",  "underscore", "lib/kmapjs/views/graph-view", "utils/u
         });
       });
 
-      // add small circle link for editing
-      newGs.append("circle")
-        .attr("r", consts.toEditCircleRadius)
-        .attr("cx", consts.nodeRadius*0.707)
-        .attr("cy", -consts.nodeRadius*0.707)
-        .classed(consts.toEditCircleClass, true)
-        .on("mouseup", function(d){
-          if (!thisView.state.justDragged){
-            thisView.state.toNodeEdit = true;
-            thisView.appRouter.changeUrlParams({mode: "edit", focus: d.id});
-          }
-        });
     },
 
     pathMouseDown: function(d, thisView){
@@ -469,6 +460,11 @@ define(["backbone", "d3",  "underscore", "lib/kmapjs/views/graph-view", "utils/u
           selectedEdge = state.selectedEdge;
 
       switch(d3.event.keyCode) {
+      case consts.Z_UC_KEY:
+      case consts.Z_LC_KEY:
+        d3.event.preventDefault();
+        thisView.optimizeGraphPlacement.call(thisView, true);
+        break;
       case consts.BACKSPACE_KEY:
       case consts.DELETE_KEY:
         d3.event.preventDefault();

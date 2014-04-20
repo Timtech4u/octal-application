@@ -30,7 +30,7 @@ define(["backbone", "jquery", "octal/models/quiz-model", "octal/views/quiz-view"
 
             // prevent zoom buttons from submitting form
             $('#edit-wrap button').click(function(e){ e.preventDefault(); });
-window.eV = thisRoute.editView;
+
             // oh god the hack
             window.editor_json = function() { 
                 // build json out of the nodes in the model

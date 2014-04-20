@@ -1,7 +1,7 @@
 {% extends "octal.html" %}
 {% load staticfiles %}
 
-{% block title %}: create new map{% endblock %}
+{% block title %}: {% if gid %}edit a{% else %}create new{% endif %} map{% endblock %}
 
 {% block extra-css %}
 <link rel="stylesheet" type="text/css" href="{% static "css/lib/select2.css" %}" />
@@ -109,8 +109,9 @@ function pageUtils() {
         and drag from the prerequisite to the postrequisite.
         A prerequisite should point to a postrequisite.<br />
         <strong>Delete</strong> concepts or links by clicking on the concept or link
-        and then press delete or backspace.</p>
-        <div id="edit-view-wrapper" ></div>
+        and then press delete or backspace.<br />
+        <strong>OPTIMIZE</strong> the placement of the concepts and links with the Z key.</p>
+        <div id="edit-view-wrapper"></div>
     </div>
 
     <div id="tbl_study">
