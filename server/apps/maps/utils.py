@@ -66,7 +66,8 @@ def graphCheck(adjacency_list):
         count[cid] += 1
         if check[cid] is 2: return
         if check[cid] is 1: 
-            raise GraphIntegrityError("cyclical graph structure. Some prerequisite of '%s' depends on it as a prerequisite." % cid)
+            raise GraphIntegrityError("cyclical graph structure. Some postrequisite of '%s' depends on it as a prerequisite." % 
+                concepts[cid]['name'])
         check[cid] = 1
         map(_dfs_fwd_edge, concepts[cid]['deps'])
         check[cid] = 2
