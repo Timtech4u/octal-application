@@ -41,6 +41,8 @@ def graphCheck(adjacency_list):
             raise GraphIntegrityError("one or more dependencies in concept %d missing 'source' key." % index)
 
         cid = c['id']
+        if cid in concepts:
+            raise GraphIntegrityError("there are two concepts with ID '%s'; every ID must be unique." % cid)
         concepts[cid] = { "deps": d, "name": c['title'] }
         check[cid] = 0
         count[cid] = -1
