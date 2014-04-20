@@ -1,8 +1,6 @@
 #quiz-view-wrapper {
     text-align:left;
     position:absolute;
-    #border:1px solid black;
-    #border-radius: 5px;
     width:46%;
     z-index:2;
     background-color: #FFFFFF;
@@ -27,7 +25,6 @@ p {
 .answer {
     position:relative;
     text-align:left;
-    #border: 1px solid black;
     display:inline-block;
     padding:0px 10px 0px 10px;
     border-radius: 3px;

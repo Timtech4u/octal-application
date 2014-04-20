@@ -5,13 +5,14 @@
 
 {% block extra-css %}
 <link rel="stylesheet" type="text/css" href="{% static "css/lib/select2.css" %}" />
-{% endblock %}
-
+<link rel="stylesheet" href="{% static "css/lib/kmapcss/graph.css" %}"/>
+<link rel="stylesheet" href="{% static "css/form.css" %}" />
 {% block jscript-extend %}
 <script type="text/javascript" src="{% static "javascript/lib/select2.min.js" %}"></script>
 <script type="text/javascript">
 // <![CDATA[
 window.onload = (function(){
+/*
   // move study table
   $('<tr id="row_study"><td colspan="2"></td></tr>').insertBefore( $('table#gform tr:eq(4)') );
   $('#tbl_study').appendTo( $('#row_study td') );
@@ -61,6 +62,7 @@ window.onload = (function(){
     return true;
   });
 {% endif %}
+*/
 });
 
 // ]]>
@@ -105,6 +107,8 @@ window.onload = (function(){
         {{ forms.graph.as_table }}
     </table>
 
+    <div id="edit-view-wrapper" ></div>
+
     <div id="tbl_study">
         <h3>Research study options</h3>
         <table>
@@ -112,58 +116,73 @@ window.onload = (function(){
         </table>
     </div>
 
-    <div id="tbl_nodeset">
-        <h3>Graph structure definition</h3>
-        {{ forms.nodes.non_form_errors.as_ul }}
-        {{ forms.nodes.management_form }}
-        <table>
-        {% for form in forms.nodes %}
-            {% if forloop.first %}
-                <thead><tr>
-                {% for field in form.visible_fields %}
-                    <th>{{ field.label|capfirst }}</th>
-                {% endfor %}
-                </tr></thead>
-              {% endif %}
-              <tr>
-              {% for field in form.visible_fields %}
-                <td>
-                {# Include the hidden fields in the form #}
-                {% if forloop.first %}
-                  {% for hidden in form.hidden_fields %}
-                  {{ hidden }}
-                  {% endfor %}
-                {% endif %}
-                  {{ field.errors.as_ul }}
-                  {{ field }}
-                </td>
-              {% endfor %}
-              </tr>
+{% if gid %}
+    {{ forms.nodes.non_form_errors.as_ul }}
+    <table id="formset" class="form">
+    {% for form in forms.nodes %}
+      {% if forloop.first %}
+      <thead><tr>
+        {% for field in form.visible_fields %}
+        <th>
+            {{ field.label|capfirst }}<br />
+            <span class="helptext">{{ field.help_text }}</span>
+        </th>
         {% endfor %}
-        </table>
-        <input type="button" value="Add Another Concept" id="add_node">
-        <div id="empty_form" style="display:none">
-                {{ forms.nodes.empty_form.as_table }}
-        </div>    
-    </div>
+      </tr></thead>
+      {% endif %}
+      <tr class="{% cycle row1,row2 %}">
+      {% for field in form.visible_fields %}
+        <td>
+        {# Include the hidden fields in the form #}
+        {% if forloop.first %}
+          {% for hidden in form.hidden_fields %}
+          {{ hidden }}
+          {% endfor %}
+        {% endif %}
+          {{ field.errors.as_ul }}
+          {{ field }}
+        </td>
+      {% endfor %}
+      </tr>
+    {% endfor %}
+    </table>
+{% endif %}
 
-
-    
-    {% if not gid %}
-    <div class="secret">
-    <p>Please remember the following secret,
-    it will allow you to edit your map in the future:</p>
-    <p><span>{{ forms.graph.secret.value }}</span></p>
-    </div>
+{% if not gid %}
+    <p class="secret">Please remember the following secret,
+    it will allow you to edit your map in the future:
+    <br />
+    <span>{{ forms.graph.secret.value }}</span>
+    </p>
 
     <p class="error" style="display:none;text-align:center" id="warn">Be sure
-    you have recorded the above secret, or you will be
-    unable to edit your map!</p>
-    {% endif %}
+you have recorded the above secret, or you will be unable to edit your map!</p>
+{% endif %}
 
     <input type="submit" class="submit-button" value="{% if gid %}Save{% else %}Create{% endif %}" />
     </form>
-    </div>
+</div>
 
 {% endif %}
+
+{% include "quiz-view.html" %}
+{% include "quiz-error-view.html" %}
 {% endblock %}
+
+{% if forms.graph %}
+
+{% block jscript %}
+<script>
+window.oGlobals = {};
+//oGlobals.auxData = {{ full_graph_skeleton|safe }};
+oGlobals.auxData = null;
+oGlobals.auxModel = null; // init in main js app
+</script>
+{% if 1 %}
+<script data-main="{% static "javascript/main.js" %}" type="text/javascript" src="{% static "javascript/lib/require-min.js" %}"></script>
+{% else %}
+<script  src="{% static "javascript/lib/require-min.js" %}"></script>
+<script src="{% static "javascript/main-built.js" %}"></script>
+{% endif %}
+{% endblock %}
+{% endif %}

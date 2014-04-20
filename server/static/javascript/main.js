@@ -60,9 +60,6 @@ if (window.PRODUCTION){
 requirejs(["backbone", "utils/utils", "octal/routers/router", "jquery", "btouch"], function(Backbone, Utils, AppRouter, $){
   "use strict";
 
-  // handle noscript content
-  $("body").css("overflow", "hidden");
-
   // shim for CSRF token integration with backbone and django
   var oldSync = Backbone.sync;
   Backbone.sync = function(method, model, options){
