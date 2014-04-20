@@ -56,6 +56,7 @@ def new_graph(request):
 
             # all saved, forward to map
             return HttpResponseRedirect(reverse("maps:display", kwargs={"gid":g.pk}))
+            f['error'] = f['graph'].errors.get('json_data')
     else:
         f['graph'] = GraphForm(initial={'secret':generateSecret()}, prefix="graph")
         f['study'] = StudyForm(prefix="study")
@@ -109,6 +110,7 @@ def edit(request, gid=""):
 
                 if f['graph'].is_valid() and f['study'].is_valid():
                     return HttpResponse("yay")
+                f['error'] = f['graph'].errors.get('json_data')
             else:
                 # prepare content; most data is provided by models
                 ki = {'secret':g.secret, 'edited': True}
