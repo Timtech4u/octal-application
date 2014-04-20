@@ -1,8 +1,5 @@
 {% extends "octal.html" %}
 {% load staticfiles %}
-{% block meta-description %}
-    <meta name="description" content="{{ concept_data.title}}: {{concept_data.summary}}">
-{% endblock %}
 
 {% block targetblank %}
 <base target="_blank">
@@ -12,7 +9,6 @@
 <link rel="stylesheet" href="{% static "css/lib/kmapcss/graph.css" %}"/>
 <link rel="stylesheet" href="{% static "css/lib/kmapcss/list.css" %}"/>
 <link rel="stylesheet" href="{% static "css/quiz.css" %}" />
-
 {% endblock %}
 
 {% block main %}
