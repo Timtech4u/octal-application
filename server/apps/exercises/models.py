@@ -59,5 +59,5 @@ class Attempts(models.Model):
 
     def get_correctness(self):
         if self.submitted is True:
-            return (self.concept.tag, self.correct)
+            return (self.concept.id, self.correct)
         return None

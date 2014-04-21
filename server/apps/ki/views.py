@@ -3,6 +3,7 @@ import json
 from django.http import HttpResponse
 from lazysignup.decorators import allow_lazy_user
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 
 from apps.exercises.models import Attempts
 from apps.maps.models import Graphs
@@ -13,10 +14,8 @@ from apps.research.utils import getParticipantByUID, studyFilter
 @allow_lazy_user
 def knowledge_inference(request, gid=""):
     if request.method == "GET":
-        try:
-            g = Graphs.objects.get(pk=gid)
-        except Graphs.DoesNotExist:
-            return HttpResponse(status=422)
+        g = get_object_or_404(Graphs, pk=gid)
+
         if not request.user.is_authenticated(): return HttpResponse(status=403)
         u, uc = User.objects.get_or_create(pk=request.user.pk)
         p = getParticipantByUID(request.user.pk, gid)

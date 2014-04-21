@@ -33,7 +33,7 @@ def performInference(graph, responses):
         if "_bp" in graph[cid]: return graph[cid]["_bp"]
 
         #hack since pymc seems to require ascii (and not unicode)
-        cida = cid.encode('ascii')
+        cida = str(cid).encode('ascii')
 
         if graph[cid]["dependencies"]:
             # process dependencies first
@@ -61,7 +61,7 @@ def performInference(graph, responses):
     otherQuestions = [];
     for example in responses:
         # more pymc ascii hacks
-        cida = example[0].encode('ascii')
+        cida = str(example[0]).encode('ascii')
 
         tmp = graph[example[0]]["_bp"]
         prob = mc.Lambda(pStr % cida, lambda tmp=tmp: pl.where(tmp, 1-pS, pG))

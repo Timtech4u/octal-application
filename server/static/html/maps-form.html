@@ -71,7 +71,7 @@ function pageUtils() {
   pidl.attr("style", "border:0;background:none");
   pidl.hover(function() { pidl.toggleClass("form_hover") });
   pidl.click(function() {
-    if(confirm("Do you want to edit the participant list? It will cause all participants to be deleted and re-created on the server.")) {
+    if(confirm("Do you want to edit the participant list? Changing the list and saving will cause all participants and their data to be deleted and re-created on the server.")) {
       pidl.removeAttr("readonly").removeAttr("style").removeClass("form_hover");
       pidl.unbind("mouseenter mouseleave click");
     }
@@ -122,7 +122,7 @@ function pageUtils() {
 
     <div id="edit-wrap">
         <h2>Graph editor</h2>
-        <p class="helptext">In the box below is the OCTAL graph editor.<br />
+        <p class="helptext">In the box below is a graph editor so you may build a concept map.<br />
         <strong>Create</strong> a concept with shift + click then type its name.<br />
         <strong>Edit</strong> a concept's title by shift + click on it.<br />
         <strong>Link</strong> concepts into prerequisite relationships by shift + click

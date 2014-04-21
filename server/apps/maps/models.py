@@ -36,8 +36,8 @@ class Graphs(models.Model):
         """
         concepts = {}
         for c in self.concepts_set.all():
-            deps = [d.tag for d in c.dependencies.all()]
-            concepts[c.tag] = { "title": c.name, "dependencies": deps }
+            deps = [d.id for d in c.dependencies.all()]
+            concepts[c.id] = { "tag": c.tag, "title": c.name, "dependencies": deps }
         return concepts
     concept_dict = property(_concept_dict)
 

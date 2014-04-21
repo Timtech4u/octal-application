@@ -66,8 +66,6 @@ define(["backbone", "jquery", "octal/models/quiz-model", "octal/views/quiz-view"
 
         showQuiz: function(gid, concept) {
             this.gid = gid;
-            console.log("you have selected the concept: " + concept);
-
 
             var questionModel = new QuestionModel({concept: concept.toLowerCase(), gid: gid})
             var that = this;
