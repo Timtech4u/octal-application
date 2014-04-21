@@ -96,7 +96,9 @@ define(["backbone", "jquery", "octal/models/quiz-model", "octal/views/quiz-view"
                 thisRoute.graphView = new GraphView({model: thisRoute.graphModel, appRouter: thisRoute, includeShortestOutlink: true });
                 thisRoute.graphModel.addJsonNodesToGraph(oGlobals.auxData);
 
-                // hack to prevent kmap from showing edge wisps
+                // hack alert: prevent kmap from showing edge wisps and summary toasts
+                thisRoute.graphView.showEdgeSummary = function() {};
+                thisRoute.graphView.showNodeSummary = function() {};
                 thisRoute.graphView.isEdgeLengthBelowThresh = function() { return true; };
 
                 thisRoute.graphView.optimizeGraphPlacement(false, false);
