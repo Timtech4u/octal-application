@@ -218,32 +218,25 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
                 },
                 highlightNodes: function() {
                     if(!oGlobals.linear) {
-                        //console.log(pvt.knownConcepts)
                         //mega-ghetto
-                        $('circle').css('fill',pvt.viewConsts.neutralColor);
-                        for (var i = 0; i < pvt.knownConcepts.length; i++) {
+                        $('circle').attr('class', '');
+                        for (var i=0,j=pvt.knownConcepts.length; i < j; i++) {
                             try {
-                                $($('#circlgG-' + pvt.knownConcepts[i]).find('circle')[0]).css('fill', pvt.viewConsts.knownColor);
-                            } catch (TypeError) {
-                                //do nothing, node not in graph
-                            }
+                                $('#circlgG-' + pvt.knownConcepts[i] + ' circle').attr("class", "known-concept");
+                            } catch (TypeError) { /* node not in graph */ }
                         }
                     } else {
                         $('.learn-title-display').css('background-color', pvt.viewConsts.neutralColor);
-                        for (var i = 0; i < pvt.knownConcepts.length; i++) {
+                        for (var i=0,j=pvt.knownConcepts.length;  i < j; i++) {
                             try {
                                 $('#node-title-view-' + pvt.knownConcepts[i]).css('background-color', pvt.viewConsts.knownColor);
-                            } catch (TypeError) {
-                                //do nothing, node not in graph
-                            }
+                            } catch (TypeError) { /* node not in graph */ }
                         }
                     }
                 },
                 edit: function() { },
 
-                close: function() {
-                        //$('#header').css('display', 'block');
-                }
+                close: function() { }
 
             });
     })();
