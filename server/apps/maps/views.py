@@ -2,6 +2,7 @@ from django.core.urlresolvers import reverse
 from django.forms import HiddenInput
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.utils.html import escape, strip_tags
 
 from forms import GraphForm, NodesFormSetFactory, KeyForm
 from models import Graphs, Concepts
@@ -72,7 +73,7 @@ def display(request, gid):
         participant = int(p.isParticipant())
 
     return render(request, "map.html",{"full_graph_skeleton":graph, 
-                              "graph_name":graph.name,
+                              "graph_name": escape(strip_tags(graph.name)),
                               "linear":linear,
                               "participant":participant,
                               "study_active": int(graph.study_active),})

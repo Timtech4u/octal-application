@@ -1,57 +1,56 @@
 <script type="text/template" id="quiz-view-template">
 
-	<div class="quiz" <% if (linear == 1)  { %> id="linear-quiz" <% } %> >
+<div class="quiz" <% if (linear == 1)  { %> id="linear-quiz" <% } %> >
+    <h1 class="title"><%= graphName %></h1>
     <div id="logout">
         <% if(studyActive == 1) {
             if(participant) { %>
                 You are currently logged in as a participant, click 
                 <a href="/maps/<%= gid %>/research/logout/" target="_self">here</a> to log out
             <% } else { %>
-                If you are a participant in the study, click
+                If you are a participant in this study, click
                 <a href="/maps/<%= gid %>/research/logout/" target="_self">here</a> to log in
             <% }
         } %>
     </div>
     <br />
-    <h1 class="title"><strong><% if (title) { %>
+    <h2 class="title"><strong><% if (title) { %>
 				<%= title %>
     <%} else {%>
         Placeholder
     <% } %>
 		</strong>
-    </h1>
+    </h2>
+
     <% if(t != 1) { %>
     <div id="questions-remaining"> <span id="correct-count"><%= ct-cr %></span> out of <%= ct %> questions completed </div>
 	<% } %>
-	   <hr />
-		<br />
-	  <div class="question-content">
 
-	    <%= h %>
-	  </div>
-		<br />
-	  <div>
-    	<form class="answer">
-				<% if(t == 0) { %>
-				  <% for (var answer in a) { %>
+    <hr /><br />
+    <div class="question-content">
+        <%= h %>
+    </div><br />
 
-				  <label class ='answer-choice'><input type='radio' name='answer'  value='<%= a[answer] %>'><%= a[answer] %></label>
+    <div>
+        <form class="answer">
+          <% if(t == 0) { %>
+            <% for (var answer in a) { %>
+              <label class ='answer-choice'><input type='radio' name='answer'  value='<%= a[answer] %>'><%= a[answer] %></label>
+            <% } %>
+          <% } %>
+        </form>
 
-				  <% } %>
-				<% } %>
-    	</form>
-    	<br />
-			<br />
+        <br /><br />
+
         <% if (t != 1) { %>
-        <div id="question-feedback"></div>
-        <div id="check-answer"><span class="lil-icons">✓</span>Check My Answer</div>
-    	<div id="next-question-button">Go To Next Question<span class="lil-icons">↦</span></div>
+            <div id="question-feedback"></div>
+            <div id="check-answer"><span class="lil-icons">✓</span>Check My Answer</div>
+            <div id="next-question-button">Go To Next Question<span class="lil-icons">↦</span></div>
         <% } %>
-        <br />
-        <br />
-	  </div>
-	</div>
-	<div id='graph-wrapper'>
-	</div>
-</script>
+        <br /><br />
+    </div>
+</div>
 
+<div id='graph-wrapper'></div>
+
+</script>

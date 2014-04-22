@@ -39,6 +39,16 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
                         'click .submit-button': 'submit'
                 },
 
+                // insert some variables from the server into the object
+                buildGlobals: function(o) {
+                    o.gid = this.options.gid,
+                    o.linear = oGlobals.linear;
+                    o.graphName = oGlobals.graphName;
+                    o.participant = oGlobals.participant;
+                    o.studyActive = oGlobals.studyActive;
+                    return o;
+                },
+
                 // Re-render the title of the todo item.
                 render: function() {
                     //prevent scrolling
@@ -46,12 +56,7 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
 
                     if(!this.model) {
                         this.template = _.template(document.getElementById(pvt.viewConsts.altTemplateId).innerHTML);
-                        h = {
-                            gid: this.options.gid, 
-                            studyActive:oGlobals.studyActive,
-                            participant:oGlobals.participant
-                        };
-                        this.$el.html(this.template(h));
+                        this.$el.html(this.template(this.buildGlobals({})));
                         this.getKnowledgeState("/maps/"+this.options.gid);
                         return;
                     }
@@ -82,12 +87,8 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
                     //Shuffle the order of the answer choices and render the view
                     thisModel.set("a", shuffle(thisModel.get("a")));
                     var h = _.clone(thisModel.toJSON());
-                    h.participant = oGlobals.participant;
-                    h.linear = oGlobals.linear;
-                    h.studyActive = oGlobals.studyActive;
-                    h.gid = thisView.model.get("gid");
 
-                    thisView.$el.html(thisView.template(h));
+                    thisView.$el.html(thisView.template(this.buildGlobals(h)));
 
                     //Add some behavior to the check-answer and next question buttons
                     //TODO: I wonder if there isn't a better way/place to do this
