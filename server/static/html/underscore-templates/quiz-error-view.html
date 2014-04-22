@@ -1,19 +1,24 @@
 <script type="text/template" id="quiz-error-view-template">
+
+<div class="quiz" <% if (linear == 1)  { %> id="linear-quiz" <% } %> >
+    <p class="title"><%= graphName %></p>
     <div id="logout">
         <% if(studyActive == 1) {
             if(participant) { %>
                 You are currently logged in as a participant, click 
                 <a href="/maps/<%= gid %>/research/logout/" target="_self">here</a> to log out
             <% } else { %>
-                If you are a participant in the study, click
+                If you are a participant in this study, click
                 <a href="/maps/<%= gid %>/research/logout/" target="_self">here</a> to log in
             <% }
         } %>
     </div>
     <br />
+    <h2 class="title">
+        <strong>Welcome!</strong>
+    </h2>
+    <hr /><br />
     <div>
-        <h1>OCTAL</h1>
-        <p>Welcome to <%= graphName %>.</p>
         <p>
             Click on any of the concepts to see exercises associated with it.
             As you respond to them, the tool will try to predict your level of
@@ -30,4 +35,5 @@
         </p>
         <p>Enjoy the tool, we hope you find it useful.</p>
     </div>
+</div>
 </script>

@@ -14,12 +14,8 @@
         } %>
     </div>
     <br />
-    <h2 class="title"><strong><% if (title) { %>
-				<%= title %>
-    <%} else {%>
-        Placeholder
-    <% } %>
-		</strong>
+    <h2 class="title">
+        <strong><% if (title){ print(title) }else{ print('Placeholder') }%></strong>
     </h2>
 
     <% if(t != 1) { %>
