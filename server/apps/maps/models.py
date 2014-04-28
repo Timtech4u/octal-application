@@ -15,6 +15,8 @@ class Graphs(models.Model):
     public = models.BooleanField(default=True)
     secret = models.CharField(max_length=16)
     study_active = models.BooleanField(default=False)
+    lti_key = models.CharField(max_length=8)
+    lti_secret = models.CharField(max_length=16)
 
     def _adjacency_list(self):
         """

@@ -44,7 +44,10 @@ def new_graph(request):
             return HttpResponseRedirect(reverse("maps:display", kwargs={"gid":g.pk}))
         f['error'] = f['graph'].errors.get('json_data')
     else:
-        f['graph'] = GraphForm(initial={'secret':generateSecret()}, prefix="graph")
+        secrets = {'secret':generateSecret(),
+                   'lti_key':generateSecret(8),
+                   'lti_secret':generateSecret()}
+        f['graph'] = GraphForm(initial=secrets, prefix="graph")
         f['study'] = StudyForm(prefix="study")
 
     return render(request, "maps-form.html", {'forms':f})

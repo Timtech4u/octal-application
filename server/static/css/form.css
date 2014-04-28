@@ -13,6 +13,15 @@
     color: #f00;
 }
 
+.lti {
+    display: block;
+    border: 1px solid black;
+    background-color: #F6FBFF;
+    text-align: center;
+    margin: 1em auto 0 auto;
+    padding: 1em;
+}
+
 .secret {
     display: block;
     border: 1px solid black;

@@ -28,10 +28,12 @@ class GraphForm(forms.ModelForm):
 
     class Meta:
         model = Graphs
-        fields = ['name', 'description', 'public', 'study_active', 'json_input', 'json_data', 'secret']
+        fields = ['name', 'description', 'public', 'study_active', 'json_input', 'json_data', 'lti_key', 'lti_secret', 'secret']
         labels = {
             'name': ("Unit Name"),
             'study_active': ("Research study"),
+            'lti_key': ("Consumer Key"),
+            'lti_secret': ("Shared Secret"),
         }
         help_texts = {
             'public': ("Public units are displayed on the unit list. Private units will be accessible by anyone with the URL."),
@@ -42,6 +44,8 @@ class GraphForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'size':40}),
             'description': forms.Textarea(attrs={'cols':40, 'rows':2}),
             'secret': forms.HiddenInput(),
+            'lti_key': forms.HiddenInput(),
+            'lti_secret': forms.HiddenInput(),
         }
 
 class KeyForm(forms.Form):

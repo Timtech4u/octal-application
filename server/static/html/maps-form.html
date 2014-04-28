@@ -175,6 +175,13 @@ function pageUtils() {
     </table>
 {% endif %}
 
+<p class="lti">If you are interested in LTI integration (say, to
+<a href="https://youtu.be/38tYR8Nuens">embed your unit in edX</a>), 
+you will need the following information: <br />
+Consumer Key: <strong>{{ forms.graph.lti_key.value }}</strong><br />
+Shared Secret: <strong>{{ forms.graph.lti_secret.value }}</strong>
+</p>
+ 
 {% if not gid %}
     <p class="secret">Please remember the following secret,
     it will allow you to edit your Unit in the future:
