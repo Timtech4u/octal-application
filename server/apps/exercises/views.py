@@ -1,9 +1,10 @@
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from lazysignup.decorators import allow_lazy_user
 
 from models import Problems, Responses, Attempts
+from forms import ProblemsFormSetFactory
 
 from apps.maps.models import Graphs, Concepts
 from apps.research.utils import getParticipantByUID, studyFilter
@@ -123,6 +124,19 @@ def set_attempt(request, gid="", attempt="", correct=""):
     else:
         return HttpResponse(status=405)
 
+def edit(request, gid=""):
+    g = get_object_or_404(Graphs, pk=gid)
+
+    if request.method == 'POST':
+        forms = ProblemsFormSetFactory(g, post=request.POST)
+        if forms.is_valid():
+            return HttpResponse("yay")
+    else:
+        forms = ProblemsFormSetFactory(g)
+
+    return render(request, "exercises-form.html", 
+                    {'forms':forms, 'gid':gid, 'gname':g.name})
+
 def build(request, gid=""):
     g = get_object_or_404(Graphs, pk=gid)
 
@@ -148,12 +162,6 @@ def build(request, gid=""):
 
         # add concepts to the exercise (concepts separated by |)
         pr.concepts = [concepts[x] for x in e['concepts'].split('|')]
-
-        # TODO: fix special case
-        #if int(e['qid']) is 0:
-            #ex.qtype = ex.SHORT
-            #ex.save()
-            #continue
 
         pr.save()
 

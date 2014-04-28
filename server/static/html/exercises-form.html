@@ -1,0 +1,73 @@
+{% extends "octal.html" %}
+{% load staticfiles %}
+
+{% block title %}: edit exercises in an OCTAL Unit{% endblock %}
+
+{% block extra-css %}
+<link rel="stylesheet" type="text/css" href="{% static "css/lib/select2.css" %}" />
+<link rel="stylesheet" href="{% static "css/lib/kmapcss/graph.css" %}"/>
+<link rel="stylesheet" href="{% static "css/form.css" %}" />
+{% endblock %}
+{% block jscript-extend %}
+<script type="text/javascript" src="{% static "javascript/lib/select2.min.js" %}"></script>
+<script type="text/javascript">
+// <![CDATA[
+function pageUtils() {
+  // make multiple select boxes appear in tag style
+  $("select[multiple]").select2();
+
+  // dynamically add more exercises
+  $('#add_ex').click(function() {
+    var total_nodes = $('#id_{{ forms.prefix }}-TOTAL_FORMS');
+    var form_idx = total_nodes.val();
+    $('#exset tbody').append($('#empty-form tbody').html().replace(/__prefix__/g, form_idx));
+    total_nodes.val(parseInt(form_idx) + 1);
+  });
+
+  // highlight every other set of exercise fields
+  var odd = false;
+  $('#exset tr').each( function(x) {
+    if(x%5 == 0) odd = !odd;
+    if(odd) $(this).css('background', '#eee');
+  });
+
+}
+pageUtils();
+// ]]>
+</script>
+{% endblock %}
+ 
+{% block main %}
+
+<div class="main-octal-wrap">
+
+<div id="octal-logo">
+    <img width="128" height="128" alt="OCTAL logo" src="{% static "images/octal-logo.png" %}" />
+</div>
+
+<h1>OCTAL</h1>
+
+<h2>&quot;{{ gname }}&quot; Exercises</h2>
+<p>Create new exercises by clicking &quot;Add Another Exercise&quot;.
+Or you may edit existing exercises directly.
+Be sure to list one or more concepts that apply to each exercise!
+</p>
+
+<form action="{% url 'maps:exercises:edit' gid=gid %}" method="post">
+    {% csrf_token %}
+
+    {{ forms.non_form_errors.as_ul }}
+    <table id="exset" class="form"><tbody>
+    {{ forms.as_table }}
+    </tbody></table>
+    <table id="empty-form"><tbody>
+        {{ forms.empty_form.as_table }}
+    </tbody></table>
+
+    <input type="button" value="Add Another Exercise" id="add_ex">
+
+    <input type="submit" class="submit-button" value="Save" />
+    </form>
+</div>
+
+{% endblock %}

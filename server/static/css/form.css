@@ -1,3 +1,7 @@
+#empty-form {
+    display: none;
+}
+
 #edit-view-wrapper {
     border:1px solid black;
     width: 100%; 
@@ -32,6 +36,18 @@ form table {
     text-align: left;
     border-collapse: separate;
     border-spacing: 0 1em;
+}
+
+#exset {
+    border-spacing: 0;
+}
+
+#exset .select2-container{
+    width: 96%;
+}
+
+#exset th,td {
+    padding: .5em 0.25em;
 }
 
 #tbl_study {
