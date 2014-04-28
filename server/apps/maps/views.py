@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.utils.html import escape, strip_tags
 
-from forms import GraphForm, NodesFormSetFactory, KeyForm
+from forms import GraphForm, KeyForm
 from models import Graphs, Concepts
 from utils import graphCheck, generateSecret
 

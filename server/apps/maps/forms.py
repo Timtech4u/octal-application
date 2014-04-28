@@ -30,46 +30,19 @@ class GraphForm(forms.ModelForm):
         model = Graphs
         fields = ['name', 'description', 'public', 'study_active', 'json_input', 'json_data', 'secret']
         labels = {
-            'name': ("Graph Name"),
+            'name': ("Unit Name"),
             'study_active': ("Research study"),
         }
         help_texts = {
-            'public': ("Public maps are displayed on the map list. Private maps will still be publicly viewable by anyone with the URL."),
-            'secret': ("The secret is used to modify the graph in the future. Please remember the value of this field!"),
-            'study_active': ("Check this only if you plan to use this map as part of a research investigation."),
+            'public': ("Public units are displayed on the unit list. Private units will be accessible by anyone with the URL."),
+            'secret': ("The secret is used to modify the unit in the future. Please remember the value of this field!"),
+            'study_active': ("Check this only if you plan to use this unit as part of a research investigation."),
         }
         widgets = {
             'name': forms.TextInput(attrs={'size':40}),
             'description': forms.Textarea(attrs={'cols':40, 'rows':2}),
             'secret': forms.HiddenInput(),
         }
-
-def NodesFormSetFactory(g=None, post=None):
-    def _form_factory(g):
-        """
-        A closure to restrict the dependencies to those in the supplied graph
-        """
-        class NodesForm(forms.ModelForm):
-            def __init__(self, *args, **kwargs):
-                super(NodesForm, self).__init__(*args, **kwargs)
-                self.fields['dependencies'].queryset = Concepts.objects.filter(graph=g)
-                self.fields['dependencies'].required = False
-            class Meta:
-                model = Concepts
-                exclude = ['tag']
-                labels = {
-                    'name': ("Concept Title"),
-                    'dependencies': ("Prerequisites"),
-                }
-                help_texts = {
-                    'dependencies': ("A list of other concept IDs that are a prerequisite for this concept."),
-                }
-        return NodesForm
-
-    NodesFormSet = forms.models.inlineformset_factory(Graphs, Concepts)
-    NodesForm = NodesFormSet(post, instance=g, prefix="nodes")
-    NodesForm.form = _form_factory(g)
-    return NodesForm
 
 class KeyForm(forms.Form):
     """

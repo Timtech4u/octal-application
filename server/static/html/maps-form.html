@@ -1,7 +1,7 @@
 {% extends "octal.html" %}
 {% load staticfiles %}
 
-{% block title %}: {% if gid %}edit a{% else %}create new{% endif %} map{% endblock %}
+{% block title %}: {% if gid %}edit an{% else %}create new{% endif %} OCTAL Unit{% endblock %}
 
 {% block extra-css %}
 <link rel="stylesheet" type="text/css" href="{% static "css/lib/select2.css" %}" />
@@ -92,16 +92,16 @@ function pageUtils() {
 
 <h1>OCTAL</h1>
 
-<h2>{% if not gid %}Create a new{% else %}Edit a{% endif %} concept map</h2>
+<h2>{% if not gid %}Create a new{% else %}Edit a{% endif %} Unit</h2>
 <p>Please fill out the below information to 
-{% if not gid %}create a new{% else %}edit a{% endif %} map.</p>
+{% if not gid %}create a new{% else %}edit an{% endif %} OCTAL Unit.</p>
 
 {% if not forms.graph %}
     <form action="{% url 'maps:edit' gid=gid %}" method="post" 
     autocomplete="off" autocapitalize="off" autocorrect="off">
     {% csrf_token %}
     <div class="secret">
-        <p>Please enter this map's secret to continue.</p>
+        <p>Please enter this Unit's secret to continue.</p>
         {{ forms.key.as_p }}
     </div>
     {{ forms.key.edited }}
@@ -178,13 +178,13 @@ function pageUtils() {
 
 {% if not gid %}
     <p class="secret">Please remember the following secret,
-    it will allow you to edit your map in the future:
+    it will allow you to edit your Unit in the future:
     <br />
     <span>{{ forms.graph.secret.value }}</span>
     </p>
 
     <p class="error" style="display:none;text-align:center" id="warn">Be sure
-you have recorded the above secret, or you will be unable to edit your map!</p>
+you have recorded the above secret, or you will be unable to edit your Unit!</p>
 {% endif %}
 
     <input type="submit" class="submit-button" value="{% if gid %}Save{% else %}Create{% endif %}" />
