@@ -11,7 +11,6 @@ from apps.maps.models import Graphs
 from apps.ki.utils import performInference
 from apps.research.utils import getParticipantByUID, studyFilter
 
-@allow_lazy_user
 def knowledge_inference(request, gid=""):
     if request.method == "GET":
         g = get_object_or_404(Graphs, pk=gid)

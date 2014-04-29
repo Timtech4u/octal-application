@@ -23,7 +23,6 @@ def fetch_attempt_id(u, p, g, con, pr):
     return attempt.pk;
 
 
-@allow_lazy_user
 def fetch_ex(request, gid="", tag="", qid=""):
     #does the requested concept exist in the graph?
     g = get_object_or_404(Graphs, pk=gid)
@@ -81,7 +80,6 @@ def fetch_ex(request, gid="", tag="", qid=""):
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
-@allow_lazy_user
 def set_attempt(request, gid="", attempt="", correct=""):
     g = get_object_or_404(Graphs, pk=gid)
 
