@@ -76,7 +76,7 @@ define(["backbone", "jquery", "octal/models/quiz-model", "octal/views/quiz-view"
                     $("#quiz-view-wrapper").html(that.qview.$el).show();
                 },
                 error: function(model, response, options) {
-                    that.qview = new QuizView({gid: this.gid});
+                    that.qview = new QuizView({gid: that.gid});
                     that.qview.render();
                     $("#quiz-view-wrapper").html(that.qview.$el).show();
                 }
@@ -111,12 +111,6 @@ define(["backbone", "jquery", "octal/models/quiz-model", "octal/views/quiz-view"
         changeUrlParams: function(paramsObj) {
             this.navigate("/maps/"+this.gid+"/concepts/" + paramsObj.focus, true);
         }
-
-            /**$.ajax({url: "/maps/"+this.gid+"/exercises/fetch/" + concept + "/", async:false}).done(function(data) {
-                model = new QuestionModel(data);
-                model.set("concept",concept.toLowerCase());
-
-             });**/
 
     });
 

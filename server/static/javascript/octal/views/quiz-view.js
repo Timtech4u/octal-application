@@ -56,8 +56,9 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
 
                     if(!this.model) {
                         this.template = _.template(document.getElementById(pvt.viewConsts.altTemplateId).innerHTML);
-                        this.$el.html(this.template(this.buildGlobals({})));
-                        this.getKnowledgeState("/maps/"+this.options.gid);
+                        o = this.buildGlobals({});
+                        this.$el.html(this.template(o));
+                        this.getKnowledgeState("/maps/"+o.gid);
                         return;
                     }
 
@@ -190,18 +191,6 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
                             thisView.render();
                         }
                     });
-                    /*)
-                    $.ajax({
-                        url: thisView.options.baseurl + "/exercises/fetch/" + pvt.conceptName + "/" + thisView.model.get('qid'),
-                        async:false
-                    }).done(function(data) {
-                        thisView.model = new QuestionModel(data);
-                        thisView.model.set("concept", pvt.conceptName);
-                    });
-                    pvt.newQuestion = true;
-                    pvt.correct = false;
-                    this.render();
-                    */
                 },
 
 
@@ -213,7 +202,6 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
                     }).done(function(data) {
                         pvt.knownConcepts = data;
                         thisView.highlightNodes();
-                        //thisView.getKnowledgeState(data);
                     });
 
                 },
