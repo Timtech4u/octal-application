@@ -1,12 +1,16 @@
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.forms import HiddenInput
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.utils.html import escape, strip_tags
+from django.views.decorators.csrf import csrf_exempt
 
 from forms import GraphForm, KeyForm
 from models import Graphs, Concepts
 from utils import graphCheck, generateSecret
+
+from ims_lti_py.tool_provider import DjangoToolProvider
 
 from apps.research.models import Participants, Spectators, Studies, StudyForm
 from apps.research.utils import getParticipantByUID, handleSurveys, urlLanding, buildPIDs
@@ -137,3 +141,37 @@ def edit(request, gid=""):
         f['key'] = KeyForm(graph=g, prefix="key")
 
     return render(request, "maps-form.html", {'forms':f, 'gid':gid})
+
+@csrf_exempt
+def lti(request, gid):
+    graph = get_object_or_404(Graphs, pk=gid)
+
+    if request.method != 'POST' or 'oauth_consumer_key' not in request.POST:
+        return HttpResponse("Improper LTI request method", status=405)
+
+    # confirm oauth credentials with ims_lti tool
+    tool_provider = DjangoToolProvider(graph.lti_key, graph.lti_secret, request.POST)
+    if tool_provider.valid_request(request) is False:
+        raise PermissionDenied()
+
+    # build username from userid
+    userid = getattr(tool_provider, "user_id", None)
+    if userid is None: raise PermissionDenied()
+
+    username = "_%s" % (userid)
+
+    # try to get the user
+    user = get_object_or_none(User,username=username)
+
+    # haven't seen this user before
+    if user is None: 
+        user = User.objects.create_user(username=username)
+        user.set_unusable_password()
+        user.save()
+
+    # have the user ready to go, login
+    user.backend = "django.contrib.auth.backends.ModelBackend"
+    login(request, user)
+
+    # LTI user logged in, forward to map
+    return HttpResponseRedirect(reverse("maps:display", kwargs={"gid":gid}))
