@@ -13,7 +13,6 @@ With a live demo at http://www.metacademy.org
 ### Windows
 For Windows installation/requirements, please see the readme located in [/windows](/windows), these instructions presume a *nix or OSX OS
 
-
 ### Preliminary requirements
 * `python 2.7X`: NB: install `python-devel` if you're using a package manager such as apt-get. The following command should print a path (if this command raises an exception, make sure that you have the `python-devel` version installed):
 
@@ -56,6 +55,10 @@ For Windows installation/requirements, please see the readme located in [/window
 1. install the octal application (note: this project uses a [virtual environment](http://www.virtualenv.org/en/latest/) for development):
 
         make
+
+    If you are on OS X and have a version of Xcode >= 5.1, [you might need to prefix the above command](http://kaspermunck.github.io/2014/03/fixing-clang-error/) with this:
+    
+        ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future make
 
 #### Optional: create a superuser
 
