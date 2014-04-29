@@ -153,7 +153,10 @@ def lti(request, gid):
 
     # confirm oauth credentials with ims_lti tool
     tool_provider = DjangoToolProvider(graph.lti_key, graph.lti_secret, request.POST)
-    if tool_provider.valid_request(request) is False:
+    try:
+        if tool_provider.valid_request(request) is False:
+            raise PermissionDenied()
+    except:
         raise PermissionDenied()
 
     # build username from userid
