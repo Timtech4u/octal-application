@@ -85,6 +85,6 @@ def generateSecret(length=16):
     """
     Generate a secret by randomly picking characters from a string
     """
-    chars = "abcdefghjkmnpqrtuvwxyzABCDEFGHKMNPQRTUVWXYZ23456789?<>:!@#$%^&*()-_=+"
+    chars = "abcdefghjkmnpqrtuvwxyzABCDEFGHKMNPQRTUVWXYZ23456789?<>!@#$%^&*()-_=+"
     return ''.join(choice(chars) for _ in range(length))
  

@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+from django.contrib.auth import login
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.forms import HiddenInput
@@ -161,10 +163,9 @@ def lti(request, gid):
     username = "_%s" % (userid)
 
     # try to get the user
-    user = get_object_or_none(User,username=username)
-
-    # haven't seen this user before
-    if user is None: 
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
         user = User.objects.create_user(username=username)
         user.set_unusable_password()
         user.save()
