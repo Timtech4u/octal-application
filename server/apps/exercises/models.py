@@ -11,8 +11,8 @@ class Problems(models.Model):
     MULTIPLE = 0
     SHORT    = 1
     EXERCISE_TYPES = ( 
-        ('Multiple choice', MULTIPLE),
-        ('Short answer',    SHORT),
+        (MULTIPLE, 'Multiple choice'),
+        (SHORT, 'Short answer'),
     )
 
     graph = models.ForeignKey(Graphs)
