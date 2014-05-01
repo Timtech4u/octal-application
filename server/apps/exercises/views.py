@@ -7,6 +7,7 @@ from models import Problems, Responses, Attempts
 from forms import ProblemsFormSetFactory
 
 from apps.maps.models import Graphs, Concepts
+from apps.maps.utils import require_edit_access
 from apps.research.utils import getParticipantByUID, studyFilter
 
 import json, requests, csv
@@ -122,8 +123,10 @@ def set_attempt(request, gid="", attempt="", correct=""):
     else:
         return HttpResponse(status=405)
 
+@require_edit_access
 def edit(request, gid=""):
     g = get_object_or_404(Graphs, pk=gid)
+    #ans = ', '.join([p.pid for p in s.participants_set.all()])
 
     if request.method == 'POST':
         forms = ProblemsFormSetFactory(g, post=request.POST)

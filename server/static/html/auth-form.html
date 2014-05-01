@@ -1,0 +1,32 @@
+{% extends "octal.html" %}
+{% load staticfiles %}
+
+{% block title %}: Authorize edit access to unit{% endblock %}
+
+{% block extra-css %}
+<link rel="stylesheet" href="{% static "css/form.css" %}" />
+{% endblock %}
+
+{% block main %}
+
+<div class="main-octal-wrap">
+
+<div id="octal-logo">
+    <img width="128" height="128" alt="OCTAL logo" src="{% static "images/octal-logo.png" %}" />
+</div>
+
+<h1>OCTAL</h1>
+
+<h2>OCTAL Unit authentication</h2>
+
+<form action="{% url 'maps:auth' gid=gid %}?p={{ fwd|urlencode:'' }}" method="post" 
+    autocomplete="off" autocapitalize="off" autocorrect="off">
+    {% csrf_token %}
+    <div class="secret">
+        <p>Please enter this Unit's secret to continue.</p>
+        {{ key.as_p }}
+    </div>
+
+    <input type="submit" value="Go" />
+    </form>
+{% endblock %}

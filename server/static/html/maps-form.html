@@ -95,53 +95,40 @@ function pageUtils() {
 <p>Please fill out the below information to 
 {% if not gid %}create a new{% else %}edit an{% endif %} OCTAL Unit.</p>
 
-{% if not forms.graph %}
-    <form action="{% url 'maps:edit' gid=gid %}" method="post" 
-    autocomplete="off" autocapitalize="off" autocorrect="off">
-    {% csrf_token %}
-    <div class="secret">
-        <p>Please enter this Unit's secret to continue.</p>
-        {{ forms.key.as_p }}
-    </div>
-    {{ forms.key.edited }}
-
-    <input type="submit" value="Go" />
-    </form>
+{% if gid %}
+    <form action="{% url 'maps:edit' gid=gid %}" method="post">
 {% else %}
-    {% if gid %}
-        <form action="{% url 'maps:edit' gid=gid %}" method="post">
-        {{ forms.key.as_p }}
-    {% else %}
-        <form action="{% url 'maps:new' %}" method="post">
-    {% endif %}        
-    {% csrf_token %}
-    <table id="gform">
-        {{ forms.graph.as_table }}
+    <form action="{% url 'maps:new' %}" method="post">
+{% endif %}        
+
+{% csrf_token %}
+<table id="gform">
+    {{ forms.graph.as_table }}
+</table>
+
+<div id="edit-wrap">
+    <h2>Graph editor</h2>
+    <p class="helptext">In the box below is a graph editor so you may build a concept map.<br />
+    <strong>Create</strong> a concept with shift + click then type its name.<br />
+    <strong>Edit</strong> a concept's title by shift + click on it.<br />
+    <strong>Link</strong> concepts into prerequisite relationships by shift + click
+    and drag from the prerequisite to the postrequisite.
+    A prerequisite should point to a postrequisite and avoid circular references.<br />
+    <strong>Delete</strong> concepts or links by clicking on the concept or link
+    and then press the X key.<br />
+    <strong>OPTIMIZE</strong> the placement of the concepts and links with the Z key.</p>
+    {% if forms.error %}
+        <p class="error" style="padding:0;margin:0;">{{ forms.error.as_text }}</p>
+    {% endif %}
+    <div id="edit-view-wrapper"></div>
+</div>
+
+<div id="tbl_study">
+    <h3>Research study options</h3>
+    <table>
+        {{ forms.study.as_table }}
     </table>
-
-    <div id="edit-wrap">
-        <h2>Graph editor</h2>
-        <p class="helptext">In the box below is a graph editor so you may build a concept map.<br />
-        <strong>Create</strong> a concept with shift + click then type its name.<br />
-        <strong>Edit</strong> a concept's title by shift + click on it.<br />
-        <strong>Link</strong> concepts into prerequisite relationships by shift + click
-        and drag from the prerequisite to the postrequisite.
-        A prerequisite should point to a postrequisite and avoid circular references.<br />
-        <strong>Delete</strong> concepts or links by clicking on the concept or link
-        and then press the X key.<br />
-        <strong>OPTIMIZE</strong> the placement of the concepts and links with the Z key.</p>
-        {% if forms.error %}
-            <p class="error" style="padding:0;margin:0;">{{ forms.error.as_text }}</p>
-        {% endif %}
-        <div id="edit-view-wrapper"></div>
-    </div>
-
-    <div id="tbl_study">
-        <h3>Research study options</h3>
-        <table>
-            {{ forms.study.as_table }}
-        </table>
-    </div>
+</div>
 
 {% if gid %}
     {{ forms.nodes.non_form_errors.as_ul }}
@@ -196,8 +183,6 @@ you have recorded the above secret, or you will be unable to edit your Unit!</p>
     <input type="submit" class="submit-button" value="{% if gid %}Save{% else %}Create{% endif %}" />
     </form>
 </div>
-
-{% endif %}
 
 {% include "quiz-view.html" %}
 {% include "quiz-error-view.html" %}

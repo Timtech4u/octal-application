@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from forms import GraphForm, KeyForm
 from models import Graphs, Concepts
-from utils import graphCheck, generateSecret
+from utils import graphCheck, generateSecret, require_edit_access
 
 from ims_lti_py.tool_provider import DjangoToolProvider
 
@@ -87,6 +87,27 @@ def display(request, gid):
                               "participant":participant,
                               "study_active": int(graph.study_active),})
 
+def auth(request, gid=""):
+    """
+    Allow a user to edit a unit for a session if correct secret
+    """
+    g = get_object_or_404(Graphs, pk=gid)
+
+    fwd = request.GET.get('p', reverse('maps:display', kwargs={'gid':gid}))
+
+    if request.method == 'POST':
+        form = KeyForm(request.POST, graph=g, prefix="key")
+        if form.is_valid():
+            # user has entered a valid secret, forward back to URL
+            request.session['editor_%s' % gid] = True
+            return HttpResponseRedirect(fwd)
+    else:
+        form = KeyForm(graph=g, prefix="key")
+
+    return render(request, "auth-form.html", {'key':form, 'gid':gid, 'fwd':fwd})
+
+
+@require_edit_access
 def edit(request, gid=""):
     g = get_object_or_404(Graphs, pk=gid)
     s = get_object_or_404(Studies, pk=gid)
@@ -95,52 +116,40 @@ def edit(request, gid=""):
     f = {}
 
     if request.method == 'POST':
-        f['key'] = KeyForm(request.POST, graph=g, prefix="key")
-        if f['key'].is_valid():
-            # user has entered a valid secret, save edited content or show form
-            if f['key'].cleaned_data['edited']:
-                f['graph'] = GraphForm(request.POST, instance=g, prefix="graph")
-                f['study'] = StudyForm(request.POST, instance=s, prefix="study", initial={'pids':pids})
-                f['graph'].fields["json_input"].widget = HiddenInput()
-                f['key'].fields["secret"].widget = HiddenInput()
+        f['graph'] = GraphForm(request.POST, instance=g, prefix="graph")
+        f['study'] = StudyForm(request.POST, instance=s, prefix="study", initial={'pids':pids})
+        f['graph'].fields["json_input"].widget = HiddenInput()
 
-                if f['graph'].is_valid() and (not f['graph'].cleaned_data["study_active"] or f['study'].is_valid()):
-                    # woo all good, save the graph and build its concepts
-                    g = f['graph'].save()
-                    g.build(f['graph'].cleaned_data["json_data"])
+        if f['graph'].is_valid() and (not f['graph'].cleaned_data["study_active"] or f['study'].is_valid()):
+            # woo all good, save the graph and build its concepts
+            g = f['graph'].save()
+            g.build(f['graph'].cleaned_data["json_data"])
 
-                    # insert study data if applicable
-                    if f['graph'].cleaned_data["study_active"]:
-                        s = f['study'].save()
+            # insert study data if applicable
+            if f['graph'].cleaned_data["study_active"]:
+                s = f['study'].save()
 
-                        if 'pids' in f['study'].changed_data:
-                            # you asked for it! delete all participants
-                            Participants.objects.filter(study=s).delete()
-                            Spectators.objects.filter(study=s).delete()
-                            buildPIDs(s, f['study'].cleaned_data["pids"])
-                    else:
-                        # delete all participants
-                        Participants.objects.filter(study=s).delete()
-                        Spectators.objects.filter(study=s).delete()
-
-                    return HttpResponseRedirect(reverse("maps:display", kwargs={"gid":g.pk}))
-                f['error'] = f['graph'].errors.get('json_data')
+                if 'pids' in f['study'].changed_data:
+                    # you asked for it! delete all participants
+                    Participants.objects.filter(study=s).delete()
+                    Spectators.objects.filter(study=s).delete()
+                    buildPIDs(s, f['study'].cleaned_data["pids"])
             else:
-                # prepare content; most data is provided by models
-                ki = {'secret':g.secret, 'edited': True}
-                f['key'] = KeyForm(graph=g, prefix="key", initial=ki)
-                f['key'].fields["secret"].widget = HiddenInput()
+                # delete all participants
+                Participants.objects.filter(study=s).delete()
+                Spectators.objects.filter(study=s).delete()
 
-                gi = {'json_data':str(g)}
-                f['graph'] = GraphForm(instance=g, prefix="graph", initial=gi)
-                f['graph'].fields["json_input"].widget = HiddenInput()
-
-                si = {'pids':pids}
-                f['study'] = StudyForm(instance=s, prefix="study", initial=si)
-                f['study'].fields['pids'].help_text = "<strong>Click above to edit. Note that editing the participant list will cause all participants to be deleted and re-created on the server.</strong><br />%s" % f['study'].fields['pids'].help_text;
-
+            return HttpResponseRedirect(reverse("maps:display", kwargs={"gid":g.pk}))
+        f['error'] = f['graph'].errors.get('json_data')
     else:
-        f['key'] = KeyForm(graph=g, prefix="key")
+        # prepare content; most data is provided by models
+        gi = {'json_data':str(g)}
+        f['graph'] = GraphForm(instance=g, prefix="graph", initial=gi)
+        f['graph'].fields["json_input"].widget = HiddenInput()
+
+        si = {'pids':pids}
+        f['study'] = StudyForm(instance=s, prefix="study", initial=si)
+        f['study'].fields['pids'].help_text = "<strong>Click above to edit. Note that editing the participant list will cause all participants to be deleted and re-created on the server.</strong><br />%s" % f['study'].fields['pids'].help_text;
 
     return render(request, "maps-form.html", {'forms':f, 'gid':gid})
 
