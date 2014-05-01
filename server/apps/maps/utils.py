@@ -10,15 +10,21 @@ def require_edit_access(view):
     A decorator that enforces user has edit permissions for the graph
     """
     def _wrapped_view(request, gid, *args, **kwargs):
-        editor = request.session.get('editor_%s' % gid, False)
-
-        if not editor:
+        if not canEdit(request, gid):
             url = reverse("maps:auth", kwargs={"gid":gid})
             fwd = QueryDict('p=%s' % request.get_full_path())
             return HttpResponseRedirect("%s?%s" % (url, fwd.urlencode()))
 
         return view(request, gid, *args, **kwargs)
     return _wrapped_view
+
+def canEdit(request, gid):
+    return gid in request.session.get('editor', [])
+
+def setEdit(request, gid):
+    if type(request.session.get('editor', None)) != list:
+        request.session['editor'] = []
+    request.session['editor'].append(gid)
 
 class GraphIntegrityError(Exception):
     """

@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from forms import GraphForm, KeyForm
 from models import Graphs, Concepts
-from utils import graphCheck, generateSecret, require_edit_access
+from utils import graphCheck, generateSecret, require_edit_access, setEdit, canEdit
 
 from ims_lti_py.tool_provider import DjangoToolProvider
 
@@ -46,7 +46,8 @@ def new_graph(request):
                 # insert blank study
                 Studies(graph=g).save()
 
-            # all saved, forward to map
+            # all saved, provide edit access and forward to map
+            setEdit(request, gid)
             return HttpResponseRedirect(reverse("maps:display", kwargs={"gid":g.pk}))
         f['error'] = f['graph'].errors.get('json_data')
     else:
@@ -85,6 +86,7 @@ def display(request, gid):
                               "graph_name": escape(strip_tags(graph.name)),
                               "linear":linear,
                               "participant":participant,
+                              "editor":int(canEdit(request,gid)),
                               "study_active": int(graph.study_active),})
 
 def auth(request, gid=""):
@@ -99,7 +101,7 @@ def auth(request, gid=""):
         form = KeyForm(request.POST, graph=g, prefix="key")
         if form.is_valid():
             # user has entered a valid secret, forward back to URL
-            request.session['editor_%s' % gid] = True
+            setEdit(request, gid)
             return HttpResponseRedirect(fwd)
     else:
         form = KeyForm(graph=g, prefix="key")
