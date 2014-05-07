@@ -47,7 +47,7 @@ def new_graph(request):
                 Studies(graph=g).save()
 
             # all saved, provide edit access and forward to map
-            setEdit(request, gid)
+            setEdit(request, g.pk)
             return HttpResponseRedirect(reverse("maps:display", kwargs={"gid":g.pk}))
         f['error'] = f['graph'].errors.get('json_data')
     else:
