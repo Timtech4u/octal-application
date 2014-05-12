@@ -13,6 +13,16 @@
 <script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
 <script type="text/javascript">
 // <![CDATA[
+
+// highlight every other set of exercise fields
+function highlight() {
+  var odd = false;
+  $('#exset tr').each( function(x) {
+    if(x%5 == 0) odd = !odd;
+    if(odd) $(this).css('background', '#eee');
+  });
+}
+
 function pageUtils() {
   // make multiple select boxes appear in tag style
   $("select[multiple]").select2();
@@ -33,14 +43,10 @@ function pageUtils() {
     var form_idx = total_nodes.val();
     $('#exset tbody').append($('#empty-form tbody').html().replace(/__prefix__/g, form_idx));
     total_nodes.val(parseInt(form_idx) + 1);
+    highlight();
   });
 
-  // highlight every other set of exercise fields
-  var odd = false;
-  $('#exset tr').each( function(x) {
-    if(x%5 == 0) odd = !odd;
-    if(odd) $(this).css('background', '#eee');
-  });
+  highlight();
 
 }
 pageUtils();
