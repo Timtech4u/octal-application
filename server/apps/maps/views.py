@@ -15,7 +15,8 @@ from utils import graphCheck, generateSecret, require_edit_access, setEdit, canE
 
 from ims_lti_py.tool_provider import DjangoToolProvider
 
-from apps.research.models import Participants, Spectators, Studies, StudyForm
+from apps.research.models import Participants, Spectators, Studies
+from apps.research.forms import StudyForm
 from apps.research.utils import getParticipantByUID, handleSurveys, urlLanding, buildPIDs
 
 import json
