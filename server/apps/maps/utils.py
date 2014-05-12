@@ -19,12 +19,13 @@ def require_edit_access(view):
     return _wrapped_view
 
 def canEdit(request, gid):
-    return gid in request.session.get('editor', [])
+    return int(gid) in request.session.get('editor', [])
 
 def setEdit(request, gid):
     if type(request.session.get('editor', None)) != list:
         request.session['editor'] = []
-    request.session['editor'].append(gid)
+    request.session['editor'].append(int(gid))
+    request.session.modified = True
 
 class GraphIntegrityError(Exception):
     """

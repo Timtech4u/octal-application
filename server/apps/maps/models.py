@@ -13,7 +13,7 @@ class Graphs(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     public = models.BooleanField(default=True)
-    secret = models.CharField(max_length=16)
+    secret = models.CharField(max_length=128)
     study_active = models.BooleanField(default=False)
     lti_key = models.CharField(max_length=8)
     lti_secret = models.CharField(max_length=16)

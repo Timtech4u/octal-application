@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import login
+from django.contrib.auth.hashers import make_password
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.forms import HiddenInput
@@ -32,8 +33,14 @@ def new_graph(request):
         f['study'] = StudyForm(request.POST, prefix="study")
 
         if f['graph'].is_valid() and (not f['graph'].cleaned_data["study_active"] or f['study'].is_valid()):
-            # woo all good, save the graph and build its concepts
-            g = f['graph'].save()
+            # woo all good
+            g = f['graph'].save(commit=False)
+
+            # hash graph's key
+            g.secret = make_password(f['graph'].cleaned_data["secret"]);
+            g.save()
+
+            # build the graph's concepts
             g.build(f['graph'].cleaned_data["json_data"])
 
             # insert study data if applicable

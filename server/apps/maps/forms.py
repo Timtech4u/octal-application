@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.hashers import check_password
 from models import Graphs, Concepts
 from utils import graphCheck, GraphIntegrityError
 
@@ -67,7 +68,7 @@ class KeyForm(forms.Form):
         When validating the form, compare the key against the graph's secret
         """
         cleaned_data = super(KeyForm, self).clean()
-        if self._graph.secret != cleaned_data.get("secret"):
+        if not check_password(cleaned_data.get("secret"), self._graph.secret):
             raise forms.ValidationError("Incorrect secret")
         return cleaned_data
 
