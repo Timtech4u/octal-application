@@ -43,12 +43,15 @@ def ProblemsFormSetFactory(g=None, post=None):
             def __init__(self, *args, **kwargs):
                 super(ProblemsForm, self).__init__(*args, **kwargs)
                 self.fields['concepts'].queryset = Concepts.objects.filter(graph=g)
-                self.fields['concepts'].help_text = ""
+                self.fields['concepts'].help_text = "Most exercises apply only to a single concept. However, you may list multiple concepts if you wish the exercise to appear in more than one exercise set."
 
             class Meta:
                 model = Problems
                 labels = { 'qtype': ("Type"), }
-                widgets = { 'qid': forms.HiddenInput(), }
+                widgets = { 
+                    'question': forms.Textarea(attrs={'cols':80, 'rows':4, 'class':'edit'}),
+                    'qid': forms.HiddenInput(), 
+                }
 
         return ProblemsForm
 

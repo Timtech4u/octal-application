@@ -10,11 +10,22 @@
 {% endblock %}
 {% block jscript-extend %}
 <script type="text/javascript" src="{% static "javascript/lib/select2.min.js" %}"></script>
+<script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
 <script type="text/javascript">
 // <![CDATA[
 function pageUtils() {
   // make multiple select boxes appear in tag style
   $("select[multiple]").select2();
+
+  // show html editor
+  tinymce.init({
+    selector: "textarea.edit",
+    add_unload_trigger: false,
+    schema: "html5",
+    statusbar: false,
+    plugins: "advlist autolink autoresize code image link table",
+    tools: "inserttable"
+  });
 
   // dynamically add more exercises
   $('#add_ex').click(function() {
