@@ -51,7 +51,7 @@ def fetch_ex(request, gid="", tag="", qid=""):
     numRemaining = pr.count()
 
     # filter out the current question, if provided and if possible
-    if qid and numRemaining > 1: pr = pr.exclude(qid=int(qid))
+    if qid and numRemaining > 1: pr = pr.exclude(id=int(qid))
 
     # if student has completed all, pick one from the total set
     if numRemaining == 0: pr = Problems.objects.filter(concepts=eCon)
@@ -70,7 +70,7 @@ def fetch_ex(request, gid="", tag="", qid=""):
         return HttpResponse(status=404)
 
     data = {
-        'qid': pr.qid,
+        'qid': pr.id,
         'h': pr.question,
         't': pr.qtype,
         'a': [x.response for x in r],
@@ -156,7 +156,8 @@ def build(request, gid=""):
     exercises = csv.DictReader(gdoc.content.splitlines())
 
     for e in exercises:
-        pr,t = Problems.objects.get_or_create(graph=g, qid=e['qid'])
+        #pr,t = Problems.objects.get_or_create(graph=g, qid=e['qid'])
+        pr = Problems.objects.create(graph=g)
 
         # update question text
         pr.question = e['question']

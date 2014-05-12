@@ -8,15 +8,14 @@ class Problems(models.Model):
     """
     Exercise storage
     """
-    MULTIPLE = 0
-    SHORT    = 1
+    MULTIPLE = '0'
+    SHORT    = '1'
     EXERCISE_TYPES = ( 
         (MULTIPLE, 'Multiple choice'),
         (SHORT, 'Short answer'),
     )
 
     graph = models.ForeignKey(Graphs)
-    qid = models.IntegerField()
     question = models.TextField()
     concepts = models.ManyToManyField(Concepts)
     qtype = models.CharField(max_length=1, 
