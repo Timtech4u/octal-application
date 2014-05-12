@@ -33,6 +33,12 @@
             the topic.
         </p>
         <p>Enjoy the tool, we hope you find it useful.</p>
+        <% if (editor == 1) { %>
+            <p style="font-weight: bold">As an editor, you can add new 
+            exercises or edit existing
+            ones <a href="/maps/<%= gid %>/exercises/edit">at the Exercise
+            Edit page</a>.</p>
+        <% } %>
     </div>
 </div>
 </script>

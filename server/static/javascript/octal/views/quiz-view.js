@@ -43,6 +43,7 @@ define(["backbone", "underscore", "jquery", "octal/models/quiz-model"], function
                 buildGlobals: function(o) {
                     o.gid = this.options.gid,
                     o.linear = oGlobals.linear;
+                    o.editor = oGlobals.editor;
                     o.graphName = oGlobals.graphName;
                     o.participant = oGlobals.participant;
                     o.studyActive = oGlobals.studyActive;
