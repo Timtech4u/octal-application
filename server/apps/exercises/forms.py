@@ -9,9 +9,14 @@ def ProblemsFormSetFactory(g=None, post=None):
         A closure to restrict the dependencies to those in the supplied graph
         """
         class ProblemsForm(forms.ModelForm):
-            answers = forms.CharField(label=("Answers"),
-                    help_text=("List all answers separated by a comma. List the correct answer first."),
-                    widget=forms.Textarea(attrs={'cols':80, 'rows':2}))
+            answer = forms.CharField(label=("Correct Answer"),
+                widget=forms.TextInput(attrs={'size': '80'}))
+            distractor1 = forms.CharField(label=("Distrator"),
+                widget=forms.TextInput(attrs={'size': '80'}))
+            distractor2 = forms.CharField(label=("Distrator"),
+                widget=forms.TextInput(attrs={'size': '80'}))
+            distractor3 = forms.CharField(label=("Distrator"),
+                widget=forms.TextInput(attrs={'size': '80'}))
 
             def clean_answers(self):
                 """

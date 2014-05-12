@@ -14,13 +14,23 @@
 <script type="text/javascript">
 // <![CDATA[
 
+formSetSize = 8;
+
 // highlight every other set of exercise fields
 function highlight() {
   var odd = false;
   $('#exset tr').each( function(x) {
-    if(x%5 == 0) odd = !odd;
+    if(x % formSetSize == 0) odd = !odd;
     if(odd) $(this).css('background', '#eee');
   });
+}
+
+function showDistractors(group, val) {
+    // show distractors for multiple choice
+    show = (val == 0);
+    $('#exset tr').eq(group*formSetSize+4).toggle(show);
+    $('#exset tr').eq(group*formSetSize+5).toggle(show);
+    $('#exset tr').eq(group*formSetSize+6).toggle(show);
 }
 
 function pageUtils() {
@@ -37,6 +47,15 @@ function pageUtils() {
     tools: "inserttable"
   });
 
+  // dynamically hide distractor fields
+  var total_ex = $('#id_{{ forms.prefix }}-TOTAL_FORMS').val();
+  for (var i=0; i < total_ex; i++) {
+    group = i;
+    $("#id_problems_set-"+i+"-qtype").change(function() { 
+      showDistractors(group, $(this).val()); 
+    });
+  }
+
   // dynamically add more exercises
   $('#add_ex').click(function() {
     var total_nodes = $('#id_{{ forms.prefix }}-TOTAL_FORMS');
@@ -44,6 +63,9 @@ function pageUtils() {
     $('#exset tbody').append($('#empty-form tbody').html().replace(/__prefix__/g, form_idx));
     total_nodes.val(parseInt(form_idx) + 1);
     highlight();
+    $("#id_problems_set-"+form_idx+"-qtype").change(function() { 
+        showDistractors(form_idx, $(this).val());
+    });
   });
 
   highlight();
