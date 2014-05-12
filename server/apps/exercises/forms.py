@@ -55,7 +55,7 @@ def ProblemsFormSetFactory(g=None, post=None):
 
         return ProblemsForm
 
-    ProblemsFormSet = forms.models.inlineformset_factory(Graphs, Problems)
+    ProblemsFormSet = forms.models.inlineformset_factory(Graphs, Problems, extra=1)
     ProblemsForm = ProblemsFormSet(post, instance=g)
     ProblemsForm.form = _form_factory(g)
     return ProblemsForm
