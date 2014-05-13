@@ -112,7 +112,5 @@ strong {
     display:none;
 }
 #questions-remaining {
-    opacity:.4;
     color:#46a546;
-    font-size:smaller;
 }
