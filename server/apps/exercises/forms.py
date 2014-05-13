@@ -28,7 +28,6 @@ def ProblemsFormSetFactory(g=None, post=None):
 
             class Meta:
                 model = Problems
-                labels = { 'qtype': ("Type"), }
                 widgets = { 
                     'question': forms.Textarea(attrs={'cols':80, 'rows':4, 'class':'edit'}),
                 }
