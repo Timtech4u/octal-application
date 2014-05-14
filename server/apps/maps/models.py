@@ -1,4 +1,5 @@
 from django.db import models
+from django_bleach.models import BleachField
 import json
 
 class Graphs(models.Model):
@@ -11,7 +12,7 @@ class Graphs(models.Model):
     http://django-mongodb-engine.readthedocs.org/en/latest/
     """
     name = models.CharField(max_length=100)
-    description = models.TextField()
+    description = BleachField()
     public = models.BooleanField(default=True)
     secret = models.CharField(max_length=128)
     study_active = models.BooleanField(default=False)

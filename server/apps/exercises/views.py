@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
-from django.http import HttpResponse
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from lazysignup.decorators import allow_lazy_user
 
@@ -130,13 +131,31 @@ def edit(request, gid=""):
 
     if request.method == 'POST':
         forms = ProblemsFormSetFactory(g, post=request.POST)
+
+        # we require at least one exercise
+        forms[0].empty_permitted = False
+
         if forms.is_valid():
-            return HttpResponse("yay")
+            for f in forms:
+                if not f.has_changed(): continue
+
+                p = f.save()
+
+                # destroy existing answers, if any
+                Responses.objects.filter(problem=p).delete()
+
+                # save the answer
+                ans = f.cleaned_data['answer']
+                Responses(problem=p, response=ans).save()
+
+                # build and save distractors
+                distractors = [d for k,d in f.cleaned_data.iteritems() if k.startswith('distractor')]
+                for d in distractors:
+                    Responses(problem=p, response=d, distract=True).save()
+
+            return HttpResponseRedirect(reverse("maps:display", kwargs={"gid":gid}))
     else:
         forms = ProblemsFormSetFactory(g)
-
-    # we require at least one exercise
-    forms[0].empty_permitted = False
 
     return render(request, "exercises-form.html", 
                     {'forms':forms, 'gid':gid, 'gname':g.name})

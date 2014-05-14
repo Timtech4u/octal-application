@@ -126,6 +126,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'django_bleach',
     'apps.maps',
     'apps.exercises',
     'apps.research',
@@ -178,6 +179,23 @@ AUTHENTICATION_BACKENDS = (
   'django.contrib.auth.backends.ModelBackend',
   'lazysignup.backends.LazySignupBackend',
 )
+
+# Bleach settings
+# Which HTML tags are allowed
+BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'em', 'strong', 'a', 'span', 'img']
+
+# Which HTML attributes are allowed
+BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'src', 'alt', 'width', 'height']
+
+# Which CSS properties are allowed in 'style' attributes
+BLEACH_ALLOWED_STYLES = [ 'font-family', 'font-weight', 
+    'text-decoration', 'font-variant']
+
+# Strip unknown tags if True, replace with HTML escaped characters if False
+BLEACH_STRIP_TAGS = False
+
+# Strip comments, or leave them in.
+BLEACH_STRIP_COMMENTS = True
 
 # default URL to redirect to after login
 LOGIN_REDIRECT_URL = '/user'

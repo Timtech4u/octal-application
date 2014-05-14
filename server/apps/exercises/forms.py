@@ -1,4 +1,5 @@
 from django import forms
+from django_bleach.forms import BleachField
 from models import Problems, Responses
 
 from apps.maps.models import Graphs, Concepts
@@ -9,15 +10,15 @@ def ProblemsFormSetFactory(g=None, post=None):
         A closure to restrict the dependencies to those in the supplied graph
         """
         class ProblemsForm(forms.ModelForm):
-            answer = forms.CharField(label=("Correct Answer"),
+            answer = BleachField(label=("Correct Answer"),
                 widget=forms.TextInput(attrs={'size': '80'}))
-            distractor1 = forms.CharField(label=("Distrator"),
+            distractor1 = BleachField(label=("Distrator"),
                 required=False,
                 widget=forms.TextInput(attrs={'size': '80'}))
-            distractor2 = forms.CharField(label=("Distrator"),
+            distractor2 = BleachField(label=("Distrator"),
                 required=False,
                 widget=forms.TextInput(attrs={'size': '80'}))
-            distractor3 = forms.CharField(label=("Distrator"),
+            distractor3 = BleachField(label=("Distrator"),
                 required=False,
                 widget=forms.TextInput(attrs={'size': '80'}))
 

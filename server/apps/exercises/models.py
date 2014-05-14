@@ -1,4 +1,5 @@
 from django.db import models
+from django_bleach.models import BleachField
 from django.contrib.auth.models import User
 
 from apps.research.models import Participants
@@ -16,7 +17,7 @@ class Problems(models.Model):
     )
 
     graph = models.ForeignKey(Graphs)
-    question = models.TextField()
+    question = BleachField()
     concepts = models.ManyToManyField(Concepts)
     qtype = models.CharField(max_length=1, 
                              choices=EXERCISE_TYPES,
