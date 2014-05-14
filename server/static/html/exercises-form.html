@@ -51,9 +51,9 @@ function pageUtils() {
   var total_ex = $('#id_{{ forms.prefix }}-TOTAL_FORMS').val();
   for (var i=0; i < total_ex; i++) {
     (function(group) {
-      $("#id_problems_set-"+i+"-qtype").change(function() {
-        showDistractors(group, $(this).val());
-      });
+      ex = $("#id_problems_set-"+i+"-qtype");
+      ex.change(function() { showDistractors(group, $(this).val()); });
+      showDistractors(i, ex.val());
     })(i);
   }
 
