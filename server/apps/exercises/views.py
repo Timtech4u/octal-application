@@ -135,6 +135,9 @@ def edit(request, gid=""):
     else:
         forms = ProblemsFormSetFactory(g)
 
+    # we require at least one exercise
+    forms[0].empty_permitted = False
+
     return render(request, "exercises-form.html", 
                     {'forms':forms, 'gid':gid, 'gname':g.name})
 
