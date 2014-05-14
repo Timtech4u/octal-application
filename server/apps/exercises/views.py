@@ -149,8 +149,9 @@ def edit(request, gid=""):
                 Responses(problem=p, response=ans).save()
 
                 # build and save distractors
-                distractors = [d for k,d in f.cleaned_data.iteritems() if k.startswith('distractor')]
+                distractors = [d.strip() for k,d in f.cleaned_data.iteritems() if k.startswith('distractor')]
                 for d in distractors:
+                    if not d: continue
                     Responses(problem=p, response=d, distract=True).save()
 
             return HttpResponseRedirect(reverse("maps:display", kwargs={"gid":gid}))
