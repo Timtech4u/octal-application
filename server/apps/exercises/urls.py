@@ -8,6 +8,6 @@ urlpatterns = patterns('',
                            views.fetch_ex, name='fetch'),
                        url(r'^/attempt/(?P<attempt>[^/]*)/(?P<correct>[01])/?$', 
                            views.set_attempt, name='attempt'),
-                       url(r'^/build/?$', views.build, name='build'),
+                       #url(r'^/build/?$', views.build, name='build'),
                        url(r'^/edit/?$', views.edit, name='edit'),
                       )

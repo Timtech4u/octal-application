@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -185,15 +185,14 @@ def lti(request, gid):
     username = "_%s" % (userid)
 
     # try to get the user
-    try:
-        user = User.objects.get(username=username)
-    except User.DoesNotExist:
-        user = User.objects.create_user(username=username)
-        user.set_unusable_password()
-        user.save()
+    user = authenticate(username=username)
+    if user is None:
+        u = User.objects.create_user(username=username)
+        u.set_unusable_password()
+        u.save()
+        user = authenticate(username=username)
 
     # have the user ready to go, login
-    user.backend = "django.contrib.auth.backends.ModelBackend"
     login(request, user)
 
     # LTI user logged in, forward to map
