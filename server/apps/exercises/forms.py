@@ -25,9 +25,20 @@ def ProblemsFormSetFactory(g=None, post=None):
                 super(ProblemsForm, self).__init__(*args, **kwargs)
                 self.fields['concepts'].queryset = Concepts.objects.filter(graph=g)
                 self.fields['concepts'].help_text = "Most exercises apply only to a single concept. However, you may list multiple concepts if you wish the exercise to appear in more than one exercise set."
+                # fill out answer and distractors if this problem has them
+                if self.instance.id:
+                    pset = Responses.objects.filter(problem=self.instance)
+                    i = 1
+                    for p in pset:
+                        f = 'answer'
+                        if p.distract and i < 4:
+                            f = 'distractor%d' % i
+                            i += 1
+                        self.fields[f].initial = p.response
 
             class Meta:
                 model = Problems
+                labels = { 'qtype': ("Type"), }
                 widgets = { 
                     'question': forms.Textarea(attrs={'cols':80, 'rows':4, 'class':'edit'}),
                 }
@@ -38,5 +49,4 @@ def ProblemsFormSetFactory(g=None, post=None):
     ProblemsForm = ProblemsFormSet(post, instance=g)
     ProblemsForm.form = _form_factory(g)
     return ProblemsForm
-
 
