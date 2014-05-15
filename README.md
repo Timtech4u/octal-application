@@ -8,7 +8,7 @@ https://github.com/metacademy/metacademy-application
 With a live demo at http://www.metacademy.org
 
 The following instructions bring up a development version of OCTAL.
-Look at the [production directions](/production/README.md) for creating a production-level OCTAL server.
+Look at the [production directions](/production) for creating a production-level OCTAL server.
 
 ## Installation
 

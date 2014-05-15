@@ -3,7 +3,7 @@ Production Configuration
 
 If you want to get a production server of OCTAL started quickly, skip ahead to the Amazon EC2 section.
 
-Whereas the [README](/README.md) describes insructions for setting up a development server with OCTAL, the following instructions are intended to bring up an OCTAL server into production.
+Whereas the [README](/) describes insructions for setting up a development server with OCTAL, the following instructions are intended to bring up an OCTAL server into production.
 
 The following instructions run OCTAL using the Gunicorn Python WSGI HTTP server and Nginx for static file serving on a Fedora platform.
 
