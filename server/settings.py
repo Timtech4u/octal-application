@@ -218,7 +218,7 @@ SERVER = 'http://'+ str(config.SERVER_IP) + ":" + str(config.SERVER_PORT)
 # TinyMCE configuration
 TINYMCE_JS_URL = os.path.join(STATIC_URL, "javascript/lib/tinymce-4.0.26/tinymce.min.js")
 
-TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "javascript/lib/tinymce-4.0.26/")
+TINYMCE_JS_ROOT = os.path.join(CLIENT_SERVER_PATH, "static/javascript/lib/tinymce-4.0.26")
 
 TINYMCE_DEFAULT_CONFIG = {
     'theme': 'modern',
@@ -228,7 +228,8 @@ TINYMCE_DEFAULT_CONFIG = {
     'plugins': 'advlist,autolink,autoresize,code,image,link',
 }
 
-TINYMCE_COMPRESSOR = not config.DEBUG
+# Compressor support in current django-tinymce does not work for TinyMCE 4 :(
+TINYMCE_COMPRESSOR = False
 
 # Add FQDN host of the server this is running on in production below
 #ALLOWED_HOSTS = ['.domain.tld', 'host.amazonaws.com', '123.123.123.123']
