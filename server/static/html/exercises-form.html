@@ -3,6 +3,10 @@
 
 {% block title %}: edit exercises in an OCTAL Unit{% endblock %}
 
+{% block head-extend %}
+{{ forms.media }}
+{% endblock %}
+
 {% block extra-css %}
 <link rel="stylesheet" type="text/css" href="{% static "css/lib/select2.css" %}" />
 <link rel="stylesheet" href="{% static "css/lib/kmapcss/graph.css" %}"/>
@@ -10,7 +14,6 @@
 {% endblock %}
 {% block jscript-extend %}
 <script type="text/javascript" src="{% static "javascript/lib/select2.min.js" %}"></script>
-<script type="text/javascript" src="{% static "javascript/lib/tinymce-4.0.26/tinymce.min.js" %}"></script>
 <script type="text/javascript">
 // <![CDATA[
 
@@ -36,16 +39,6 @@ function showDistractors(group, val) {
 function pageUtils() {
   // make multiple select boxes appear in tag style
   $("select[multiple]").select2();
-
-  // show html editor
-  tinymce.init({
-    selector: "textarea.edit",
-    add_unload_trigger: false,
-    schema: "html5",
-    statusbar: false,
-    plugins: "advlist autolink autoresize code image link table",
-    tools: "inserttable"
-  });
 
   // dynamically hide distractor fields
   var total_ex = $('#id_{{ forms.prefix }}-TOTAL_FORMS').val();

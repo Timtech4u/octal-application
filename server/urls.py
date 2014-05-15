@@ -15,6 +15,7 @@ urlpatterns = patterns('',
                        url(r'^$', RedirectView.as_view(url="/maps"), name='start'),
                        #url(r'^$', TemplateView.as_view(template_name="landing.html")),
                        url(r'^(?i)maps', include('apps.maps.urls', namespace="maps")),
+                       url(r'^tinymce/', include('tinymce.urls')),
 )
 
 urlpatterns += staticfiles_urlpatterns()

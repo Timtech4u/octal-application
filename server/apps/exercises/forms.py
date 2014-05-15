@@ -1,6 +1,7 @@
 from django import forms
 from django_bleach.forms import BleachField
 from models import Problems, Responses
+from tinymce.widgets import TinyMCE
 
 from apps.maps.models import Graphs, Concepts
 
@@ -41,7 +42,7 @@ def ProblemsFormSetFactory(g=None, post=None):
                 model = Problems
                 labels = { 'qtype': ("Type"), }
                 widgets = { 
-                    'question': forms.Textarea(attrs={'cols':80, 'rows':4, 'class':'edit'}),
+                    'question': TinyMCE(attrs={'cols': 80, 'rows': 20}),
                 }
 
         return ProblemsForm
