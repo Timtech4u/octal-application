@@ -67,7 +67,7 @@ test: $(VENV_ACTIVATE)
 
 build_production:
 	cd server/static/javascript; node lib/r.js -o build.js
-	$(VENV); python server/manage.py collectstatic --noinput
+	. $(VENV_ACTIVATE); python server/manage.py collectstatic --noinput
 
 update:
 	git pull
