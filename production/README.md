@@ -88,81 +88,83 @@ If it did fail, do this to fix:
         mkdir /var/log/django
         chown octal:octal /var/log/django
 
-1. (for [v1.1-pilot+postsurvey](https://github.com/danallan/octal-application/tree/v1.1-pilot+postsurvey) installations only)
+### For [v1.1-pilot+postsurvey](https://github.com/danallan/octal-application/tree/v1.1-pilot+postsurvey) installations only
 
-    1. Import the valid participant IDs into the db:
+Skip to the next section if you're running a newer version.
 
-            app_server/manage.py dbshell
-            (copy-patse contents of sqlite.txt into the sqlite shell)
-            .quit
+1. Import the valid participant IDs into the db:
 
-    1. Build the exercise DB at the following URL:
+        app_server/manage.py dbshell
+        (copy-patse contents of sqlite.txt into the sqlite shell)
+        .quit
 
-            http://url-to-server:8080/octal/build_exercise_db
+1. Build the exercise DB at the following URL:
 
-
-    1. Add the following files:
-
-            run_{app,content}_server.sh to /srv
-            nginx.conf to /etc/nginx/
-            octal_{app,content}.ini to /etc/supervisord.d/
-
-    1. turn off stupid selinux (below) then restart
-
-            SELINUX=disabled in /etc/selinux/config
-            shutdown -r now
-
-    1. enable supervisor and nginx
-
-            chkconfig nginx on
-            chkconfig supervisord on
-
-    1. start supervisor
-
-            supervisorctl reread
-            supervisorctl update
-
-    1. start nginx
-
-            service nginx start
+        http://url-to-server:8080/octal/build_exercise_db
 
 
-1. (for [v2.0-ms](https://github.com/danallan/octal-application/tree/v2.0-ms) installations only) 
+1. Add the following files:
 
-    1. Update octal-application/config.py:
+        run_{app,content}_server.sh to /srv
+        nginx.conf to /etc/nginx/
+        octal_{app,content}.ini to /etc/supervisord.d/
 
-            META_TOP_LEVEL = path.realpath('/srv/octal/') #explicit path
-            LOG_PATH = path.realpath('/srv/log') #explicit path
-            DEBUG = False #change debug mode
+1. turn off stupid selinux (below) then restart
 
-    1. Add the following to octal-application/server/settings.py (referencing instead the hosts and IPs applicable to your own application):
+        SELINUX=disabled in /etc/selinux/config
+        shutdown -r now
 
-            ALLOWED_HOSTS = ['.domain.tld', 'host.amazonaws.com', '123.123.123.123']
+1. enable supervisor and nginx
 
-    1. Update `SECRET_KEY` in `octal-application/server/local_settings.py`
+        chkconfig nginx on
+        chkconfig supervisord on
 
-    1. Add the following files:
+1. start supervisor
 
-            run_octal_server.sh to /srv
-            nginx.conf to /etc/nginx/
-            octal.ini to /etc/supervisord.d/
+        supervisorctl reread
+        supervisorctl update
 
-    1. turn off stupid selinux (below) then restart
+1. start nginx
 
-            SELINUX=disabled in /etc/selinux/config
-            shutdown -r now
+        service nginx start
 
-    1. enable supervisor and nginx
 
-            chkconfig nginx on
-            chkconfig supervisord on
+### For [v2.0-ms](https://github.com/danallan/octal-application/tree/v2.0-ms) installations only
 
-    1. start supervisor
+1. Update octal-application/config.py:
 
-            supervisorctl reread
-            supervisorctl update
+        META_TOP_LEVEL = path.realpath('/srv/octal/') #explicit path
+        LOG_PATH = path.realpath('/srv/log') #explicit path
+        DEBUG = False #change debug mode
 
-    1. start nginx
+1. Add the following to octal-application/server/settings.py (referencing instead the hosts and IPs applicable to your own application):
 
-            service nginx start
+        ALLOWED_HOSTS = ['.domain.tld', 'host.amazonaws.com', '123.123.123.123']
+
+1. Update `SECRET_KEY` in `octal-application/server/local_settings.py`
+
+1. Add the following files:
+
+        run_octal_server.sh to /srv
+        nginx.conf to /etc/nginx/
+        octal.ini to /etc/supervisord.d/
+
+1. turn off stupid selinux (below) then restart
+
+        SELINUX=disabled in /etc/selinux/config
+        shutdown -r now
+
+1. enable supervisor and nginx
+
+        chkconfig nginx on
+        chkconfig supervisord on
+
+1. start supervisor
+
+        supervisorctl reread
+        supervisorctl update
+
+1. start nginx
+
+        service nginx start
 
