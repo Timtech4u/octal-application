@@ -21,11 +21,11 @@ The image, ami-df3746ef, is available in the EC2 US West (Oregon) region.
 
 The following steps should bring an OCTAL production server up from scratch.
 
-* Fire up a SMALL instance of Fedora on [AWS](http://fedoraproject.org/en_GB/get-fedora#clouds)
+* Fire up a SMALL instance of [Fedora](http://fedoraproject.org/en_GB/get-fedora#clouds) on Amazon EC2.
 
 * SSH in (Fedora 19 and later require username of 'fedora' during SSH)
 
-* Commands:
+* Initial package install:
 
         sudo su
         yum -y update
@@ -39,7 +39,7 @@ The following steps should bring an OCTAL production server up from scratch.
         python get-pip.py
         rm get-pip.py
 
-* Add octal user make directory:
+* Add octal user and make directory structure:
 
         adduser octal
         mkdir /srv/octal /srv/log
@@ -47,29 +47,31 @@ The following steps should bring an OCTAL production server up from scratch.
         chown -R octal:octal /var/lib/nginx/
         su octal
 
-* Create directory, pull files
+* Fetch the OCTAL code and build the dependencies:
 
         cd /srv/octal
         git clone https://github.com/danallan/octal-application.git
         cd octal-application
         make
 
-* It will probably fail. If it does, it might be due to some odd numpy failure. Do this:
+* Dependency building will probably fail due to Numpy, Matplotlib, or Scipy packages. 
+Skip this step if `make` did not fail.
+If it did fail, do this to fix:
 
         rm -rf ../meta_venv
 
-    * remove lines involving numpy, matplotlib, and pymc from requirements.txt
-    * re-run `make`
-    *  if successful, link numpy to the virtual environment:
+    * Remove lines involving numpy, matplotlib, and pymc from requirements.txt
+    * Re-run `make`
+    * If successful, link numpy to the virtual environment:
 
-        ln -s /usr/lib64/python2.7/site-packages/numpy /srv/octal/meta_venv/lib/python2.7/site-packages/
+            ln -s /usr/lib64/python2.7/site-packages/numpy /srv/octal/meta_venv/lib/python2.7/site-packages/
 
-    * activate the virtual environment and build pymc
+    * Activate the virtual environment and build pymc
 
-        source ../meta_venv/bin/activate
-        pip install matplotlib pymc
+            source ../meta_venv/bin/activate
+            pip install matplotlib pymc
 
-* Finish up the install by linking scipy:
+* Finish up the install by linking Scipy:
 
         ln -s /usr/lib64/python2.7/site-packages/scipy /srv/octal/meta_venv/lib/python2.7/site-packages/
 
@@ -90,77 +92,77 @@ The following steps should bring an OCTAL production server up from scratch.
 
     * Import the valid participant IDs into the db:
 
-        app_server/manage.py dbshell
-        (copy-patse contents of sqlite.txt into the sqlite shell)
-        .quit
+            app_server/manage.py dbshell
+            (copy-patse contents of sqlite.txt into the sqlite shell)
+            .quit
 
     * Build the exercise DB at the following URL:
 
-        http://url-to-server:8080/octal/build_exercise_db
+            http://url-to-server:8080/octal/build_exercise_db
 
 
     * Add the following files:
 
-        run_{app,content}_server.sh to /srv
-        nginx.conf to /etc/nginx/
-        octal_{app,content}.ini to /etc/supervisord.d/
+            run_{app,content}_server.sh to /srv
+            nginx.conf to /etc/nginx/
+            octal_{app,content}.ini to /etc/supervisord.d/
 
-    * turn off freaking selinux (below) then restart
+    * turn off stupid selinux (below) then restart
 
-        /etc/selinux/config
-        SELINUX=disabled
+            SELINUX=disabled in /etc/selinux/config
+            shutdown -r now
 
     * enable supervisor and nginx
 
-        chkconfig nginx on
-        chkconfig supervisord on
+            chkconfig nginx on
+            chkconfig supervisord on
 
     * start supervisor
 
-        supervisorctl reread
-        supervisorctl update
+            supervisorctl reread
+            supervisorctl update
 
     * start nginx
 
-        service nginx start
+            service nginx start
 
 
 * (for [v2.0-ms](https://github.com/danallan/octal-application/tree/v2.0-ms) installations only) 
 
     * Update octal-application/config.py:
 
-        META_TOP_LEVEL = path.realpath('/srv/octal/') #explicit path
-        LOG_PATH = path.realpath('/srv/log') #explicit path
-        DEBUG = False #change debug mode
+            META_TOP_LEVEL = path.realpath('/srv/octal/') #explicit path
+            LOG_PATH = path.realpath('/srv/log') #explicit path
+            DEBUG = False #change debug mode
 
     * Add the following to octal-application/server/settings.py (referencing instead the hosts and IPs applicable to your own application):
 
-        ALLOWED_HOSTS = ['.domain.tld', 'host.amazonaws.com', '123.123.123.123']
+            ALLOWED_HOSTS = ['.domain.tld', 'host.amazonaws.com', '123.123.123.123']
 
     * Update SECRET_KEY in octal-application/server/local_settings.py
 
     * Add the following files:
 
-        run_octal_server.sh to /srv
-        nginx.conf to /etc/nginx/
-        octal.ini to /etc/supervisord.d/
+            run_octal_server.sh to /srv
+            nginx.conf to /etc/nginx/
+            octal.ini to /etc/supervisord.d/
 
-    * turn off freaking selinux (below) then restart
+    * turn off stupid selinux (below) then restart
 
-        /etc/selinux/config
-        SELINUX=disabled
+            SELINUX=disabled in /etc/selinux/config
+            shutdown -r now
 
     * enable supervisor and nginx
 
-        chkconfig nginx on
-        chkconfig supervisord on
+            chkconfig nginx on
+            chkconfig supervisord on
 
     * start supervisor
 
-        supervisorctl reread
-        supervisorctl update
+            supervisorctl reread
+            supervisorctl update
 
     * start nginx
 
-        service nginx start
+            service nginx start
 
