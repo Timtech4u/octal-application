@@ -14,8 +14,54 @@ The following snapshot is from the [v2.0-ms branch](https://github.com/danallan/
 
 [Click here to launch an instance based on the AMI](https://console.aws.amazon.com/ec2/v2/home?region=us-west-2#LaunchInstanceWizard:ami=ami-df3746ef)
 
-We recommend an m1.small instance, unless you know you need more power.
+We recommend an m1.small instance, unless you know you need more or less power.
+A micro instance might be more economical at a cost of performance.
 The image, ami-df3746ef, is available in the EC2 US West (Oregon) region.
+
+To prep and use the AMI:
+
+1. SSH in with username `fedora`.
+You should have set a private key when booting the instance, but if that was not an option, contact Dan (`danallan` at `cs` punto `berkeley` punto `edu`) for a private key.
+
+    * Note: all relevant files are owned by user `octal`. Frequently, permissions errors are due to files not being owned by this account. You can become this user by first becoming root:
+
+            sudo su
+            su octal
+
+    * For some tasks you will need to activate the virtual environment. First log in as `octal` (above) and then:
+
+            cd /srv/octal/octal-application
+            source ../meta_venv/bin/activate
+
+    * Here are some important files:
+
+            /srv                     # root server structure
+            |  /octal.sock           # socket file for nginx/gunicorn communication
+            |  /run_octal_server.sh  # script to run gunicorn (started by supervisor)
+            |  /log                  # server logs
+            |-   /django.log         # django errors from octal app
+            |-   /octal.log          # nginx static file server errors
+            |  /octal                # OCTAL files
+            |-   /octal-application  # this repo
+            |-   /meta_venv          # python virtual environment
+            |-   /local_dbs          # SQLite database storage
+
+1. Update `ALLOWED_HOSTS` in `/srv/octal/octal-application/server/settings.py`
+
+1. nginx should start on boot, but you can control it with the following (as root):
+
+        service nginx restart
+
+1. supervisor manages the Gunicorn WSGI server.
+You should restart it after any modification to OCTAL's non-static (e.g., Python, Django settings) files.
+As root, run:
+
+        supervisorctl restart octal
+
+If you make any modifications to the static files (HTML, JavaScript, etc), you need to rebuild the compressed static directory. First log in as `octal` and activate the virtual environment (see Step 1) then:
+
+        make build_production
+        exit
 
 ## From Scratch
 
