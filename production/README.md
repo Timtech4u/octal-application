@@ -93,6 +93,8 @@ If it did fail, do this to fix:
 ### For [v1.1-pilot+postsurvey](https://github.com/danallan/octal-application/tree/v1.1-pilot+postsurvey) installations only
 
 Skip to the next section if you're running a newer version.
+The directions for this early version may be slightly outdated.
+If you have problems, try some of the steps from a newer version.
 
 1. Import the valid participant IDs into the db:
 
@@ -107,7 +109,7 @@ Skip to the next section if you're running a newer version.
 
 1. Add the following files:
 
-        run_{app,content}_server.sh to /srv
+        run_{app,content}_server.sh to /srv/
         nginx.conf to /etc/nginx/
         octal_{app,content}.ini to /etc/supervisord.d/
 
@@ -133,7 +135,7 @@ Skip to the next section if you're running a newer version.
 
 ### For [v2.0-ms](https://github.com/danallan/octal-application/tree/v2.0-ms) installations only
 
-1. Update octal-application/config.py:
+1. Update `octal-application/config.py`:
 
         META_TOP_LEVEL = path.realpath('/srv/octal/') #explicit path
         LOG_PATH = path.realpath('/srv/log') #explicit path
@@ -147,7 +149,7 @@ Skip to the next section if you're running a newer version.
 
 1. Add the following files:
 
-        run_octal_server.sh to /srv
+        run_octal_server.sh to /srv/
         nginx.conf to /etc/nginx/
         octal.ini to /etc/supervisord.d/
 
