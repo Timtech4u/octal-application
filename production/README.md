@@ -141,7 +141,7 @@ If you have problems, try some of the steps from a newer version.
         LOG_PATH = path.realpath('/srv/log') #explicit path
         DEBUG = False #change debug mode
 
-1. Add the following to octal-application/server/settings.py (referencing instead the hosts and IPs applicable to your own application):
+1. Add the following to `octal-application/server/settings.py1 (referencing instead the hosts and IPs applicable to your own application):
 
         ALLOWED_HOSTS = ['.domain.tld', 'host.amazonaws.com', '123.123.123.123']
 
