@@ -18,12 +18,16 @@ We recommend an m1.small instance, unless you know you need more or less power.
 A micro instance might be more economical at a cost of performance.
 The image, ami-df3746ef, is available in the EC2 US West (Oregon) region.
 
-To prep and use the AMI:
+### AMI Prep
 
-1. SSH in with username `fedora`.
+You __must__ update `ALLOWED_HOSTS` in `/srv/octal/octal-application/server/settings.py`
+
+### Management
+
+* SSH in with username `fedora`.
 You should have set a private key when booting the instance, but if that was not an option, contact Dan (`danallan` at `cs` punto `berkeley` punto `edu`) for a private key.
 
-    * Note: all relevant files are owned by user `octal`. Frequently, permissions errors are due to files not being owned by this account. You can become this user by first becoming root:
+    * All relevant files are owned by user `octal`. Frequently, permissions errors are due to files not being owned by this account. You can become this user by first becoming root:
 
             sudo su
             su octal
@@ -46,19 +50,18 @@ You should have set a private key when booting the instance, but if that was not
             |-   /meta_venv          # python virtual environment
             |-   /local_dbs          # SQLite database storage
 
-1. Update `ALLOWED_HOSTS` in `/srv/octal/octal-application/server/settings.py`
 
-1. nginx should start on boot, but you can control it with the following (as root):
+* `nginx` should start on boot, but you can control it with the following (as root):
 
         service nginx restart
 
-1. supervisor manages the Gunicorn WSGI server.
+* `supervisor` manages the Gunicorn WSGI server.
 You should restart it after any modification to OCTAL's non-static (e.g., Python, Django settings) files.
 As root, run:
 
         supervisorctl restart octal
 
-If you make any modifications to the static files (HTML, JavaScript, etc), you need to rebuild the compressed static directory. First log in as `octal` and activate the virtual environment (see Step 1) then:
+* If you make any modifications to the static files (HTML, JavaScript, etc), you need to rebuild the compressed static directory. First log in as `octal` and activate the virtual environment (see Step 1) then:
 
         make build_production
         exit
