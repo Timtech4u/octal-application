@@ -9,6 +9,8 @@ from django.shortcuts import render, get_object_or_404
 from django.utils.html import escape, strip_tags
 from django.views.decorators.csrf import csrf_exempt
 
+from lazysignup.decorators import allow_lazy_user
+
 from forms import GraphForm, KeyForm
 from models import Graphs, Concepts
 from utils import graphCheck, generateSecret, require_edit_access, setEdit, canEdit
@@ -67,6 +69,7 @@ def new_graph(request):
 
     return render(request, "maps-form.html", {'forms':f})
 
+@allow_lazy_user
 def display(request, gid):
     graph = get_object_or_404(Graphs, pk=gid)
 

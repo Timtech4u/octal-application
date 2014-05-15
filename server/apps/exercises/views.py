@@ -2,7 +2,6 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from lazysignup.decorators import allow_lazy_user
 
 from models import Problems, Responses, Attempts
 from forms import ProblemsFormSetFactory

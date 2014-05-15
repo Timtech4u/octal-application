@@ -1,7 +1,6 @@
 import json
 
 from django.http import HttpResponse
-from lazysignup.decorators import allow_lazy_user
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
