@@ -14,6 +14,9 @@
     d3: {
       exports: "d3"
     },
+    dagre: {
+      exports: "dagre"
+    },
     underscore: {
       exports: "_"
     },
