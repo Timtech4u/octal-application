@@ -138,6 +138,12 @@ def edit(request, gid=""):
             for f in forms:
                 if not f.has_changed(): continue
 
+                # manually delete the form if selected
+                if f in forms.deleted_forms:
+                    instance = f.instance
+                    if instance.pk: instance.delete()
+                    continue
+
                 p = f.save()
 
                 # destroy existing answers, if any
