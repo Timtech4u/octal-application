@@ -20,35 +20,38 @@ The image, ami-df3746ef, is available in the EC2 US West (Oregon) region.
 
 ### AMI Prep
 
-You __must__ update `ALLOWED_HOSTS` in `/srv/octal/octal-application/server/settings.py`
+You __must__ update `ALLOWED_HOSTS` in `/srv/octal/octal-application/server/settings.py` or Django will refuse any HTTP request.
+
+After updating this you will probably need to restart (or start) the Gunicorn server and ensure that nginx is running.
+These steps are described in the _Management_ section, below.
 
 ### Management
 
-* SSH in with username `fedora`.
-You should have set a private key when booting the instance, but if that was not an option, contact Dan (`danallan` at `cs` punto `berkeley` punto `edu`) for a private key.
+* SSH to your instance in with username `fedora`.
+You should have set a private key when booting the instance, but if that was not an option, contact Dan (`danallan` at `cs` punto `berkeley` punto `edu`) for a private key specific to this AMI.
 
-    * All relevant files are owned by user `octal`. Frequently, permissions errors are due to files not being owned by this account. You can become this user by first becoming root:
+* All relevant files are owned by user `octal`. Frequently, permissions errors are due to files not being owned by this account. You can become this user by first becoming root:
 
-            sudo su
-            su octal
+        sudo su
+        su octal
 
-    * For some tasks you will need to activate the virtual environment. First log in as `octal` (above) and then:
+* For some tasks you will need to activate the virtual environment. First log in as `octal` (above) and then:
 
-            cd /srv/octal/octal-application
-            source ../meta_venv/bin/activate
+        cd /srv/octal/octal-application
+        source ../meta_venv/bin/activate
 
-    * Here are some important files:
+* Here are some important files:
 
-            /srv                     # root server structure
-            |  /octal.sock           # socket file for nginx/gunicorn communication
-            |  /run_octal_server.sh  # script to run gunicorn (started by supervisor)
-            |  /log                  # server logs
-            |-   /django.log         # django errors from octal app
-            |-   /octal.log          # nginx static file server errors
-            |  /octal                # OCTAL files
-            |-   /octal-application  # this repo
-            |-   /meta_venv          # python virtual environment
-            |-   /local_dbs          # SQLite database storage
+        /srv                     # root server structure
+        |  /octal.sock           # socket file for nginx/gunicorn communication
+        |  /run_octal_server.sh  # script to run gunicorn (started by supervisor)
+        |  /log                  # server logs
+        |-   /django.log         # django errors from octal app
+        |-   /octal.log          # nginx static file server errors
+        |  /octal                # OCTAL files
+        |-   /octal-application  # this repo
+        |-   /meta_venv          # python virtual environment
+        |-   /local_dbs          # SQLite database storage
 
 
 * `nginx` should start on boot, but you can control it with the following (as root):
