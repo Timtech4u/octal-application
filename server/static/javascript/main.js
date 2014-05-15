@@ -8,10 +8,10 @@
 requirejs.config({
   baseUrl: window.STATIC_PATH + "javascript",
   paths: {
-    jquery:"//code.jquery.com/jquery-2.1.0.min",
-    underscore: "//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min",
-    backbone: "//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min",
-    d3: "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.5/d3.min",
+    jquery: "lib/jquery-2.1.0.min",
+    underscore: "lib/underscore-1.6.0-min",
+    backbone: "lib/backbone-1.1.2-min",
+    d3: "lib/d3-3.4.5.min",
     "dagre": "lib/dagre",
     "btouch": "lib/backbone.touch",
   },
