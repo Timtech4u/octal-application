@@ -88,6 +88,8 @@ If it did fail, do this to fix:
         mkdir /var/log/django
         chown octal:octal /var/log/django
 
+1. Continue the directions for your appropriate version, below.
+
 ### For [v1.1-pilot+postsurvey](https://github.com/danallan/octal-application/tree/v1.1-pilot+postsurvey) installations only
 
 Skip to the next section if you're running a newer version.
