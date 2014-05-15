@@ -50,10 +50,9 @@ As root, run:
 
         supervisorctl restart octal
 
-* If you make any modifications to the static files (HTML, JavaScript, etc), you need to rebuild the compressed static directory. First log in as `octal` and activate the virtual environment (see Step 1) then:
+* If you make any modifications to the static files (HTML, JavaScript, etc), you need to rebuild the compressed static directory. First log in as `octal` and activate the virtual environment, as described above, and then:
 
         make build_production
-        exit
 
 * The following is an overview of useful files:
 
