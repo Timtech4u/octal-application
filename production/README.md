@@ -40,20 +40,6 @@ You should have set a private key when booting the instance, but if that was not
         cd /srv/octal/octal-application
         source ../meta_venv/bin/activate
 
-* Here are some important files:
-
-        /srv                     # root server structure
-        |  /octal.sock           # socket file for nginx/gunicorn communication
-        |  /run_octal_server.sh  # script to run gunicorn (started by supervisor)
-        |  /log                  # server logs
-        |-   /django.log         # django errors from octal app
-        |-   /octal.log          # nginx static file server errors
-        |  /octal                # OCTAL files
-        |-   /octal-application  # this repo
-        |-   /meta_venv          # python virtual environment
-        |-   /local_dbs          # SQLite database storage
-
-
 * `nginx` should start on boot, but you can control it with the following (as root):
 
         service nginx restart
@@ -68,6 +54,20 @@ As root, run:
 
         make build_production
         exit
+
+* The following is an overview of useful files:
+
+        /srv                     # root server structure
+        |  /octal.sock           # socket file for nginx/gunicorn communication
+        |  /run_octal_server.sh  # script to run gunicorn (started by supervisor)
+        |  /log                  # server logs
+        |-   /django.log         # django errors from octal app
+        |-   /octal.log          # nginx static file server errors
+        |  /octal                # OCTAL files
+        |-   /octal-application  # this repo
+        |-   /meta_venv          # python virtual environment
+        |-   /local_dbs          # SQLite database storage
+
 
 ## From Scratch
 
