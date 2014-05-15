@@ -30,7 +30,7 @@ The following steps should bring an OCTAL production server up from scratch.
         sudo su
         yum -y update
         yum -y upgrade
-        yum -y install screen freetype-devel gcc gcc-gfortran git wget vim nodejs npm python-devel make numpy numpy-f2py scipy python-matplotlib libpng-devel
+        yum -y install screen freetype-devel gcc gcc-gfortran git wget vim nodejs npm python-devel make numpy numpy-f2py scipy python-matplotlib libpng-devel libxml2-devel libxslt-devel
         easy_install virtualenv nginx supervisor
 
 1. Install PIP:
