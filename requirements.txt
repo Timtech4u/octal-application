@@ -1,3 +1,4 @@
+BeautifulSoup<4.0
 Django==1.6
 Flask==0.10.1
 Flask-Cache==0.12
