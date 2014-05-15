@@ -2,6 +2,9 @@ from os import path
 
 META_TOP_LEVEL = path.realpath('..')
 
+# logging directory for production
+LOG_PATH = path.realpath('..')
+
 # change this path to specify a different local database directory
 TOP_DB_PATH = path.join(META_TOP_LEVEL, 'local_dbs')
 

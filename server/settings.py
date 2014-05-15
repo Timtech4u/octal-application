@@ -166,7 +166,8 @@ LOGGING = {
         },
         'logfile': {
             'class': 'logging.handlers.WatchedFileHandler',
-            'filename': '/var/log/django/error.log'
+            'filters': ['require_debug_false'],
+            'filename': os.path.join(config.LOG_PATH, 'django.log')
         },
     },
     'loggers': {
