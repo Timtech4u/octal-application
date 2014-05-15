@@ -20,7 +20,8 @@ The image, ami-df3746ef, is available in the EC2 US West (Oregon) region.
 
 ### AMI Prep
 
-You __must__ update `ALLOWED_HOSTS` in `/srv/octal/octal-application/server/settings.py` or Django will refuse any HTTP request.
+Prepping the AMI is pretty easy.
+Once it's booted, you __must__ update `ALLOWED_HOSTS` in `/srv/octal/octal-application/server/settings.py` or Django will refuse any HTTP request.
 
 After updating this you will probably need to restart (or start) the Gunicorn server and ensure that nginx is running.
 These steps are described in the _Management_ section, below.
