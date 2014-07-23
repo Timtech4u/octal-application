@@ -18,6 +18,8 @@ We recommend an m1.small instance, unless you know you need more or less power.
 A micro instance might be more economical at a cost of performance.
 The image, ami-df3746ef, is available in the EC2 US West (Oregon) region.
 
+While setting up your instance, be sure that you add a rule for HTTP (port 80) to your instance's [security group](http://docs.aws.amazon.com/gettingstarted/latest/computebasics/getting-started-security-group.html) so that you may access the OCTAL server.
+
 ### AMI Prep
 
 Prepping the AMI is pretty easy.
