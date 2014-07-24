@@ -199,7 +199,7 @@ If you have problems, try some of the steps from a newer version.
 
         ALLOWED_HOSTS = ['.domain.tld', 'host.amazonaws.com', '123.123.123.123']
 
-1. Update `SECRET_KEY` in `octal-application/server/local_settings.py`
+1. Update `SECRET_KEY` in `octal-application/server/settings_local.py`
 
 1. Add the following files:
 
